@@ -62,7 +62,7 @@ server/src/
 | Database | PostgreSQL — Neon (serverless) |
 | Auth | JWT (access + refresh token, HttpOnly cookie) |
 | File upload | Cloudinary |
-| Deploy | Netlify (frontend) + Railway (backend) |
+| Deploy | Vercel (frontend) + Railway (backend) |
 
 ## Local Setup
 
@@ -133,5 +133,5 @@ bun run dev
 
 ## Deploy
 
-- **Frontend** → Netlify. Config in `netlify.toml`. Set `VITE_API_URL` in Netlify environment variables.
+- **Frontend** → Vercel. Config in `vercel.json`. Set `VITE_API_URL` in Vercel environment variables.
 - **Backend** → Railway. Config in `server/railway.json`. Set all backend environment variables in Railway dashboard.
