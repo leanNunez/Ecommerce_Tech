@@ -19,7 +19,7 @@ const STATUS_CLASS: Record<OrderStatus, string> = {
 export function DashboardPage() {
   const { user } = useAuth()
   const { data: ordersData, isLoading } = useOrders()
-  const recentOrders = (ordersData?.data ?? []).slice(0, 5)
+  const recentOrders = (ordersData ?? []).slice(0, 5)
 
   return (
     <div className="flex flex-col gap-8">

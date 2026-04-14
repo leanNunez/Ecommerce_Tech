@@ -10,7 +10,7 @@ export function AdminStats() {
   const { data: productsData } = useAdminProducts()
   const { data: users = [] }   = useUsers()
 
-  const orders   = ordersData?.data ?? []
+  const orders   = ordersData ?? []
   const products = productsData?.data ?? []
 
   const totalSales    = orders.reduce((sum, o) => sum + o.total, 0)
