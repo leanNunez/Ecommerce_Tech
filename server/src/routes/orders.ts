@@ -1,0 +1,107 @@
+import { Router } from 'express'
+import { z } from 'zod'
+import { prisma } from '../lib/prisma.js'
+import { authenticate, requireAdmin } from '../middleware/auth.js'
+
+const router = Router()
+
+const ORDER_INCLUDE = {
+  items:           { include: { product: true, variant: true } },
+  shippingAddress: true,
+}
+
+// ── GET /api/orders ───────────────────────────────────────────────────────────
+router.get('/', authenticate, async (req, res, next) => {
+  try {
+    const isAdmin = req.auth!.role === 'admin'
+    const data = await prisma.order.findMany({
+      where:   isAdmin ? undefined : { userId: req.auth!.userId },
+      orderBy: { createdAt: 'desc' },
+      include: ORDER_INCLUDE,
+    })
+    res.json({ success: true, data })
+  } catch (err) { next(err) }
+})
+
+// ── GET /api/orders/:id ───────────────────────────────────────────────────────
+router.get('/:id', authenticate, async (req, res, next) => {
+  try {
+    const order = await prisma.order.findUnique({
+      where:   { id: req.params.id },
+      include: ORDER_INCLUDE,
+    })
+    if (!order) { res.status(404).json({ success: false, message: 'Order not found' }); return }
+    const isOwner = order.userId === req.auth!.userId
+    const isAdmin = req.auth!.role === 'admin'
+    if (!isOwner && !isAdmin) { res.status(403).json({ success: false, message: 'Forbidden' }); return }
+    res.json({ success: true, data: order })
+  } catch (err) { next(err) }
+})
+
+// ── POST /api/orders — place order ────────────────────────────────────────────
+const placeOrderSchema = z.object({
+  items: z.array(z.object({
+    productId: z.string(),
+    variantId: z.string().optional(),
+    name:      z.string(),
+    price:     z.number().positive(),
+    quantity:  z.number().int().positive(),
+    imageUrl:  z.string(),
+  })).min(1),
+  shippingAddress: z.object({
+    street:  z.string().min(1),
+    city:    z.string().min(1),
+    state:   z.string().min(1),
+    country: z.string().min(1),
+    zipCode: z.string().min(3),
+  }),
+})
+
+router.post('/', authenticate, async (req, res, next) => {
+  try {
+    const { items, shippingAddress } = placeOrderSchema.parse(req.body)
+    const subtotal = items.reduce((s, i) => s + i.price * i.quantity, 0)
+
+    const order = await prisma.order.create({
+      data: {
+        userId: req.auth!.userId,
+        status: 'processing',
+        total:  Number((subtotal * 1.1).toFixed(2)),
+        shippingAddress: {
+          create: { ...shippingAddress, userId: req.auth!.userId, isDefault: false },
+        },
+        items: {
+          create: items.map((item) => ({
+            name:      item.name,
+            price:     item.price,
+            quantity:  item.quantity,
+            imageUrl:  item.imageUrl,
+            productId: item.productId,
+            variantId: item.variantId,
+          })),
+        },
+      },
+      include: ORDER_INCLUDE,
+    })
+    res.status(201).json({ success: true, data: order })
+  } catch (err) { next(err) }
+})
+
+// ── PATCH /api/orders/:id/status — admin ─────────────────────────────────────
+const statusSchema = z.object({
+  status: z.enum(['pending', 'processing', 'shipped', 'delivered', 'cancelled']),
+})
+
+router.patch('/:id/status', authenticate, requireAdmin, async (req, res, next) => {
+  try {
+    const { status } = statusSchema.parse(req.body)
+    const order = await prisma.order.update({
+      where:   { id: req.params.id },
+      data:    { status },
+      include: ORDER_INCLUDE,
+    })
+    res.json({ success: true, data: order })
+  } catch (err) { next(err) }
+})
+
+export default router
