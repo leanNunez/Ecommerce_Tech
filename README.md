@@ -62,7 +62,7 @@ server/src/
 | Database | PostgreSQL — Neon (serverless) |
 | Auth | JWT (access + refresh token, HttpOnly cookie) |
 | File upload | Cloudinary |
-| Deploy | Vercel (frontend) + Railway (backend) |
+| Deploy | Vercel (frontend) + Render (backend) |
 
 ## Local Setup
 
@@ -134,4 +134,4 @@ bun run dev
 ## Deploy
 
 - **Frontend** → Vercel. Config in `vercel.json`. Set `VITE_API_URL` in Vercel environment variables.
-- **Backend** → Railway. Config in `server/railway.json`. Set all backend environment variables in Railway dashboard.
+- **Backend** → Render. Set all backend environment variables in Render dashboard (note: `server/railway.json` can be ignored).
