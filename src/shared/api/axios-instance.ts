@@ -33,27 +33,11 @@ export function registerRefreshFailureHandler(handler: () => void) {
   onRefreshFailure = handler
 }
 
-// ── Error normalization interceptor ──────────────────────────────────────────
-apiClient.interceptors.response.use(
-  (response) => response,
-  (error: AxiosError) => {
-    const data = error.response?.data as Record<string, unknown> | undefined
-    const apiError: ApiError = {
-      status: error.response?.status ?? 0,
-      message: error.response
-        ? (data?.message as string | undefined) ?? error.message
-        : 'Network error',
-      code: data?.code as string | undefined,
-      fieldErrors:
-        error.response?.status === 422
-          ? (data?.errors as Record<string, string[]> | undefined)
-          : undefined,
-    }
-    return Promise.reject(apiError)
-  },
-)
-
 // ── Refresh token interceptor with 401 queue ─────────────────────────────────
+// IMPORTANT: must be registered BEFORE the error normalization interceptor.
+// Axios runs response interceptors in registration order (FIFO). If normalization
+// ran first it would create a new ApiError object without `config`, making the
+// retry below impossible.
 let isRefreshing = false
 let failedQueue: Array<{
   resolve: (value: unknown) => void
@@ -75,10 +59,10 @@ type RetryableConfig = InternalAxiosRequestConfig & { _retry?: boolean }
 
 apiClient.interceptors.response.use(
   (response) => response,
-  async (error: ApiError & { config?: RetryableConfig }) => {
-    const config = error.config
+  async (error: AxiosError) => {
+    const config = error.config as RetryableConfig | undefined
 
-    if (error.status !== 401 || !config || config._retry) {
+    if (error.response?.status !== 401 || !config || config._retry) {
       return Promise.reject(error)
     }
 
@@ -107,5 +91,27 @@ apiClient.interceptors.response.use(
     } finally {
       isRefreshing = false
     }
+  },
+)
+
+// ── Error normalization interceptor ──────────────────────────────────────────
+// Registered AFTER the refresh interceptor so it only sees errors that are
+// truly final (refresh already attempted or non-401).
+apiClient.interceptors.response.use(
+  (response) => response,
+  (error: AxiosError) => {
+    const data = error.response?.data as Record<string, unknown> | undefined
+    const apiError: ApiError = {
+      status: error.response?.status ?? 0,
+      message: error.response
+        ? (data?.message as string | undefined) ?? error.message
+        : 'Network error',
+      code: data?.code as string | undefined,
+      fieldErrors:
+        error.response?.status === 422
+          ? (data?.errors as Record<string, string[]> | undefined)
+          : undefined,
+    }
+    return Promise.reject(apiError)
   },
 )
