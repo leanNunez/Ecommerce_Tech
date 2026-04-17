@@ -62,7 +62,12 @@ apiClient.interceptors.response.use(
   async (error: AxiosError) => {
     const config = error.config as RetryableConfig | undefined
 
-    if (error.response?.status !== 401 || !config || config._retry) {
+    if (
+      error.response?.status !== 401 ||
+      !config ||
+      config._retry ||
+      config.url?.includes('/api/auth/refresh')
+    ) {
       return Promise.reject(error)
     }
 

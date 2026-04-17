@@ -22,7 +22,13 @@ export const useAuthStore = create<AuthState>()((set) => ({
 // Register the refresh failure handler so axios-instance can clear auth
 // without importing from this feature (FSD boundary compliance).
 registerRefreshFailureHandler(() => {
+  const wasAuthenticated = useAuthStore.getState().isAuthenticated
   setAccessToken(null)
   useAuthStore.getState().clearAuth()
-  window.location.href = '/login'
+  // Only force-redirect when the user had an active session and their refresh
+  // token expired mid-session. On initial page load isAuthenticated is false,
+  // so we skip the redirect and let route guards handle it normally.
+  if (wasAuthenticated) {
+    window.location.href = '/login'
+  }
 })
