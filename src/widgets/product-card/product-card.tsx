@@ -1,7 +1,10 @@
-import { Link } from '@tanstack/react-router'
+import { Link, useNavigate } from '@tanstack/react-router'
 import { formatCurrency } from '@/shared/lib/format-currency'
+import { Button } from '@/shared/ui'
 import { AddToCartButton } from '@/features/add-to-cart'
 import { WishlistToggleButton } from '@/features/add-to-wishlist'
+import { useAuthStore } from '@/features/authenticate'
+import { useCartStore } from '@/entities/cart'
 import { useBrands } from '@/entities/brand'
 import type { Product } from '@/entities/product'
 
@@ -12,12 +15,27 @@ interface ProductCardProps {
 export function ProductCard({ product }: ProductCardProps) {
   const { data } = useBrands()
   const brands = data?.data ?? []
+  const navigate = useNavigate()
+  const addItem = useCartStore((s) => s.addItem)
+  const role = useAuthStore((s) => s.role)
   const image = product.images[0]
   const brandName = brands.find((b) => b.id === product.brandId)?.name ?? ''
   const discount = product.compareAtPrice
     ? Math.round((1 - product.price / product.compareAtPrice) * 100)
     : null
   const isLowStock = product.stock > 0 && product.stock <= 5
+
+  function handleBuyNow(e: React.MouseEvent) {
+    e.preventDefault()
+    addItem({
+      productId: product.id,
+      name: product.name,
+      price: product.price,
+      quantity: 1,
+      imageUrl: product.images[0]?.url ?? '',
+    })
+    navigate({ to: '/checkout' })
+  }
 
   return (
     <article className="group relative flex h-full flex-col rounded-xl bg-surface overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
@@ -83,7 +101,14 @@ export function ProductCard({ product }: ProductCardProps) {
               </span>
             )}
           </div>
-          <AddToCartButton product={product} className="w-full" size="sm" />
+          <div className="flex gap-1.5">
+            <AddToCartButton product={product} className="flex-1" size="sm" variant="outline" />
+            {role !== 'admin' && product.stock > 0 && (
+              <Button size="sm" className="flex-1" onClick={handleBuyNow}>
+                Buy Now
+              </Button>
+            )}
+          </div>
         </div>
       </div>
     </article>
