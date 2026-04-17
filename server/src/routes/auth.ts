@@ -148,7 +148,13 @@ router.post('/refresh', (req, res) => {
 
 // ── POST /api/auth/logout ─────────────────────────────────────────────────────
 router.post('/logout', (_req, res) => {
-  res.clearCookie('refreshToken', { path: '/api/auth/refresh' })
+  const isProd = process.env.NODE_ENV === 'production'
+  res.clearCookie('refreshToken', {
+    httpOnly: true,
+    sameSite: isProd ? 'none' : 'lax',
+    secure:   isProd,
+    path:     '/api/auth/refresh',
+  })
   res.json({ success: true })
 })
 
