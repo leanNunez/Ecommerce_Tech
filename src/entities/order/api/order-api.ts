@@ -34,7 +34,7 @@ export function placeOrder(payload: PlaceOrderPayload): Promise<ApiResponse<Orde
 
 export function cancelOrder(id: string): Promise<ApiResponse<Order>> {
   return apiClient
-    .patch<ApiResponse<Order>>(`/api/orders/${id}/status`, { status: 'cancelled' })
+    .patch<ApiResponse<Order>>(`/api/orders/${id}/cancel`)
     .then((r) => r.data)
 }
 
