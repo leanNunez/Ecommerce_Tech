@@ -10,9 +10,10 @@ interface AddToCartButtonProps {
   quantity?: number
   className?: string
   size?: 'default' | 'sm' | 'lg' | 'icon'
+  variant?: 'default' | 'outline' | 'secondary'
 }
 
-export function AddToCartButton({ product, variantId, quantity = 1, className, size }: AddToCartButtonProps) {
+export function AddToCartButton({ product, variantId, quantity = 1, className, size, variant }: AddToCartButtonProps) {
   const addItem = useCartStore((s) => s.addItem)
   const role = useAuthStore((s) => s.role)
   const [added, setAdded] = useState(false)
@@ -41,7 +42,7 @@ export function AddToCartButton({ product, variantId, quantity = 1, className, s
   }
 
   return (
-    <Button onClick={handleClick} className={className} size={size}>
+    <Button onClick={handleClick} className={className} size={size} variant={variant}>
       {added ? 'Added!' : 'Add to cart'}
     </Button>
   )

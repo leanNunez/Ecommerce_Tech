@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Link, useParams } from '@tanstack/react-router'
+import { Link, useNavigate, useParams } from '@tanstack/react-router'
 import {
   ArrowLeft,
   ChevronRight,
@@ -9,10 +9,13 @@ import {
   Truck,
 } from 'lucide-react'
 import { formatCurrency } from '@/shared/lib/format-currency'
+import { Button } from '@/shared/ui'
 import { ProductGallery } from '@/widgets/product-gallery'
 import { ProductCard } from '@/widgets/product-card'
 import { AddToCartButton } from '@/features/add-to-cart'
 import { WishlistToggleButton } from '@/features/add-to-wishlist'
+import { useAuthStore } from '@/features/authenticate'
+import { useCartStore } from '@/entities/cart'
 import { useProductBySlug, useProducts } from '@/entities/product'
 import { useBrands } from '@/entities/brand'
 
@@ -80,6 +83,9 @@ function StockBadge({ stock }: { stock: number }) {
 
 export function ProductDetailPage() {
   const { productSlug } = useParams({ from: '/product/$productSlug' })
+  const navigate = useNavigate()
+  const addItem = useCartStore((s) => s.addItem)
+  const role = useAuthStore((s) => s.role)
 
   const { data: productData, isLoading, isError } = useProductBySlug(productSlug)
   const { data: brandsData } = useBrands()
@@ -107,6 +113,19 @@ export function ProductDetailPage() {
     : null
   const rating      = product ? getRating(product.id) : 0
   const ratingCount = product ? getRatingCount(product.id) : 0
+
+  function handleBuyNow() {
+    if (!product) return
+    addItem({
+      productId: product.id,
+      variantId: selectedVariantId ?? product.variants[0]?.id,
+      name: product.name,
+      price: displayPrice,
+      quantity: 1,
+      imageUrl: product.images[0]?.url ?? '',
+    })
+    navigate({ to: '/checkout' })
+  }
 
   // ── Loading ──────────────────────────────────────────────────────────────────
   if (isLoading) {
@@ -270,16 +289,24 @@ export function ProductDetailPage() {
             <StockBadge stock={selectedVariant?.stock ?? product.stock} />
 
             {/* CTA */}
-            <div className="flex gap-3">
-              <div className="flex-1">
-                <AddToCartButton
-                  product={product}
-                  variantId={selectedVariantId ?? product.variants[0]?.id}
-                  className="w-full"
-                  size="lg"
-                />
+            <div className="flex flex-col gap-2">
+              {role !== 'admin' && product.stock > 0 && (
+                <Button size="lg" className="w-full" onClick={handleBuyNow}>
+                  Buy Now
+                </Button>
+              )}
+              <div className="flex gap-3">
+                <div className="flex-1">
+                  <AddToCartButton
+                    product={product}
+                    variantId={selectedVariantId ?? product.variants[0]?.id}
+                    className="w-full"
+                    size="lg"
+                    variant="outline"
+                  />
+                </div>
+                <WishlistToggleButton productId={product.id} />
               </div>
-              <WishlistToggleButton productId={product.id} />
             </div>
 
             {/* Trust badges */}

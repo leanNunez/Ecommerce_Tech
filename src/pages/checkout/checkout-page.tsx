@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from '@tanstack/react-router'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -40,6 +40,7 @@ export function CheckoutPage() {
   const { mutateAsync: placeOrder } = usePlaceOrder()
   const navigate = useNavigate()
   const isPlacingOrder = useRef(false)
+  const [orderError, setOrderError] = useState<string | null>(null)
 
   useEffect(() => {
     if (items.length === 0 && !isPlacingOrder.current) {
@@ -78,6 +79,7 @@ export function CheckoutPage() {
 
   async function onSubmit(data: CheckoutFormValues) {
     isPlacingOrder.current = true
+    setOrderError(null)
     try {
       const res = await placeOrder({
         items: items.map((item) => ({
@@ -100,6 +102,7 @@ export function CheckoutPage() {
       navigate({ to: '/checkout/confirmation/$orderId', params: { orderId: res.data.id } })
     } catch {
       isPlacingOrder.current = false
+      setOrderError('Something went wrong placing your order. Please try again.')
     }
   }
 
@@ -299,6 +302,11 @@ export function CheckoutPage() {
 
               <OrderSummary items={items} />
 
+              {orderError && (
+                <p className="rounded-lg bg-destructive/10 px-3 py-2 text-sm text-destructive">
+                  {orderError}
+                </p>
+              )}
               <Button
                 type="submit"
                 size="lg"
