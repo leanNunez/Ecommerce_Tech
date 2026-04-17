@@ -18,10 +18,13 @@ function makeTokens(userId: string, role: string) {
 }
 
 function setRefreshCookie(res: ReturnType<typeof import('express').response>, token: string) {
+  const isProd = process.env.NODE_ENV === 'production'
   res.cookie('refreshToken', token, {
     httpOnly: true,
-    sameSite: 'lax',
-    secure:   process.env.NODE_ENV === 'production',
+    // cross-origin (Vercel frontend + Render backend) requires sameSite:'none'
+    // sameSite:'none' is only valid with secure:true (HTTPS), so keep lax for local dev
+    sameSite: isProd ? 'none' : 'lax',
+    secure:   isProd,
     maxAge:   7 * 24 * 60 * 60 * 1000,
     path:     '/api/auth/refresh',
   })
