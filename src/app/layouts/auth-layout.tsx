@@ -1,3 +1,4 @@
+import { Suspense } from 'react'
 import { Outlet, Link } from '@tanstack/react-router'
 import { RefreshCw, ShieldCheck, Truck } from 'lucide-react'
 
@@ -67,7 +68,9 @@ export function AuthLayout() {
           </div>
 
           <div className="rounded-2xl bg-surface p-8 shadow-sm ring-1 ring-secondary/10">
-            <Outlet />
+            <Suspense fallback={null}>
+              <Outlet />
+            </Suspense>
           </div>
         </div>
       </div>

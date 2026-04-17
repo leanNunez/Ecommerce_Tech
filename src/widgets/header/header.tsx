@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Link } from '@tanstack/react-router'
-import { Bell, Heart, LayoutDashboard, LogOut, MapPin, Menu, Package, ShoppingCart, User } from 'lucide-react'
+import { Heart, LayoutDashboard, LogOut, MapPin, Menu, Package, ShoppingCart, User } from 'lucide-react'
 import {
   Avatar, AvatarFallback,
   Button,
@@ -11,6 +11,7 @@ import { useAuthStore } from '@/features/authenticate'
 import { LogoutButton, useLogout } from '@/features/logout'
 import { useCartStore } from '@/entities/cart'
 import { useAddresses } from '@/entities/address'
+import { NotificationPopover } from './notification-popover'
 
 function LogoutDesktopButton() {
   const { mutate: logout, isPending } = useLogout()
@@ -147,7 +148,11 @@ export function Header() {
                             </Link>
                             <Link to="/cart" onClick={() => setMenuOpen(false)} className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium text-text hover:bg-background">
                               <ShoppingCart className="h-4 w-4" />
-                              Cart {cartCount > 0 && <span className="ml-auto rounded-full bg-accent px-1.5 py-0.5 text-xs font-bold text-white">{cartCount}</span>}
+                              Cart {cartCount > 0 && (
+                <span key={cartCount} className="ml-auto rounded-full bg-accent px-1.5 py-0.5 text-xs font-bold text-white animate-badge-pop">
+                  {cartCount}
+                </span>
+              )}
                             </Link>
                           </>
                         )}
@@ -223,10 +228,7 @@ export function Header() {
                   <Heart className="h-3.5 w-3.5" />
                   Favorites
                 </Link>
-                <Link to="/account/orders" className="flex items-center gap-1.5 rounded-md px-2.5 py-1 text-xs text-white/60 transition-colors hover:bg-white/10 hover:text-white">
-                  <Bell className="h-3.5 w-3.5" />
-                  Notifications
-                </Link>
+                <NotificationPopover />
               </>
             )
           )}
@@ -240,7 +242,10 @@ export function Header() {
               <ShoppingCart className="h-3.5 w-3.5" />
               Cart
               {cartCount > 0 && (
-                <span className="flex h-4 w-4 items-center justify-center rounded-full bg-accent text-[10px] font-bold text-white">
+                <span
+                  key={cartCount}
+                  className="flex h-4 w-4 items-center justify-center rounded-full bg-accent text-[10px] font-bold text-white animate-badge-pop"
+                >
                   {cartCount}
                 </span>
               )}

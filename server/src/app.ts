@@ -8,6 +8,7 @@ import productsRouter  from './routes/products.js'
 import categoriesRouter from './routes/categories.js'
 import brandsRouter    from './routes/brands.js'
 import ordersRouter    from './routes/orders.js'
+import cartRouter      from './routes/cart.js'
 import addressesRouter from './routes/addresses.js'
 import usersRouter     from './routes/users.js'
 import { errorHandler } from './middleware/error.js'
@@ -26,6 +27,7 @@ app.use('/api/products',   productsRouter)
 app.use('/api/categories', categoriesRouter)
 app.use('/api/brands',     brandsRouter)
 app.use('/api/orders',     ordersRouter)
+app.use('/api/cart',       cartRouter)
 app.use('/api/addresses',  addressesRouter)
 app.use('/api/users',      usersRouter)
 

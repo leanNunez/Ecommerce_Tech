@@ -4,6 +4,7 @@ import { AuthLayout } from '@/app/layouts/auth-layout'
 import { Header } from '@/widgets/header'
 import { Footer } from '@/widgets/footer'
 import { useAuthStore } from '@/features/authenticate'
+import { useCartServerSync } from '@/entities/cart'
 import { meQueryOptions } from './-meQueryOptions'
 
 interface RouterContext {
@@ -14,10 +15,22 @@ const AUTH_ROUTES = ['/login', '/register', '/forgot-password', '/reset-password
 const PRIVATE_PREFIXES = ['/account', '/admin', '/checkout', ...AUTH_ROUTES]
 
 function RootComponent() {
-  const pathname = useRouterState({ select: (s) => s.location.pathname })
+  useCartServerSync()
+  const { pathname, pendingPathname, status } = useRouterState({
+    select: (s) => ({
+      pathname: s.resolvedLocation?.pathname ?? s.location.pathname,
+      pendingPathname: s.pendingLocation?.pathname,
+      status: s.status,
+    }),
+  })
 
   const isAuthRoute = AUTH_ROUTES.some((p) => pathname.startsWith(p))
+  const isPendingAuthRoute = AUTH_ROUTES.some((p) => pendingPathname?.startsWith(p))
   const isPublicRoute = !PRIVATE_PREFIXES.some((p) => pathname.startsWith(p))
+
+  if (status === 'pending' && isAuthRoute !== isPendingAuthRoute) {
+    return <div className="min-h-screen bg-background" />
+  }
 
   if (isAuthRoute) return <AuthLayout />
 

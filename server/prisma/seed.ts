@@ -1,13 +1,122 @@
 import 'dotenv/config'
+import path from 'path'
+import fs from 'fs'
 import { PrismaClient } from '../src/generated/prisma/client.js'
 import { PrismaPg } from '@prisma/adapter-pg'
 import { v2 as cloudinary } from 'cloudinary'
 import bcrypt from 'bcryptjs'
 
+const IMAGES_DIR = path.resolve(process.cwd(), '../../imagenes_para_ecommerce')
+
+const LOCAL_IMAGES: Record<string, string> = {
+  // Laptops
+  'macbook-pro-16-m3':        'MacBook Pro 16 M3.webp',
+  'macbook-air-13-m3':        'MacBook Air 13 M3.jpg',
+  'macbook-pro-14-m3':        'MacBook Pro 14 M3.png',
+  'dell-xps-15':              'Dell XPS 15.png',
+  'dell-xps-13':              'Dell XPS 13.jpg',
+  'lenovo-thinkpad-x1':       'Lenovo ThinkPad X1 Carbon.jpg',
+  'lenovo-yoga-9i':           'Lenovo Yoga 9i.jpg',
+  'asus-rog-zephyrus-g14':    'ASUS ROG Zephyrus G14.jpg',
+  'microsoft-surface-laptop-5': 'Microsoft Surface Laptop 5.jpg',
+  'hp-spectre-x360':          'HP Spectre x360 14.webp',
+  'asus-zenbook-14':          'ASUS ZenBook 14 OLED.jpg',
+  'acer-swift-5':             'Acer Swift 5.png',
+  'hp-elitebook-840':         'HP EliteBook 840 G10.webp',
+  'lg-gram-16':               'LG Gram 16.jpg',
+  'samsung-galaxy-book3-pro': 'Samsung Galaxy Book3 Pro 360.jpg',
+  // Smartphones
+  'iphone-15-pro':            'iPhone 15 Pro.jpg',
+  'iphone-15':                'iPhone 15.jpg',
+  'iphone-se-3rd-gen':        'iPhone SE (3rd Gen).webp',
+  'samsung-galaxy-s24-ultra': 'Samsung Galaxy S24 Ultra.webp',
+  'samsung-galaxy-s24-plus':  'Samsung Galaxy S24+.png',
+  'samsung-galaxy-a54':       'Samsung Galaxy A54 5G.png',
+  'samsung-galaxy-z-fold5':   'Samsung Galaxy Z Fold 5.jpeg',
+  'google-pixel-8-pro':       'Google Pixel 8 Pro.png',
+  'google-pixel-8':           'Google Pixel 8.webp',
+  'sony-xperia-1-v':          'Sony Xperia 1 V.jpg',
+  'asus-rog-phone-7':         'ASUS ROG Phone 7 Ultimate.jpeg',
+  'motorola-edge-40-pro':     'Motorola Edge 40 Pro.jpg',
+  'iphone-16-pro-max':        'iphone16promax.jpg',
+  'samsung-galaxy-s26-ultra': 'Celular-Samsung-Galaxy-S26-Ultra--6.9--12GB-256GB-Negro-.webp',
+  'xiaomi-14-pro':            'Xiaomi 14 Pro.png',
+  // Headphones
+  'sony-wh-1000xm5':          'Sony WH-1000XM5.jpg',
+  'sony-wf-1000xm5':          'Sony WF-1000XM5.webp',
+  'bose-qc45':                'Bose QuietComfort 45.jpg',
+  'bose-qc-earbuds-2':        'Bose QuietComfort Earbuds II.png',
+  'apple-airpods-max':        'Apple AirPods Max.jpg',
+  'apple-airpods-pro-2':      'Apple AirPods Pro (2nd Gen).png',
+  'jabra-evolve2-85':         'Jabra Evolve2 85.jpg',
+  'sennheiser-momentum-4':    'Sennheiser Momentum 4.jpg',
+  'samsung-galaxy-buds2-pro': 'Samsung Galaxy Buds2 Pro.webp',
+  'beats-studio-pro':         'Beats Studio Pro.jpeg',
+  'jbl-tune-770nc':           'JBL Tune 770NC.webp',
+  'jabra-evolve2-55':         'Jabra Evolve2 55.jpg',
+  'anker-soundcore-q45':      'Anker Soundcore Q45.jpg',
+  'sony-wh-ch720n':           'Sony WH-CH720N.webp',
+  'bose-sport-earbuds':       'Bose Sport Earbuds.webp',
+  // Monitors
+  'lg-27gp950':               'LG 27GP950 4K Gaming.avif',
+  'dell-u2722d':              'Dell UltraSharp U2722D.jpg',
+  'samsung-odyssey-g7-32':    'Samsung 32 Odyssey G7.avif',
+  'lg-34wn80c-ultrawide':     'LG 34WN80C-B Ultrawide.avif',
+  'asus-proart-pa279cv':      'ASUS ProArt PA279CV.webp',
+  'benq-pd3220u':             'BenQ PD3220U.jpg',
+  'asus-rog-swift-pg279qm':   'ASUS ROG Swift PG279QM.jpg',
+  'gigabyte-m32u':            'Gigabyte M32U.jpg',
+  'dell-s2722qc':             'Dell S2722QC.webp',
+  'aoc-27g2':                 'AOC 27G2 Gaming.avif',
+  'dell-u2723qe':             'Dell UltraSharp U2723Qe.png',
+  'samsung-viewfinity-s9':    'Samsung ViewFinity S9 5K.webp',
+  'acer-predator-x28':        'Acer Predator X28.jpeg',
+  'msi-optix-mag274qrf':      'MSI Optix MAG274QRF-QD.png',
+  'lg-27uk850':               'LG 27UK850-W 4K HDR.avif',
+  // Tablets
+  'ipad-pro-11-m4':           'iPad Pro 11 M4.jpg',
+  'ipad-pro-13-m4':           'iPad Pro 13 M4.png',
+  'ipad-air-m2':              'iPad Air 11-M2.jpg',
+  'ipad-mini-6':              'iPad mini (6th Gen).webp',
+  'ipad-10th-gen':            'iPad (10th Gen).jpg',
+  'samsung-galaxy-tab-s9-ultra': 'Samsung Galaxy Tab S9 Ultra.avif',
+  'samsung-galaxy-tab-s9-plus':  'Samsung Galaxy Tab S9+.avif',
+  'microsoft-surface-pro-9':  'Microsoft Surface Pro 9.jpg',
+  'microsoft-surface-go-3':   'Microsoft Surface Go 3.webp',
+  'lenovo-tab-p12-pro':       'Lenovo Tab P12 Pro.png',
+  'google-pixel-tablet':      'Google Pixel Tablet.jpg',
+  'asus-rog-flow-z13':        'ASUS ROG Flow Z13.jpg',
+  'samsung-galaxy-tab-a9-plus': 'Samsung Galaxy Tab A9+.png',
+  'amazon-fire-max-11':       'Amazon Fire Max 11.jpg',
+  'xiaomi-pad-6-pro':         'Xiaomi Pad 6 Pro.webp',
+  // Components
+  'corsair-vengeance-ddr5-32gb':    'Corsair Vengeance DDR5 32GB.jpg',
+  'kingston-fury-beast-ddr5-64gb':  'Kingston Fury Beast DDR5 64GB.jpeg',
+  'gskill-trident-z5-rgb-32gb':     'G.Skill Trident Z5 RGB DDR5 32GB.webp',
+  'samsung-990-pro-1tb':            'Samsung 990 Pro NVMe SSD 1TB.jpg',
+  'wd-black-sn850x-2tb':            'WD Black SN850X 2TB.webp',
+  'seagate-ironwolf-8tb':           'Seagate IronWolf 8TB.jpg',
+  'nvidia-rtx-4070':                'NVIDIA GeForce RTX 4070.avif',
+  'nvidia-rtx-4080':                'NVIDIA GeForce RTX 4080 Super.jpg',
+  'amd-rx-7900-xt':                 'AMD Radeon RX 7900 XT.jpeg',
+  'amd-ryzen-9-7900x':              '2505503-ryzen-9-7900x-og.avif',
+  'corsair-rm1000x':                'Corsair RM1000x PSU.jpg',
+  'asus-rog-strix-b650-f':          'ROG-STRIX-B650E-F-GAMING-WIFI-3.jpg',
+  'noctua-nh-d15':                  'Noctua NH-D15 CPU Cooler.jpg',
+  'corsair-icue-h150i-elite':       'Corsair iCUE H150i Elite Capellix.jpg',
+}
+
 const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL! })
 const prisma = new PrismaClient({ adapter })
 
-// Cloudinary auto-configures from CLOUDINARY_URL or CLOUDINARY_CLOUD_NAME/API_KEY/API_SECRET
+function getCloudinaryConfig() {
+  const u = new URL(process.env.CLOUDINARY_URL!)
+  return { cloud_name: u.host, api_key: u.username, api_secret: u.password }
+}
+
+function configureCloudinary() {
+  cloudinary.config(getCloudinaryConfig())
+}
 
 // ─── Category-specific fallback images (all verified working) ─────────────────
 const FALLBACKS: Record<string, string> = {
@@ -21,19 +130,30 @@ const FALLBACKS: Record<string, string> = {
 
 async function uploadImage(sourceUrl: string, slug: string, catId: string): Promise<string> {
   const publicId = `ecommerce/products/${slug}`
+  const localFile = LOCAL_IMAGES[slug]
+  const localPath = localFile ? path.join(IMAGES_DIR, localFile) : null
+  const hasLocal = localPath !== null && fs.existsSync(localPath)
+
+  // Local file always wins — upload and overwrite whatever was in Cloudinary
+  if (hasLocal) {
+    console.log(`  ↑ local: ${slug}`)
+    const result = await cloudinary.uploader.upload(localPath!, { public_id: publicId, overwrite: true, ...getCloudinaryConfig() })
+    return result.secure_url
+  }
+
+  // No local file — skip if already in Cloudinary, otherwise upload from URL
   try {
     const existing = await cloudinary.api.resource(publicId)
     console.log(`  ↩ skipped: ${slug}`)
     return existing.secure_url as string
   } catch {
-    const urlToUpload = sourceUrl
     try {
-      const result = await cloudinary.uploader.upload(urlToUpload, { public_id: publicId, overwrite: false })
-      console.log(`  ↑ uploaded: ${slug}`)
+      console.log(`  ↑ url: ${slug}`)
+      const result = await cloudinary.uploader.upload(sourceUrl, { public_id: publicId, overwrite: false, ...getCloudinaryConfig() })
       return result.secure_url
     } catch {
       console.warn(`  ⚠ fallback: ${slug}`)
-      const result = await cloudinary.uploader.upload(FALLBACKS[catId]!, { public_id: publicId, overwrite: true })
+      const result = await cloudinary.uploader.upload(FALLBACKS[catId]!, { public_id: publicId, overwrite: true, ...getCloudinaryConfig() })
       return result.secure_url
     }
   }
@@ -72,6 +192,7 @@ const BRANDS = [
   { id: 'brand19', slug: 'kingston',   name: 'Kingston',   tagline: 'Ask a Pro',               productCount: 4,  bgColor: '#E2231A', logoUrl: 'https://cdn.simpleicons.org/kingstontechnology/E2231A' },
   { id: 'brand20', slug: 'seagate',    name: 'Seagate',    tagline: 'There Is No Try',         productCount: 3,  bgColor: '#00A651', logoUrl: 'https://cdn.simpleicons.org/seagate/00A651' },
   { id: 'brand21', slug: 'sennheiser', name: 'Sennheiser', tagline: 'Hear the Difference',     productCount: 2,  bgColor: '#000000', logoUrl: 'https://cdn.simpleicons.org/sennheiser/000000' },
+  { id: 'brand22', slug: 'motorola',   name: 'Motorola',   tagline: 'Hello Moto',               productCount: 1,  bgColor: '#E1000F', logoUrl: '' },
 ]
 
 type ProductSeed = {
@@ -351,30 +472,31 @@ const PRODUCTS: ProductSeed[] = [
   {
     id: 'p27', slug: 'motorola-edge-40-pro', name: 'Motorola Edge 40 Pro',
     description: '165Hz pOLED display, 125W TurboPower charging, 50MP triple camera, and Snapdragon 8 Gen 2.',
-    price: 799, compareAtPrice: 899, categoryId: 'cat2', brandId: 'brand2', stock: 22,
+    price: 799, compareAtPrice: 899, categoryId: 'cat2', brandId: 'brand22', stock: 22,
     sourceImageUrl: 'https://images.unsplash.com/photo-1595941069915-4ebc5197e35f?w=800&q=85',
     variants: [
       { id: 'v27a', sku: 'ME40P-256', name: '256 GB', price: 799, stock: 22, attributes: { storage: '256 GB' } },
     ],
   },
   {
-    id: 'p28', slug: 'nothing-phone-2', name: 'Nothing Phone (2)',
-    description: 'Unique Glyph Interface, Snapdragon 8+ Gen 1, 6.7" AMOLED 120Hz, and a translucent back with LED accents.',
-    price: 699, compareAtPrice: 749, categoryId: 'cat2', brandId: 'brand2', stock: 18,
-    sourceImageUrl: 'https://images.unsplash.com/photo-1617397012787-2ab5e44c8254?w=800&q=85',
+    id: 'p28', slug: 'iphone-16-pro-max', name: 'iPhone 16 Pro Max',
+    description: 'A18 Pro chip, 48MP Fusion camera with 5x optical zoom, titanium design, and the biggest battery ever in an iPhone.',
+    price: 1199, compareAtPrice: 1299, categoryId: 'cat2', brandId: 'brand1', stock: 20,
+    sourceImageUrl: 'https://images.unsplash.com/photo-1591337676887-a217a6970a8a?w=800&q=85',
     variants: [
-      { id: 'v28a', sku: 'NP2-256-12', name: '256 GB / 12 GB RAM', price: 699, stock: 10, attributes: { storage: '256 GB', ram: '12 GB' } },
-      { id: 'v28b', sku: 'NP2-512-12', name: '512 GB / 12 GB RAM', price: 749, stock: 8,  attributes: { storage: '512 GB', ram: '12 GB' } },
+      { id: 'v28a', sku: 'IP16PM-256', name: '256 GB',  price: 1199, stock: 8,  attributes: { storage: '256 GB' } },
+      { id: 'v28b', sku: 'IP16PM-512', name: '512 GB',  price: 1309, stock: 7,  attributes: { storage: '512 GB' } },
+      { id: 'v28c', sku: 'IP16PM-1TB', name: '1 TB',    price: 1529, stock: 5,  attributes: { storage: '1 TB' } },
     ],
   },
   {
-    id: 'p29', slug: 'oneplus-12', name: 'OnePlus 12',
-    description: 'Hasselblad camera system, Snapdragon 8 Gen 3, 100W SUPERVOOC charging, and a 6.82" LTPO AMOLED display.',
-    price: 799, compareAtPrice: 849, categoryId: 'cat2', brandId: 'brand2', stock: 20,
+    id: 'p29', slug: 'samsung-galaxy-s26-ultra', name: 'Samsung Galaxy S26 Ultra',
+    description: 'Galaxy AI built-in, 200MP ProVisual camera, titanium frame, built-in S Pen, and Snapdragon 8 Elite.',
+    price: 1299, compareAtPrice: 1399, categoryId: 'cat2', brandId: 'brand2', stock: 18,
     sourceImageUrl: 'https://images.unsplash.com/photo-1610945264803-b22b1d8a6959?w=800&q=85',
     variants: [
-      { id: 'v29a', sku: 'OP12-256-12', name: '256 GB / 12 GB RAM', price: 799, stock: 12, attributes: { storage: '256 GB', ram: '12 GB' } },
-      { id: 'v29b', sku: 'OP12-512-16', name: '512 GB / 16 GB RAM', price: 849, stock: 8,  attributes: { storage: '512 GB', ram: '16 GB' } },
+      { id: 'v29a', sku: 'SGS26U-256-12', name: '256 GB / 12 GB RAM', price: 1299, stock: 10, attributes: { storage: '256 GB', ram: '12 GB' } },
+      { id: 'v29b', sku: 'SGS26U-512-12', name: '512 GB / 12 GB RAM', price: 1419, stock: 8,  attributes: { storage: '512 GB', ram: '12 GB' } },
     ],
   },
   {
@@ -980,6 +1102,7 @@ const USERS = [
 
 async function main() {
   console.log('🌱 Starting seed...\n')
+  configureCloudinary()
 
   await prisma.$executeRawUnsafe(
     `TRUNCATE "OrderItem","Order","Address","ProductImage","ProductVariant","Product","Brand","Category","User" RESTART IDENTITY CASCADE`
@@ -990,7 +1113,12 @@ async function main() {
   console.log(`✓ ${CATEGORIES.length} categories`)
 
   await prisma.brand.createMany({ data: BRANDS })
-  console.log(`✓ ${BRANDS.length} brands`)
+  const motorolaLogoResult = await cloudinary.uploader.upload(
+    path.join(IMAGES_DIR, 'Motorola-simbolo.jpg'),
+    { public_id: 'ecommerce/brands/motorola', overwrite: true },
+  )
+  await prisma.brand.update({ where: { slug: 'motorola' }, data: { logoUrl: motorolaLogoResult.secure_url } })
+  console.log(`✓ ${BRANDS.length} brands (+ Motorola logo uploaded)`)
 
   console.log('\n📸 Uploading images to Cloudinary...')
   for (const p of PRODUCTS) {

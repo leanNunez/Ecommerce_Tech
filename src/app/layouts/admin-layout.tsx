@@ -9,6 +9,7 @@ const NAV_LINKS = [
   { to: '/admin/dashboard', label: 'Dashboard' },
   { to: '/admin/products', label: 'Products' },
   { to: '/admin/categories', label: 'Categories' },
+  { to: '/admin/brands', label: 'Brands' },
   { to: '/admin/orders', label: 'Orders' },
   { to: '/admin/users', label: 'Users' },
 ] as const
@@ -47,7 +48,7 @@ export function AdminLayout() {
   return (
     <div className="flex min-h-screen">
       {/* Sidebar — desktop */}
-      <aside className="hidden w-60 shrink-0 flex-col border-r border-secondary/20 bg-primary md:flex">
+      <aside className="hidden w-60 shrink-0 flex-col border-r border-secondary/20 bg-primary md:flex sticky top-0 h-screen overflow-y-auto">
         <SidebarNav />
       </aside>
 

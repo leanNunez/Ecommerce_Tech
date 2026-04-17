@@ -14,4 +14,5 @@ export {
   usePlaceOrder,
   useCancelOrder,
   useUpdateOrderStatus,
+  useOrderStatusSync,
 } from './model/order-queries'

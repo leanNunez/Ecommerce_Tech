@@ -30,9 +30,11 @@ import { Route as BrandsBrandSlugRouteImport } from './routes/brands/$brandSlug'
 import { Route as AdminUsersRouteImport } from './routes/admin/users'
 import { Route as AdminDashboardRouteImport } from './routes/admin/dashboard'
 import { Route as AdminCategoriesRouteImport } from './routes/admin/categories'
+import { Route as AdminBrandsRouteImport } from './routes/admin/brands'
 import { Route as AccountWishlistRouteImport } from './routes/account/wishlist'
 import { Route as AccountProfileRouteImport } from './routes/account/profile'
 import { Route as AccountPasswordRouteImport } from './routes/account/password'
+import { Route as AccountNotificationsRouteImport } from './routes/account/notifications'
 import { Route as AccountAddressesRouteImport } from './routes/account/addresses'
 import { Route as CatalogCategorySlugIndexRouteImport } from './routes/catalog/$categorySlug/index'
 import { Route as AdminProductsIndexRouteImport } from './routes/admin/products/index'
@@ -150,6 +152,11 @@ const AdminCategoriesRoute = AdminCategoriesRouteImport.update({
   path: '/categories',
   getParentRoute: () => AdminRouteRoute,
 } as any)
+const AdminBrandsRoute = AdminBrandsRouteImport.update({
+  id: '/brands',
+  path: '/brands',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
 const AccountWishlistRoute = AccountWishlistRouteImport.update({
   id: '/wishlist',
   path: '/wishlist',
@@ -163,6 +170,11 @@ const AccountProfileRoute = AccountProfileRouteImport.update({
 const AccountPasswordRoute = AccountPasswordRouteImport.update({
   id: '/password',
   path: '/password',
+  getParentRoute: () => AccountRouteRoute,
+} as any)
+const AccountNotificationsRoute = AccountNotificationsRouteImport.update({
+  id: '/notifications',
+  path: '/notifications',
   getParentRoute: () => AccountRouteRoute,
 } as any)
 const AccountAddressesRoute = AccountAddressesRouteImport.update({
@@ -238,9 +250,11 @@ export interface FileRoutesByFullPath {
   '/reset-password': typeof ResetPasswordRoute
   '/search': typeof SearchRoute
   '/account/addresses': typeof AccountAddressesRoute
+  '/account/notifications': typeof AccountNotificationsRoute
   '/account/password': typeof AccountPasswordRoute
   '/account/profile': typeof AccountProfileRoute
   '/account/wishlist': typeof AccountWishlistRoute
+  '/admin/brands': typeof AdminBrandsRoute
   '/admin/categories': typeof AdminCategoriesRoute
   '/admin/dashboard': typeof AdminDashboardRoute
   '/admin/users': typeof AdminUsersRoute
@@ -272,9 +286,11 @@ export interface FileRoutesByTo {
   '/reset-password': typeof ResetPasswordRoute
   '/search': typeof SearchRoute
   '/account/addresses': typeof AccountAddressesRoute
+  '/account/notifications': typeof AccountNotificationsRoute
   '/account/password': typeof AccountPasswordRoute
   '/account/profile': typeof AccountProfileRoute
   '/account/wishlist': typeof AccountWishlistRoute
+  '/admin/brands': typeof AdminBrandsRoute
   '/admin/categories': typeof AdminCategoriesRoute
   '/admin/dashboard': typeof AdminDashboardRoute
   '/admin/users': typeof AdminUsersRoute
@@ -310,9 +326,11 @@ export interface FileRoutesById {
   '/reset-password': typeof ResetPasswordRoute
   '/search': typeof SearchRoute
   '/account/addresses': typeof AccountAddressesRoute
+  '/account/notifications': typeof AccountNotificationsRoute
   '/account/password': typeof AccountPasswordRoute
   '/account/profile': typeof AccountProfileRoute
   '/account/wishlist': typeof AccountWishlistRoute
+  '/admin/brands': typeof AdminBrandsRoute
   '/admin/categories': typeof AdminCategoriesRoute
   '/admin/dashboard': typeof AdminDashboardRoute
   '/admin/users': typeof AdminUsersRoute
@@ -349,9 +367,11 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/search'
     | '/account/addresses'
+    | '/account/notifications'
     | '/account/password'
     | '/account/profile'
     | '/account/wishlist'
+    | '/admin/brands'
     | '/admin/categories'
     | '/admin/dashboard'
     | '/admin/users'
@@ -383,9 +403,11 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/search'
     | '/account/addresses'
+    | '/account/notifications'
     | '/account/password'
     | '/account/profile'
     | '/account/wishlist'
+    | '/admin/brands'
     | '/admin/categories'
     | '/admin/dashboard'
     | '/admin/users'
@@ -420,9 +442,11 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/search'
     | '/account/addresses'
+    | '/account/notifications'
     | '/account/password'
     | '/account/profile'
     | '/account/wishlist'
+    | '/admin/brands'
     | '/admin/categories'
     | '/admin/dashboard'
     | '/admin/users'
@@ -614,6 +638,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminCategoriesRouteImport
       parentRoute: typeof AdminRouteRoute
     }
+    '/admin/brands': {
+      id: '/admin/brands'
+      path: '/brands'
+      fullPath: '/admin/brands'
+      preLoaderRoute: typeof AdminBrandsRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
     '/account/wishlist': {
       id: '/account/wishlist'
       path: '/wishlist'
@@ -633,6 +664,13 @@ declare module '@tanstack/react-router' {
       path: '/password'
       fullPath: '/account/password'
       preLoaderRoute: typeof AccountPasswordRouteImport
+      parentRoute: typeof AccountRouteRoute
+    }
+    '/account/notifications': {
+      id: '/account/notifications'
+      path: '/notifications'
+      fullPath: '/account/notifications'
+      preLoaderRoute: typeof AccountNotificationsRouteImport
       parentRoute: typeof AccountRouteRoute
     }
     '/account/addresses': {
@@ -717,6 +755,7 @@ declare module '@tanstack/react-router' {
 
 interface AccountRouteRouteChildren {
   AccountAddressesRoute: typeof AccountAddressesRoute
+  AccountNotificationsRoute: typeof AccountNotificationsRoute
   AccountPasswordRoute: typeof AccountPasswordRoute
   AccountProfileRoute: typeof AccountProfileRoute
   AccountWishlistRoute: typeof AccountWishlistRoute
@@ -727,6 +766,7 @@ interface AccountRouteRouteChildren {
 
 const AccountRouteRouteChildren: AccountRouteRouteChildren = {
   AccountAddressesRoute: AccountAddressesRoute,
+  AccountNotificationsRoute: AccountNotificationsRoute,
   AccountPasswordRoute: AccountPasswordRoute,
   AccountProfileRoute: AccountProfileRoute,
   AccountWishlistRoute: AccountWishlistRoute,
@@ -740,6 +780,7 @@ const AccountRouteRouteWithChildren = AccountRouteRoute._addFileChildren(
 )
 
 interface AdminRouteRouteChildren {
+  AdminBrandsRoute: typeof AdminBrandsRoute
   AdminCategoriesRoute: typeof AdminCategoriesRoute
   AdminDashboardRoute: typeof AdminDashboardRoute
   AdminUsersRoute: typeof AdminUsersRoute
@@ -752,6 +793,7 @@ interface AdminRouteRouteChildren {
 }
 
 const AdminRouteRouteChildren: AdminRouteRouteChildren = {
+  AdminBrandsRoute: AdminBrandsRoute,
   AdminCategoriesRoute: AdminCategoriesRoute,
   AdminDashboardRoute: AdminDashboardRoute,
   AdminUsersRoute: AdminUsersRoute,

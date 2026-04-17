@@ -2,13 +2,34 @@ import { Link } from '@tanstack/react-router'
 import { Button, EmptyState, PageTitle } from '@/shared/ui'
 import { formatCurrency } from '@/shared/lib/format-currency'
 import { OrderSummary } from '@/widgets/order-summary'
-import { useCartStore } from '@/entities/cart'
+import { useCartStore, cartServerApi } from '@/entities/cart'
+import { useAuthStore } from '@/features/authenticate'
 import { Minus, Plus, Trash2 } from 'lucide-react'
 
 export function CartPage() {
   const items = useCartStore((s) => s.items)
   const updateQuantity = useCartStore((s) => s.updateQuantity)
   const removeItem = useCartStore((s) => s.removeItem)
+  const isAuthenticated = useAuthStore((s) => s.isAuthenticated)
+
+  function handleRemove(productId: string, variantId?: string) {
+    removeItem(productId, variantId)
+    if (isAuthenticated) void cartServerApi.removeItem(productId, variantId)
+  }
+
+  function handleUpdateQuantity(productId: string, quantity: number, variantId?: string) {
+    if (quantity <= 0) {
+      handleRemove(productId, variantId)
+      return
+    }
+    updateQuantity(productId, quantity, variantId)
+    if (isAuthenticated) {
+      const item = useCartStore.getState().items.find(
+        (i) => i.productId === productId && i.variantId === variantId,
+      )
+      if (item) void cartServerApi.upsertItem({ ...item, quantity })
+    }
+  }
 
   if (items.length === 0) {
     return (
@@ -45,7 +66,7 @@ export function CartPage() {
                   <div className="flex items-start justify-between gap-2">
                     <p className="text-sm font-medium text-text">{item.name}</p>
                     <button
-                      onClick={() => removeItem(item.productId, item.variantId)}
+                      onClick={() => handleRemove(item.productId, item.variantId)}
                       className="text-secondary hover:text-destructive transition-colors"
                       aria-label="Remove item"
                     >
@@ -60,13 +81,7 @@ export function CartPage() {
                         variant="outline"
                         size="icon"
                         className="h-7 w-7"
-                        onClick={() => {
-                          if (item.quantity === 1) {
-                            removeItem(item.productId, item.variantId)
-                          } else {
-                            updateQuantity(item.productId, item.quantity - 1, item.variantId)
-                          }
-                        }}
+                        onClick={() => handleUpdateQuantity(item.productId, item.quantity - 1, item.variantId)}
                       >
                         <Minus className="h-3 w-3" />
                       </Button>
@@ -75,7 +90,7 @@ export function CartPage() {
                         variant="outline"
                         size="icon"
                         className="h-7 w-7"
-                        onClick={() => updateQuantity(item.productId, item.quantity + 1, item.variantId)}
+                        onClick={() => handleUpdateQuantity(item.productId, item.quantity + 1, item.variantId)}
                       >
                         <Plus className="h-3 w-3" />
                       </Button>

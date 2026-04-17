@@ -1,5 +1,7 @@
 import { Router } from 'express'
+import { z } from 'zod'
 import { prisma } from '../lib/prisma.js'
+import { authenticate, requireAdmin } from '../middleware/auth.js'
 
 const router = Router()
 
@@ -15,6 +17,45 @@ router.get('/:slug', async (req, res, next) => {
     const brand = await prisma.brand.findUnique({ where: { slug: req.params.slug } })
     if (!brand) { res.status(404).json({ success: false, message: 'Brand not found' }); return }
     res.json({ success: true, data: brand })
+  } catch (err) { next(err) }
+})
+
+// ── POST /api/brands — admin ──────────────────────────────────────────────────
+const brandSchema = z.object({
+  name:     z.string().min(2),
+  slug:     z.string().min(2).regex(/^[a-z0-9-]+$/),
+  tagline:  z.string().min(2),
+  bgColor:  z.string().min(4),
+  logoUrl:  z.string().url().optional().or(z.literal('')),
+})
+
+router.post('/', authenticate, requireAdmin, async (req, res, next) => {
+  try {
+    const data = brandSchema.parse(req.body)
+    const brand = await prisma.brand.create({
+      data: { ...data, logoUrl: data.logoUrl || null },
+    })
+    res.status(201).json({ success: true, data: brand })
+  } catch (err) { next(err) }
+})
+
+// ── PATCH /api/brands/:id — admin ─────────────────────────────────────────────
+router.patch('/:id', authenticate, requireAdmin, async (req, res, next) => {
+  try {
+    const data = brandSchema.partial().parse(req.body)
+    const brand = await prisma.brand.update({
+      where: { id: req.params.id },
+      data:  { ...data, logoUrl: data.logoUrl === '' ? null : data.logoUrl },
+    })
+    res.json({ success: true, data: brand })
+  } catch (err) { next(err) }
+})
+
+// ── DELETE /api/brands/:id — admin ────────────────────────────────────────────
+router.delete('/:id', authenticate, requireAdmin, async (req, res, next) => {
+  try {
+    await prisma.brand.delete({ where: { id: req.params.id } })
+    res.json({ success: true })
   } catch (err) { next(err) }
 })
 

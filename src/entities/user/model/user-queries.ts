@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { getMe, getUsers, updateUser, updateProfile, changePassword, deleteUser, forgotPassword, resetPassword } from '../api/user-api'
 import type { User, UserRole } from './user.types'
+import { useNotificationStore } from '@/entities/notification'
 
 export const userKeys = {
   all: ['user'] as const,
@@ -29,6 +30,7 @@ export function useUpdateProfile() {
     mutationFn: (data: Partial<Pick<User, 'firstName' | 'lastName'>>) => updateProfile(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: userKeys.me() })
+      useNotificationStore.getState().addNotification('Profile updated successfully', 'account')
     },
   })
 }
@@ -36,6 +38,9 @@ export function useUpdateProfile() {
 export function useChangePassword() {
   return useMutation({
     mutationFn: (data: { currentPassword: string; newPassword: string }) => changePassword(data),
+    onSuccess: () => {
+      useNotificationStore.getState().addNotification('Password changed successfully', 'account')
+    },
   })
 }
 

@@ -1,6 +1,7 @@
 import { Outlet, Link } from '@tanstack/react-router'
 import { Header } from '@/widgets/header'
 import { Footer } from '@/widgets/footer'
+import { useOrderStatusSync } from '@/entities/order'
 
 const NAV_LINKS = [
   { to: '/account/profile', label: 'Profile' },
@@ -8,9 +9,12 @@ const NAV_LINKS = [
   { to: '/account/password', label: 'Password' },
   { to: '/account/orders', label: 'Orders' },
   { to: '/account/wishlist', label: 'Wishlist' },
+  { to: '/account/notifications', label: 'Notifications' },
 ] as const
 
 export function AccountLayout() {
+  useOrderStatusSync()
+
   return (
     <div className="flex min-h-screen flex-col">
       <Header />
