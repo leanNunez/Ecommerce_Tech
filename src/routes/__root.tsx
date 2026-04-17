@@ -19,7 +19,7 @@ function RootComponent() {
   const { pathname, pendingPathname, status } = useRouterState({
     select: (s) => ({
       pathname: s.resolvedLocation?.pathname ?? s.location.pathname,
-      pendingPathname: s.pendingLocation?.pathname,
+      pendingPathname: s.location.pathname,
       status: s.status,
     }),
   })
