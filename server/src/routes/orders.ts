@@ -64,7 +64,7 @@ router.post('/', authenticate, async (req, res, next) => {
 
     const order = await prisma.order.create({
       data: {
-        userId: req.auth!.userId,
+        user:   { connect: { id: req.auth!.userId } },
         status: 'processing',
         total:  Number((subtotal * 1.1).toFixed(2)),
         shippingAddress: {
@@ -84,6 +84,24 @@ router.post('/', authenticate, async (req, res, next) => {
       include: ORDER_INCLUDE,
     })
     res.status(201).json({ success: true, data: order })
+  } catch (err) { next(err) }
+})
+
+// ── PATCH /api/orders/:id/cancel — owner only ────────────────────────────────
+router.patch('/:id/cancel', authenticate, async (req, res, next) => {
+  try {
+    const order = await prisma.order.findUnique({ where: { id: req.params.id } })
+    if (!order) { res.status(404).json({ success: false, message: 'Order not found' }); return }
+    if (order.userId !== req.auth!.userId) { res.status(403).json({ success: false, message: 'Forbidden' }); return }
+    if (!['pending', 'processing'].includes(order.status)) {
+      res.status(400).json({ success: false, message: 'Order cannot be cancelled' }); return
+    }
+    const updated = await prisma.order.update({
+      where:   { id: order.id },
+      data:    { status: 'cancelled' },
+      include: ORDER_INCLUDE,
+    })
+    res.json({ success: true, data: updated })
   } catch (err) { next(err) }
 })
 
