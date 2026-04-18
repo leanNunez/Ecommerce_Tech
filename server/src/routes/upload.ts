@@ -3,6 +3,7 @@ import multer from 'multer'
 import { v2 as cloudinary } from 'cloudinary'
 import { authenticate, requireAdmin } from '../middleware/auth.js'
 
+cloudinary.config({ cloudinary_url: process.env.CLOUDINARY_URL })
 
 const router = Router()
 
