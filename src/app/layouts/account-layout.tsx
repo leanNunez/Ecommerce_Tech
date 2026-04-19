@@ -38,7 +38,7 @@ export function AccountLayout() {
 
         {/* Mobile nav */}
         <div className="w-full md:hidden">
-          <nav className="mb-6 flex gap-2 overflow-x-auto">
+          <nav className="mb-14 flex gap-2 overflow-x-auto pb-2 border-b border-secondary/15">
             {NAV_LINKS.map((link) => (
               <Link
                 key={link.to}
