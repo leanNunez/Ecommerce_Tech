@@ -3,7 +3,7 @@ import { useForm, useFieldArray, type Resolver } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { Link, useNavigate, useParams } from '@tanstack/react-router'
-import { ArrowLeft, ImagePlus, Plus, Trash2, X } from 'lucide-react'
+import { ArrowLeft, ImagePlus, Loader2, Plus, Trash2, X } from 'lucide-react'
 import {
   Button,
   Form, FormControl, FormField, FormItem, FormLabel, FormMessage,
@@ -12,10 +12,13 @@ import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
   Spinner,
 } from '@/shared/ui'
+import { cn } from '@/shared/lib/cn'
 import { useAdminProducts, useCreateProduct, useUpdateProduct } from '@/entities/product'
 import { useCategories } from '@/entities/category'
 import { useBrands } from '@/entities/brand'
 import { uploadProductImage } from '@/shared/api/upload-api'
+
+const MAX_IMAGES = 5
 
 // ─── Schemas ─────────────────────────────────────────────────────────────────
 
@@ -71,10 +74,9 @@ export function ProductFormPage() {
 
   const isEdit = Boolean(productId)
 
-  // ── Product image ──────────────────────────────────────────────────────────
+  // ── Product images ─────────────────────────────────────────────────────────
   const fileInputRef = useRef<HTMLInputElement>(null)
-  const [imageUrl, setImageUrl]         = useState<string>('')
-  const [imagePreview, setImagePreview] = useState<string>('')
+  const [imageUrls, setImageUrls]       = useState<string[]>([])
   const [uploading, setUploading]       = useState(false)
   const [uploadError, setUploadError]   = useState<string | null>(null)
 
@@ -123,9 +125,7 @@ export function ProductFormPage() {
           imageUrl: v.imageUrl ?? '',
         })),
       })
-      const existingImg = existing.images?.[0]?.url ?? ''
-      setImageUrl(existingImg)
-      setImagePreview(existingImg)
+      setImageUrls(existing.images?.map((img) => img.url) ?? [])
 
       setVariantImages(
         existing.variants.map((v) => ({
@@ -153,26 +153,24 @@ export function ProductFormPage() {
 
   // ── Product image handlers ─────────────────────────────────────────────────
   async function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0]
-    if (!file) return
+    const files = Array.from(e.target.files ?? [])
+    if (!files.length || imageUrls.length >= MAX_IMAGES) return
     setUploadError(null)
-    setImagePreview(URL.createObjectURL(file))
     setUploading(true)
     try {
-      const result = await uploadProductImage(file)
-      setImageUrl(result.url)
+      const remaining = MAX_IMAGES - imageUrls.length
+      const results = await Promise.all(files.slice(0, remaining).map((f) => uploadProductImage(f)))
+      setImageUrls((prev) => [...prev, ...results.map((r) => r.url)])
     } catch {
       setUploadError('Upload failed. Try again.')
-      setImagePreview(imageUrl)
     } finally {
       setUploading(false)
+      if (fileInputRef.current) fileInputRef.current.value = ''
     }
   }
 
-  function handleRemoveImage() {
-    setImageUrl('')
-    setImagePreview('')
-    if (fileInputRef.current) fileInputRef.current.value = ''
+  function handleRemoveImage(index: number) {
+    setImageUrls((prev) => prev.filter((_, i) => i !== index))
   }
 
   // ── Variant image handlers ─────────────────────────────────────────────────
@@ -242,7 +240,7 @@ export function ProductFormPage() {
       categoryId:     values.categoryId,
       brandId:        values.brandId,
       isActive:       values.isActive,
-      imageUrl:       imageUrl || undefined,
+      imageUrls:      imageUrls.length ? imageUrls : undefined,
       variants:       values.variants?.map((v) => ({
         sku:      v.sku,
         name:     v.name,
@@ -270,6 +268,7 @@ export function ProductFormPage() {
   }
 
   const anyUploading = uploading || variantImages.some((v) => v.uploading)
+
 
   return (
     <div className="flex flex-col gap-6">
@@ -542,36 +541,56 @@ export function ProductFormPage() {
 
           {/* ── Sidebar ── */}
           <div className="flex flex-col gap-4">
-            {/* Product image */}
+            {/* Product images */}
             <div className="rounded-xl border border-secondary/20 bg-surface p-6">
-              <h2 className="mb-4 text-sm font-semibold text-text">Image</h2>
+              <div className="mb-4 flex items-center justify-between">
+                <h2 className="text-sm font-semibold text-text">Images</h2>
+                <span className="text-xs text-muted">{imageUrls.length}/{MAX_IMAGES}</span>
+              </div>
+
               <input
                 ref={fileInputRef}
                 type="file"
                 accept="image/*"
+                multiple
                 className="hidden"
                 onChange={handleFileChange}
               />
-              {imagePreview ? (
-                <div className="relative">
-                  <img
-                    src={imagePreview}
-                    alt="Product"
-                    className="w-full rounded-lg object-cover"
-                    style={{ maxHeight: 200 }}
-                  />
-                  {uploading && (
-                    <div className="absolute inset-0 flex items-center justify-center rounded-lg bg-black/40">
-                      <Spinner />
+
+              {imageUrls.length > 0 ? (
+                <div className="grid grid-cols-3 gap-2">
+                  {imageUrls.map((url, i) => (
+                    <div key={url} className="relative aspect-square overflow-hidden rounded-lg border border-secondary/20 bg-background">
+                      {i === 0 && (
+                        <span className="absolute left-1 top-1 z-10 rounded bg-primary px-1 py-0.5 text-[10px] font-bold text-white leading-none">
+                          Main
+                        </span>
+                      )}
+                      <img src={url} alt={`Image ${i + 1}`} className="h-full w-full object-cover" />
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveImage(i)}
+                        className="absolute right-1 top-1 flex h-5 w-5 items-center justify-center rounded-full bg-black/60 text-white transition hover:bg-black/80"
+                      >
+                        <X className="h-3 w-3" />
+                      </button>
                     </div>
-                  )}
-                  {!uploading && (
+                  ))}
+                  {imageUrls.length < MAX_IMAGES && (
                     <button
                       type="button"
-                      onClick={handleRemoveImage}
-                      className="absolute right-2 top-2 flex h-7 w-7 items-center justify-center rounded-full bg-black/60 text-white transition hover:bg-black/80"
+                      onClick={() => fileInputRef.current?.click()}
+                      disabled={uploading}
+                      className={cn(
+                        'flex aspect-square flex-col items-center justify-center gap-1 rounded-lg border-2 border-dashed border-secondary/30 text-muted transition',
+                        'hover:border-primary/40 hover:text-primary disabled:opacity-50',
+                      )}
                     >
-                      <X className="h-3.5 w-3.5" />
+                      {uploading
+                        ? <Loader2 className="h-5 w-5 animate-spin text-primary" />
+                        : <ImagePlus className="h-5 w-5" />
+                      }
+                      <span className="text-[10px]">Add</span>
                     </button>
                   )}
                 </div>
@@ -579,22 +598,19 @@ export function ProductFormPage() {
                 <button
                   type="button"
                   onClick={() => fileInputRef.current?.click()}
-                  className="flex w-full flex-col items-center gap-2 rounded-lg border-2 border-dashed border-secondary/30 py-8 text-muted transition hover:border-primary/40 hover:text-primary"
+                  disabled={uploading}
+                  className="flex w-full flex-col items-center gap-2 rounded-lg border-2 border-dashed border-secondary/30 py-8 text-muted transition hover:border-primary/40 hover:text-primary disabled:opacity-50"
                 >
-                  <ImagePlus className="h-8 w-8" />
+                  {uploading ? (
+                    <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                  ) : (
+                    <ImagePlus className="h-8 w-8" />
+                  )}
                   <span className="text-sm font-medium">Click to upload</span>
-                  <span className="text-xs">PNG, JPG, WEBP — max 5 MB</span>
+                  <span className="text-xs">PNG, JPG, WEBP · hasta {MAX_IMAGES} imágenes</span>
                 </button>
               )}
-              {!uploading && imagePreview && (
-                <button
-                  type="button"
-                  onClick={() => fileInputRef.current?.click()}
-                  className="mt-2 w-full text-center text-xs font-medium text-primary hover:underline"
-                >
-                  Replace image
-                </button>
-              )}
+
               {uploadError && (
                 <p className="mt-2 text-xs text-red-500">{uploadError}</p>
               )}

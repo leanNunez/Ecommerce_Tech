@@ -22,18 +22,23 @@ router.get('/:slug', async (req, res, next) => {
 
 // ── POST /api/brands — admin ──────────────────────────────────────────────────
 const brandSchema = z.object({
-  name:     z.string().min(2),
-  slug:     z.string().min(2).regex(/^[a-z0-9-]+$/),
-  tagline:  z.string().min(2),
-  bgColor:  z.string().min(4),
-  logoUrl:  z.string().url().optional().or(z.literal('')),
+  name:      z.string().min(2),
+  slug:      z.string().min(2).regex(/^[a-z0-9-]+$/),
+  tagline:   z.string().min(2),
+  bgColor:   z.string().min(4),
+  logoUrl:   z.string().url().optional().or(z.literal('')),
+  bannerUrl: z.string().url().optional().or(z.literal('')),
 })
 
 router.post('/', authenticate, requireAdmin, async (req, res, next) => {
   try {
     const data = brandSchema.parse(req.body)
     const brand = await prisma.brand.create({
-      data: { ...data, logoUrl: data.logoUrl || null },
+      data: {
+        ...data,
+        logoUrl:   data.logoUrl   || null,
+        bannerUrl: data.bannerUrl || null,
+      },
     })
     res.status(201).json({ success: true, data: brand })
   } catch (err) { next(err) }
@@ -45,7 +50,11 @@ router.patch('/:id', authenticate, requireAdmin, async (req, res, next) => {
     const data = brandSchema.partial().parse(req.body)
     const brand = await prisma.brand.update({
       where: { id: req.params.id },
-      data:  { ...data, logoUrl: data.logoUrl === '' ? null : data.logoUrl },
+      data:  {
+        ...data,
+        logoUrl:   data.logoUrl   === '' ? null : data.logoUrl,
+        bannerUrl: data.bannerUrl === '' ? null : data.bannerUrl,
+      },
     })
     res.json({ success: true, data: brand })
   } catch (err) { next(err) }

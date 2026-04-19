@@ -11,8 +11,11 @@ import {
   Sheet, SheetContent, SheetHeader, SheetTitle,
 } from '@/shared/ui'
 import { uploadProductImage } from '@/shared/api/upload-api'
+import { cn } from '@/shared/lib/cn'
 import type { Product } from '@/entities/product'
 import type { NewProductPayload, UpdateProductPayload } from '../model/use-product-inventory'
+
+const MAX_IMAGES = 5
 
 const CATEGORIES = [
   { id: 'cat1', label: 'Laptops' },
@@ -45,8 +48,8 @@ export function ProductFormSheet({ open, onOpenChange, product, onAdd, onUpdate 
   const isEdit = Boolean(product)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
-  const [imageUrl, setImageUrl]     = useState<string>('')
-  const [uploading, setUploading]   = useState(false)
+  const [imageUrls, setImageUrls]     = useState<string[]>([])
+  const [uploading, setUploading]     = useState(false)
   const [uploadError, setUploadError] = useState<string | null>(null)
 
   const form = useForm<FormValues>({
@@ -63,24 +66,27 @@ export function ProductFormSheet({ open, onOpenChange, product, onAdd, onUpdate 
         stock:       product.stock,
         categoryId:  product.categoryId,
       })
-      setImageUrl(product.images[0]?.url ?? '')
+      setImageUrls(product.images.map((img) => img.url))
     } else {
       form.reset({ name: '', description: '', price: 0, stock: 0, categoryId: '' })
-      setImageUrl('')
+      setImageUrls([])
     }
     setUploadError(null)
   }, [product, form])
 
   async function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0]
-    if (!file) return
+    const files = Array.from(e.target.files ?? [])
+    if (!files.length) return
+    if (imageUrls.length >= MAX_IMAGES) return
 
     setUploading(true)
     setUploadError(null)
 
     try {
-      const result = await uploadProductImage(file)
-      setImageUrl(result.url)
+      const remaining = MAX_IMAGES - imageUrls.length
+      const toUpload = files.slice(0, remaining)
+      const results = await Promise.all(toUpload.map((f) => uploadProductImage(f)))
+      setImageUrls((prev) => [...prev, ...results.map((r) => r.url)])
     } catch {
       setUploadError('Upload failed. Check your Cloudinary credentials.')
     } finally {
@@ -89,8 +95,12 @@ export function ProductFormSheet({ open, onOpenChange, product, onAdd, onUpdate 
     }
   }
 
+  function removeImage(index: number) {
+    setImageUrls((prev) => prev.filter((_, i) => i !== index))
+  }
+
   function handleSubmit(values: FormValues) {
-    const payload = { ...values, imageUrl: imageUrl || undefined }
+    const payload = { ...values, imageUrls: imageUrls.length ? imageUrls : undefined }
     if (isEdit && product) {
       onUpdate(product.id, payload)
     } else {
@@ -111,33 +121,49 @@ export function ProductFormSheet({ open, onOpenChange, product, onAdd, onUpdate 
 
             {/* ── Image upload ── */}
             <div className="space-y-2">
-              <p className="text-sm font-medium">Product image</p>
+              <div className="flex items-center justify-between">
+                <p className="text-sm font-medium">Product images</p>
+                <span className="text-xs text-muted">{imageUrls.length}/{MAX_IMAGES}</span>
+              </div>
 
-              {imageUrl ? (
-                <div className="relative w-full overflow-hidden rounded-lg border border-secondary/20 bg-surface">
-                  <img
-                    src={imageUrl}
-                    alt="Product preview"
-                    className="h-48 w-full object-contain p-2"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setImageUrl('')}
-                    className="absolute right-2 top-2 flex h-6 w-6 items-center justify-center rounded-full bg-destructive text-white hover:bg-destructive/80"
-                    aria-label="Remove image"
-                  >
-                    <X className="h-3.5 w-3.5" />
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => fileInputRef.current?.click()}
-                    disabled={uploading}
-                    className="w-full border-t border-secondary/20 py-2 text-xs text-muted transition-colors hover:bg-secondary/5"
-                  >
-                    Change image
-                  </button>
+              {imageUrls.length > 0 && (
+                <div className="grid grid-cols-3 gap-2">
+                  {imageUrls.map((url, i) => (
+                    <div key={url} className="relative aspect-square overflow-hidden rounded-lg border border-secondary/20 bg-surface">
+                      {i === 0 && (
+                        <span className="absolute left-1 top-1 z-10 rounded bg-primary px-1 py-0.5 text-[10px] font-bold text-white">
+                          Main
+                        </span>
+                      )}
+                      <img src={url} alt={`Image ${i + 1}`} className="h-full w-full object-cover" />
+                      <button
+                        type="button"
+                        onClick={() => removeImage(i)}
+                        className="absolute right-1 top-1 flex h-5 w-5 items-center justify-center rounded-full bg-destructive text-white hover:bg-destructive/80"
+                        aria-label="Remove image"
+                      >
+                        <X className="h-3 w-3" />
+                      </button>
+                    </div>
+                  ))}
+                  {imageUrls.length < MAX_IMAGES && (
+                    <button
+                      type="button"
+                      onClick={() => fileInputRef.current?.click()}
+                      disabled={uploading}
+                      className={cn(
+                        'flex aspect-square flex-col items-center justify-center gap-1 rounded-lg border-2 border-dashed border-secondary/30 bg-surface text-muted transition-colors',
+                        'hover:border-primary/40 hover:bg-primary/5 disabled:opacity-50',
+                      )}
+                    >
+                      {uploading ? <Loader2 className="h-5 w-5 animate-spin text-primary" /> : <ImagePlus className="h-5 w-5" />}
+                      <span className="text-[10px]">Add</span>
+                    </button>
+                  )}
                 </div>
-              ) : (
+              )}
+
+              {imageUrls.length === 0 && (
                 <button
                   type="button"
                   onClick={() => fileInputRef.current?.click()}
@@ -152,8 +178,8 @@ export function ProductFormSheet({ open, onOpenChange, product, onAdd, onUpdate 
                   ) : (
                     <>
                       <ImagePlus className="h-8 w-8" />
-                      <span className="text-sm font-medium">Click to upload image</span>
-                      <span className="text-xs">PNG, JPG, WEBP — max 5 MB</span>
+                      <span className="text-sm font-medium">Click to upload images</span>
+                      <span className="text-xs">PNG, JPG, WEBP — max 5 MB · up to {MAX_IMAGES} images</span>
                     </>
                   )}
                 </button>
@@ -163,6 +189,7 @@ export function ProductFormSheet({ open, onOpenChange, product, onAdd, onUpdate 
                 ref={fileInputRef}
                 type="file"
                 accept="image/*"
+                multiple
                 className="hidden"
                 onChange={handleFileChange}
               />

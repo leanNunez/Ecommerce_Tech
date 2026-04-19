@@ -26,11 +26,12 @@ import type { Brand } from '@/entities/brand'
 import { useBrands, useCreateBrand, useUpdateBrand, useDeleteBrand } from '@/entities/brand'
 
 const schema = z.object({
-  name:    z.string().min(2, 'At least 2 characters'),
-  slug:    z.string().min(2).regex(/^[a-z0-9-]+$/, 'Only lowercase letters, numbers and hyphens'),
-  tagline: z.string().min(2, 'At least 2 characters'),
-  bgColor: z.string().min(4, 'Required'),
-  logoUrl: z.string().optional(),
+  name:      z.string().min(2, 'At least 2 characters'),
+  slug:      z.string().min(2).regex(/^[a-z0-9-]+$/, 'Only lowercase letters, numbers and hyphens'),
+  tagline:   z.string().min(2, 'At least 2 characters'),
+  bgColor:   z.string().min(4, 'Required'),
+  logoUrl:   z.string().optional(),
+  bannerUrl: z.string().optional(),
 })
 
 type FormValues = z.infer<typeof schema>
@@ -48,31 +49,38 @@ export function BrandsPage() {
   const [globalFilter, setGlobalFilter] = useState('')
   const [sheetOpen, setSheetOpen] = useState(false)
   const [editing, setEditing] = useState<Brand | null>(null)
-  const [logoPreview, setLogoPreview] = useState<string>('')
-  const [isUploading, setIsUploading] = useState(false)
-  const fileRef = useRef<HTMLInputElement>(null)
+
+  const [logoPreview, setLogoPreview]     = useState<string>('')
+  const [bannerPreview, setBannerPreview] = useState<string>('')
+  const [isUploadingLogo, setIsUploadingLogo]     = useState(false)
+  const [isUploadingBanner, setIsUploadingBanner] = useState(false)
+  const logoRef   = useRef<HTMLInputElement>(null)
+  const bannerRef = useRef<HTMLInputElement>(null)
 
   const form = useForm<FormValues>({
     resolver: zodResolver(schema),
-    defaultValues: { name: '', slug: '', tagline: '', bgColor: '#000000', logoUrl: '' },
+    defaultValues: { name: '', slug: '', tagline: '', bgColor: '#000000', logoUrl: '', bannerUrl: '' },
   })
 
   function openAdd() {
-    form.reset({ name: '', slug: '', tagline: '', bgColor: '#000000', logoUrl: '' })
+    form.reset({ name: '', slug: '', tagline: '', bgColor: '#000000', logoUrl: '', bannerUrl: '' })
     setLogoPreview('')
+    setBannerPreview('')
     setEditing(null)
     setSheetOpen(true)
   }
 
   function openEdit(brand: Brand) {
     form.reset({
-      name:    brand.name,
-      slug:    brand.slug,
-      tagline: brand.tagline,
-      bgColor: brand.bgColor,
-      logoUrl: brand.logoUrl ?? '',
+      name:      brand.name,
+      slug:      brand.slug,
+      tagline:   brand.tagline,
+      bgColor:   brand.bgColor,
+      logoUrl:   brand.logoUrl   ?? '',
+      bannerUrl: brand.bannerUrl ?? '',
     })
     setLogoPreview(brand.logoUrl ?? '')
+    setBannerPreview(brand.bannerUrl ?? '')
     setEditing(brand)
     setSheetOpen(true)
   }
@@ -91,12 +99,25 @@ export function BrandsPage() {
     const file = e.target.files?.[0]
     if (!file) return
     setLogoPreview(URL.createObjectURL(file))
-    setIsUploading(true)
+    setIsUploadingLogo(true)
     try {
       const { url } = await uploadProductImage(file)
       form.setValue('logoUrl', url)
     } finally {
-      setIsUploading(false)
+      setIsUploadingLogo(false)
+    }
+  }
+
+  async function handleBannerChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]
+    if (!file) return
+    setBannerPreview(URL.createObjectURL(file))
+    setIsUploadingBanner(true)
+    try {
+      const { url } = await uploadProductImage(file)
+      form.setValue('bannerUrl', url)
+    } finally {
+      setIsUploadingBanner(false)
     }
   }
 
@@ -110,6 +131,8 @@ export function BrandsPage() {
       createBrand(values, { onSuccess: () => setSheetOpen(false) })
     }
   }
+
+  const isUploading = isUploadingLogo || isUploadingBanner
 
   const columns = [
     col.display({
@@ -126,6 +149,18 @@ export function BrandsPage() {
           >
             {b.name.slice(0, 2).toUpperCase()}
           </div>
+        )
+      },
+    }),
+    col.display({
+      id: 'banner',
+      header: 'Banner',
+      cell: ({ row }) => {
+        const b = row.original
+        return b.bannerUrl ? (
+          <img src={b.bannerUrl} alt="" className="h-8 w-20 rounded object-cover" />
+        ) : (
+          <span className="text-xs text-muted">—</span>
         )
       },
     }),
@@ -266,7 +301,7 @@ export function BrandsPage() {
       </p>
 
       <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
-        <SheetContent className="w-full sm:max-w-md">
+        <SheetContent className="w-full sm:max-w-md overflow-y-auto">
           <SheetHeader>
             <SheetTitle>{editing ? 'Edit brand' : 'Add brand'}</SheetTitle>
           </SheetHeader>
@@ -274,24 +309,50 @@ export function BrandsPage() {
           <Form {...form}>
             <form onSubmit={form.handleSubmit(handleSubmit)} noValidate className="mt-6 space-y-4">
 
+              {/* Banner upload */}
+              <div className="space-y-2">
+                <p className="text-sm font-medium">Banner image</p>
+                <div
+                  className="relative flex h-32 cursor-pointer items-center justify-center overflow-hidden rounded-lg border-2 border-dashed border-secondary/30 bg-background transition-colors hover:border-primary/50"
+                  onClick={() => bannerRef.current?.click()}
+                >
+                  {bannerPreview ? (
+                    <>
+                      <img src={bannerPreview} alt="Banner preview" className="h-full w-full object-cover" />
+                      <div className="absolute inset-0 flex items-center justify-center bg-black/30 opacity-0 transition-opacity hover:opacity-100">
+                        <ImagePlus className="h-6 w-6 text-white" />
+                      </div>
+                    </>
+                  ) : (
+                    <div className="flex flex-col items-center gap-1 text-secondary">
+                      <ImagePlus className="h-6 w-6" />
+                      <span className="text-xs">Click to upload banner</span>
+                      <span className="text-[10px] text-muted">Recommended: 800×400px</span>
+                    </div>
+                  )}
+                </div>
+                <input ref={bannerRef} type="file" accept="image/*" className="hidden" onChange={handleBannerChange} />
+                {isUploadingBanner && <p className="text-xs text-secondary">Uploading…</p>}
+              </div>
+
               {/* Logo upload */}
               <div className="space-y-2">
                 <p className="text-sm font-medium">Logo</p>
                 <div
-                  className="flex h-24 cursor-pointer items-center justify-center rounded-lg border-2 border-dashed border-secondary/30 bg-background transition-colors hover:border-primary/50"
-                  onClick={() => fileRef.current?.click()}
+                  className="flex h-20 cursor-pointer items-center justify-center rounded-lg border-2 border-dashed border-secondary/30 bg-background transition-colors hover:border-primary/50"
+                  onClick={() => logoRef.current?.click()}
                 >
                   {logoPreview ? (
                     <img src={logoPreview} alt="Logo preview" className="h-full w-full object-contain p-3" />
                   ) : (
                     <div className="flex flex-col items-center gap-1 text-secondary">
                       <ImagePlus className="h-6 w-6" />
-                      <span className="text-xs">Click to upload</span>
+                      <span className="text-xs">Click to upload logo</span>
                     </div>
                   )}
                 </div>
-                <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handleLogoChange} />
-                {isUploading && <p className="text-xs text-secondary">Uploading…</p>}
+                <input ref={logoRef} type="file" accept="image/*" className="hidden" onChange={handleLogoChange} />
+                {isUploadingLogo && <p className="text-xs text-secondary">Uploading…</p>}
               </div>
 
               <FormField

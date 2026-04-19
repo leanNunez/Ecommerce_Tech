@@ -104,6 +104,7 @@ const createProductSchema = z.object({
   categoryId:     z.string().min(1),
   brandId:        z.string().optional(),
   imageUrl:       z.string().url().optional(),
+  imageUrls:      z.array(z.string().url()).optional(),
   isActive:       z.boolean().optional(),
   variants:       z.array(variantInputSchema).optional(),
 })
@@ -126,9 +127,14 @@ router.post('/', authenticate, requireAdmin, async (req, res, next) => {
         categoryId:     data.categoryId,
         brandId:        data.brandId ?? 'brand1',
         isActive:       data.isActive ?? true,
-        images: data.imageUrl
-          ? { create: [{ url: data.imageUrl }] }
-          : undefined,
+        images: (() => {
+          const urls = data.imageUrls?.length
+            ? data.imageUrls
+            : data.imageUrl ? [data.imageUrl] : []
+          return urls.length
+            ? { create: urls.map((url, order) => ({ url, order })) }
+            : undefined
+        })(),
         variants: data.variants?.length
           ? {
               create: data.variants.map((v, i) => ({
@@ -158,6 +164,7 @@ const updateProductSchema = z.object({
   categoryId:     z.string().min(1).optional(),
   brandId:        z.string().optional(),
   imageUrl:       z.string().url().optional().nullable(),
+  imageUrls:      z.array(z.string().url()).optional(),
   isActive:       z.boolean().optional(),
   variants:       z.array(variantInputSchema).optional(),
 })
@@ -165,15 +172,20 @@ const updateProductSchema = z.object({
 router.patch('/:id', authenticate, requireAdmin, async (req, res, next) => {
   try {
     const updates = updateProductSchema.parse(req.body)
-    const { imageUrl, variants, ...restWithoutVariants } = updates
+    const { imageUrl, imageUrls, variants, ...restWithoutVariants } = updates
+    const hasImageUpdate = imageUrls !== undefined || imageUrl !== undefined
+    const newUrls = imageUrls?.length
+      ? imageUrls
+      : imageUrl ? [imageUrl] : []
+
     const product = await prisma.product.update({
       where: { id: req.params.id },
       data:  {
         ...restWithoutVariants,
-        ...(imageUrl !== undefined && {
+        ...(hasImageUpdate && {
           images: {
             deleteMany: {},
-            ...(imageUrl ? { create: [{ url: imageUrl }] } : {}),
+            ...(newUrls.length ? { create: newUrls.map((url, order) => ({ url, order })) } : {}),
           },
         }),
         ...(variants !== undefined && {

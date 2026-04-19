@@ -31,6 +31,7 @@ export interface CreateProductPayload {
   categoryId: string
   brandId?: string
   imageUrl?: string
+  imageUrls?: string[]
   isActive?: boolean
   variants?: VariantPayload[]
 }

@@ -51,6 +51,18 @@ export {
   TableRow,
 } from './table'
 export { Alert, AlertDescription, AlertTitle } from './alert'
+export {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogOverlay,
+  DialogPortal,
+  DialogTitle,
+  DialogTrigger,
+} from './dialog'
 
 // Custom shared UI
 export { PageTitle } from './page-title'
