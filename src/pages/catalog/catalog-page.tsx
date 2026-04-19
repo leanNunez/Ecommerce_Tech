@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useParams } from '@tanstack/react-router'
+import { useTranslation } from 'react-i18next'
 import { SlidersHorizontal } from 'lucide-react'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger, Button } from '@/shared/ui'
 import { FiltersPanel } from '@/widgets/filters-panel'
@@ -11,13 +12,14 @@ import { useProducts } from '@/entities/product'
 
 const PER_PAGE = 12
 
-const SORT_OPTIONS = [
-  { value: 'newest',     label: 'Newest' },
-  { value: 'price_asc',  label: 'Price: Low to High' },
-  { value: 'price_desc', label: 'Price: High to Low' },
+const SORT_VALUES = [
+  { value: 'newest',     key: 'catalog.sortNewest' },
+  { value: 'price_asc',  key: 'catalog.sortPriceAsc' },
+  { value: 'price_desc', key: 'catalog.sortPriceDesc' },
 ] as const
 
 export function CatalogPage() {
+  const { t } = useTranslation()
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false)
   const { sortBy, setSortBy } = useCatalogSort()
   const { filters, clearFilters } = useCatalogFilters()
@@ -43,7 +45,7 @@ export function CatalogPage() {
 
   return (
     <div className="mx-auto max-w-7xl px-6 py-8">
-      <h1 className="mb-6 text-2xl font-bold text-text">Catalog</h1>
+      <h1 className="mb-6 text-2xl font-bold text-text">{t('filters.title')}</h1>
 
       <div className="flex gap-8">
         {/* Filters sidebar — desktop only */}
@@ -61,28 +63,28 @@ export function CatalogPage() {
                 <SheetTrigger asChild>
                   <Button variant="outline" size="sm" className="md:hidden flex items-center gap-2">
                     <SlidersHorizontal className="h-4 w-4" />
-                    Filters
+                    {t('filters.title')}
                   </Button>
                 </SheetTrigger>
                 <SheetContent side="left" className="w-72 overflow-y-auto">
                   <SheetHeader className="mb-6">
-                    <SheetTitle>Filters</SheetTitle>
+                    <SheetTitle>{t('filters.title')}</SheetTitle>
                   </SheetHeader>
-                  <FiltersPanel />
+                  <FiltersPanel onClose={() => setMobileFiltersOpen(false)} />
                 </SheetContent>
               </Sheet>
               <p className="text-sm text-muted">
-                {isLoading ? 'Loading...' : `${total} product${total !== 1 ? 's' : ''}${activeCategory || filters.brand || filters.minPrice || filters.maxPrice ? ' found' : ''}`}
+                {isLoading ? '...' : t('catalog.productsFound', { count: total })}
               </p>
             </div>
             <Select value={sortBy} onValueChange={(v) => setSortBy(v as typeof sortBy)}>
               <SelectTrigger className="w-48 bg-surface">
-                <SelectValue placeholder="Sort by" />
+                <SelectValue placeholder={t('catalog.sortBy')} />
               </SelectTrigger>
               <SelectContent className="z-50">
-                {SORT_OPTIONS.map((opt) => (
-                  <SelectItem key={opt.value} value={opt.value}>
-                    {opt.label}
+                {SORT_VALUES.map(({ value, key }) => (
+                  <SelectItem key={value} value={value}>
+                    {t(key)}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -92,8 +94,8 @@ export function CatalogPage() {
           {/* Error */}
           {isError && (
             <div className="flex flex-col items-center gap-2 py-24 text-center">
-              <p className="text-lg font-semibold text-text">Failed to load products</p>
-              <p className="text-sm text-muted">Please try again later.</p>
+              <p className="text-lg font-semibold text-text">{t('catalog.failedToLoad')}</p>
+              <p className="text-sm text-muted">{t('catalog.tryAgain')}</p>
             </div>
           )}
 
@@ -109,13 +111,13 @@ export function CatalogPage() {
           {/* No results */}
           {!isLoading && !isError && products.length === 0 && (
             <div className="flex flex-col items-center gap-4 py-24 text-center">
-              <p className="text-lg font-semibold text-text">No products found</p>
-              <p className="text-sm text-muted">Try adjusting your filters.</p>
+              <p className="text-lg font-semibold text-text">{t('catalog.noProducts')}</p>
+              <p className="text-sm text-muted">{t('catalog.adjustFilters')}</p>
               <button
                 onClick={clearFilters}
                 className="text-sm font-medium text-primary hover:underline"
               >
-                Clear all filters
+                {t('catalog.clearAllFilters')}
               </button>
             </div>
           )}

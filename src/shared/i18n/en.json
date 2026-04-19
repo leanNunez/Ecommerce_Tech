@@ -1,0 +1,155 @@
+{
+  "header": {
+    "searchPlaceholder": "Search products…",
+    "signIn": "Sign in",
+    "signOut": "Sign out",
+    "createAccount": "Create account",
+    "hello": "Hello,",
+    "admin": "Admin",
+    "categories": "Categories",
+    "offers": "Offers",
+    "myProfile": "My Profile",
+    "myOrders": "My Orders",
+    "favorites": "Favorites",
+    "cart": "Cart",
+    "adminPanel": "Admin Panel",
+    "sendTo": "Send to",
+    "sendToZipCode": "Send to ZIP code",
+    "openMenu": "Open menu",
+    "shipsTo": "Ships to"
+  },
+  "footer": {
+    "tagline": "Premium tech, delivered fast.",
+    "company": "Company",
+    "aboutUs": "About us",
+    "careers": "Careers",
+    "press": "Press",
+    "support": "Support",
+    "helpCenter": "Help center",
+    "contactUs": "Contact us",
+    "returns": "Returns",
+    "legal": "Legal",
+    "privacyPolicy": "Privacy policy",
+    "termsOfService": "Terms of service",
+    "cookiePolicy": "Cookie policy",
+    "copyright": "© {{year}} Ecommerce. All rights reserved."
+  },
+  "home": {
+    "hero": {
+      "badge": "🔥 Free shipping on orders over $99",
+      "title1": "Premium Tech,",
+      "title2": "Delivered Fast.",
+      "subtitle": "Shop the latest from Apple, Samsung, Sony and more. Curated selection, unbeatable prices, expert support.",
+      "shopNow": "Shop Now",
+      "browseBrands": "Browse Brands"
+    },
+    "flashDeals": {
+      "label": "Flash Deals",
+      "badge": "Today only",
+      "seeAll": "See all",
+      "viewAllDeals": "View all deals"
+    },
+    "stats": {
+      "productsValue": "10,000+",
+      "productsLabel": "Products",
+      "brandsValue": "500+",
+      "brandsLabel": "Brands",
+      "satisfactionValue": "99.9%",
+      "satisfactionLabel": "Satisfaction",
+      "supportValue": "24/7",
+      "supportLabel": "Support",
+      "customersValue": "50K+",
+      "customersLabel": "Happy Customers",
+      "shippingValue": "Free",
+      "shippingLabel": "Shipping $99+"
+    },
+    "brands": {
+      "trustedPartners": "Trusted Partners",
+      "topBrands": "Top",
+      "topBrandsHighlight": "Brands",
+      "scrollLeft": "Scroll left",
+      "scrollRight": "Scroll right"
+    },
+    "valueProps": {
+      "freeShipping": "Free Shipping",
+      "freeShippingDesc": "On all orders over $99",
+      "warranty": "2-Year Warranty",
+      "warrantyDesc": "On all products we sell",
+      "returns": "30-Day Returns",
+      "returnsDesc": "No questions asked"
+    }
+  },
+  "categories": {
+    "laptops": "Laptops",
+    "smartphones": "Smartphones",
+    "headphones": "Headphones",
+    "monitors": "Monitors",
+    "tablets": "Tablets",
+    "components": "Components"
+  },
+  "catalog": {
+    "sortBy": "Sort by",
+    "sortNewest": "Newest",
+    "sortPriceAsc": "Price: Low to High",
+    "sortPriceDesc": "Price: High to Low",
+    "productsFound_one": "{{count}} product found",
+    "productsFound_other": "{{count}} products found",
+    "failedToLoad": "Failed to load products",
+    "tryAgain": "Please try again later.",
+    "noProducts": "No products found",
+    "adjustFilters": "Try adjusting your filters.",
+    "clearAllFilters": "Clear all filters"
+  },
+  "filters": {
+    "title": "Filters",
+    "category": "Category",
+    "brand": "Brand",
+    "price": "Price",
+    "minPlaceholder": "Min",
+    "maxPlaceholder": "Max",
+    "clearFilters": "Clear filters"
+  },
+  "productCard": {
+    "buyNow": "Buy Now",
+    "addToCart": "Add to cart",
+    "added": "Added!",
+    "lowStock": "Low Stock",
+    "outOfStock": "Out of stock"
+  },
+  "productDetail": {
+    "notFound": "Product not found",
+    "backToCatalog": "Back to catalog",
+    "home": "Home",
+    "options": "Options",
+    "inStock": "In stock",
+    "onlyLeft": "Only {{count}} left",
+    "outOfStock": "Out of stock",
+    "reviews_one": "{{count}} review",
+    "reviews_other": "{{count}} reviews",
+    "freeShipping": "Free Shipping",
+    "freeShippingDesc": "Orders over $99",
+    "warranty": "2-Year Warranty",
+    "warrantyDesc": "All products",
+    "returns": "30-Day Returns",
+    "returnsDesc": "No questions",
+    "moreIn": "More in {{category}}",
+    "seeAll": "See all"
+  },
+  "brands": {
+    "subtitle": "Shop from the world's leading tech manufacturers. Every brand, every product, one place.",
+    "countSuffix": "Brands",
+    "comingSoon": "Coming soon"
+  },
+  "shelf": {
+    "seeAll": "See all"
+  },
+  "pagination": {
+    "previous": "Previous",
+    "next": "Next"
+  },
+  "language": {
+    "select": "Language",
+    "en": "English",
+    "es": "Español"
+  }
+}

@@ -1,4 +1,5 @@
 import { Link, useNavigate } from '@tanstack/react-router'
+import { useTranslation } from 'react-i18next'
 import { formatCurrency } from '@/shared/lib/format-currency'
 import { Button } from '@/shared/ui'
 import { AddToCartButton } from '@/features/add-to-cart'
@@ -13,6 +14,7 @@ interface ProductCardProps {
 }
 
 export function ProductCard({ product }: ProductCardProps) {
+  const { t } = useTranslation()
   const { data } = useBrands()
   const brands = data?.data ?? []
   const navigate = useNavigate()
@@ -48,7 +50,7 @@ export function ProductCard({ product }: ProductCardProps) {
         )}
         {isLowStock && (
           <span className="rounded-full bg-destructive px-2 py-0.5 text-[10px] font-bold text-white shadow-sm">
-            Low Stock
+            {t('productCard.lowStock')}
           </span>
         )}
       </div>
@@ -105,7 +107,7 @@ export function ProductCard({ product }: ProductCardProps) {
             <AddToCartButton product={product} className="flex-1" size="sm" variant="outline" />
             {role !== 'admin' && product.stock > 0 && (
               <Button size="sm" className="flex-1" onClick={handleBuyNow}>
-                Buy Now
+                {t('productCard.buyNow')}
               </Button>
             )}
           </div>

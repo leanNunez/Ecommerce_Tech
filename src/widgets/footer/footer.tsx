@@ -1,35 +1,38 @@
 import { Link } from '@tanstack/react-router'
-
-const LINK_GROUPS = [
-  {
-    title: 'Company',
-    links: [
-      { label: 'About us', to: '/' },
-      { label: 'Careers', to: '/' },
-      { label: 'Press', to: '/' },
-    ],
-  },
-  {
-    title: 'Support',
-    links: [
-      { label: 'Help center', to: '/' },
-      { label: 'Contact us', to: '/' },
-      { label: 'Returns', to: '/' },
-    ],
-  },
-  {
-    title: 'Legal',
-    links: [
-      { label: 'Privacy policy', to: '/' },
-      { label: 'Terms of service', to: '/' },
-      { label: 'Cookie policy', to: '/' },
-    ],
-  },
-] as const
+import { useTranslation } from 'react-i18next'
 
 export function Footer() {
+  const { t } = useTranslation()
+
+  const LINK_GROUPS = [
+    {
+      titleKey: 'footer.company',
+      links: [
+        { labelKey: 'footer.aboutUs', to: '/' },
+        { labelKey: 'footer.careers', to: '/' },
+        { labelKey: 'footer.press', to: '/' },
+      ],
+    },
+    {
+      titleKey: 'footer.support',
+      links: [
+        { labelKey: 'footer.helpCenter', to: '/' },
+        { labelKey: 'footer.contactUs', to: '/' },
+        { labelKey: 'footer.returns', to: '/' },
+      ],
+    },
+    {
+      titleKey: 'footer.legal',
+      links: [
+        { labelKey: 'footer.privacyPolicy', to: '/' },
+        { labelKey: 'footer.termsOfService', to: '/' },
+        { labelKey: 'footer.cookiePolicy', to: '/' },
+      ],
+    },
+  ]
+
   return (
-    <footer className="bg-primary text-surface">
+    <footer className="bg-gradient-to-r from-primary-dark via-primary to-accent text-surface">
       <div className="mx-auto max-w-7xl px-6 py-12">
         <div className="grid grid-cols-2 gap-8 md:grid-cols-4">
           {/* Brand */}
@@ -38,24 +41,24 @@ export function Footer() {
               Ecommerce
             </Link>
             <p className="mt-3 text-sm text-white/70">
-              Premium tech, delivered fast.
+              {t('footer.tagline')}
             </p>
           </div>
 
           {/* Link groups */}
           {LINK_GROUPS.map((group) => (
-            <div key={group.title}>
+            <div key={group.titleKey}>
               <h3 className="mb-3 text-sm font-semibold uppercase tracking-wider text-white/50">
-                {group.title}
+                {t(group.titleKey)}
               </h3>
               <ul className="flex flex-col gap-2">
                 {group.links.map((link) => (
-                  <li key={link.label}>
+                  <li key={link.labelKey}>
                     <Link
                       to={link.to}
                       className="text-sm text-white/70 hover:text-white transition-colors"
                     >
-                      {link.label}
+                      {t(link.labelKey)}
                     </Link>
                   </li>
                 ))}
@@ -65,7 +68,7 @@ export function Footer() {
         </div>
 
         <div className="mt-10 border-t border-white/10 pt-6 text-center text-sm text-white/50">
-          © {new Date().getFullYear()} Ecommerce. All rights reserved.
+          {t('footer.copyright', { year: new Date().getFullYear() })}
         </div>
       </div>
     </footer>

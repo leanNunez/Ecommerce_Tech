@@ -1,0 +1,155 @@
+{
+  "header": {
+    "searchPlaceholder": "Buscar productos…",
+    "signIn": "Iniciar sesión",
+    "signOut": "Cerrar sesión",
+    "createAccount": "Crear cuenta",
+    "hello": "Hola,",
+    "admin": "Admin",
+    "categories": "Categorías",
+    "offers": "Ofertas",
+    "myProfile": "Mi Perfil",
+    "myOrders": "Mis Pedidos",
+    "favorites": "Favoritos",
+    "cart": "Carrito",
+    "adminPanel": "Panel Admin",
+    "sendTo": "Envíos a",
+    "sendToZipCode": "Envíos a código postal",
+    "openMenu": "Abrir menú",
+    "shipsTo": "Envíos a"
+  },
+  "footer": {
+    "tagline": "Tecnología premium, entregada rápido.",
+    "company": "Empresa",
+    "aboutUs": "Acerca de nosotros",
+    "careers": "Empleos",
+    "press": "Prensa",
+    "support": "Soporte",
+    "helpCenter": "Centro de ayuda",
+    "contactUs": "Contáctanos",
+    "returns": "Devoluciones",
+    "legal": "Legal",
+    "privacyPolicy": "Política de privacidad",
+    "termsOfService": "Términos de servicio",
+    "cookiePolicy": "Política de cookies",
+    "copyright": "© {{year}} Ecommerce. Todos los derechos reservados."
+  },
+  "home": {
+    "hero": {
+      "badge": "🔥 Envío gratis en pedidos superiores a $99",
+      "title1": "Tecnología Premium,",
+      "title2": "Entregada Rápido.",
+      "subtitle": "Comprá lo último de Apple, Samsung, Sony y más. Selección curada, precios imbatibles, soporte experto.",
+      "shopNow": "Comprar Ahora",
+      "browseBrands": "Ver Marcas"
+    },
+    "flashDeals": {
+      "label": "Ofertas Relámpago",
+      "badge": "Solo hoy",
+      "seeAll": "Ver todo",
+      "viewAllDeals": "Ver todas las ofertas"
+    },
+    "stats": {
+      "productsValue": "10.000+",
+      "productsLabel": "Productos",
+      "brandsValue": "500+",
+      "brandsLabel": "Marcas",
+      "satisfactionValue": "99,9%",
+      "satisfactionLabel": "Satisfacción",
+      "supportValue": "24/7",
+      "supportLabel": "Soporte",
+      "customersValue": "50K+",
+      "customersLabel": "Clientes Felices",
+      "shippingValue": "Gratis",
+      "shippingLabel": "Envío $99+"
+    },
+    "brands": {
+      "trustedPartners": "Socios de Confianza",
+      "topBrands": "Las mejores",
+      "topBrandsHighlight": "Marcas",
+      "scrollLeft": "Desplazar izquierda",
+      "scrollRight": "Desplazar derecha"
+    },
+    "valueProps": {
+      "freeShipping": "Envío Gratis",
+      "freeShippingDesc": "En todos los pedidos sobre $99",
+      "warranty": "Garantía 2 Años",
+      "warrantyDesc": "En todos los productos que vendemos",
+      "returns": "Devoluciones 30 Días",
+      "returnsDesc": "Sin preguntas"
+    }
+  },
+  "categories": {
+    "laptops": "Laptops",
+    "smartphones": "Smartphones",
+    "headphones": "Auriculares",
+    "monitors": "Monitores",
+    "tablets": "Tablets",
+    "components": "Componentes"
+  },
+  "catalog": {
+    "sortBy": "Ordenar por",
+    "sortNewest": "Más reciente",
+    "sortPriceAsc": "Precio: Menor a Mayor",
+    "sortPriceDesc": "Precio: Mayor a Menor",
+    "productsFound_one": "{{count}} producto encontrado",
+    "productsFound_other": "{{count}} productos encontrados",
+    "failedToLoad": "Error al cargar productos",
+    "tryAgain": "Por favor, intentá más tarde.",
+    "noProducts": "No se encontraron productos",
+    "adjustFilters": "Intentá ajustar los filtros.",
+    "clearAllFilters": "Limpiar todos los filtros"
+  },
+  "filters": {
+    "title": "Filtros",
+    "category": "Categoría",
+    "brand": "Marca",
+    "price": "Precio",
+    "minPlaceholder": "Mín",
+    "maxPlaceholder": "Máx",
+    "clearFilters": "Limpiar filtros"
+  },
+  "productCard": {
+    "buyNow": "Comprar Ahora",
+    "addToCart": "Agregar al carrito",
+    "added": "¡Agregado!",
+    "lowStock": "Poco Stock",
+    "outOfStock": "Sin stock"
+  },
+  "productDetail": {
+    "notFound": "Producto no encontrado",
+    "backToCatalog": "Volver al catálogo",
+    "home": "Inicio",
+    "options": "Opciones",
+    "inStock": "En stock",
+    "onlyLeft": "Solo quedan {{count}}",
+    "outOfStock": "Sin stock",
+    "reviews_one": "{{count}} reseña",
+    "reviews_other": "{{count}} reseñas",
+    "freeShipping": "Envío Gratis",
+    "freeShippingDesc": "Pedidos sobre $99",
+    "warranty": "Garantía 2 Años",
+    "warrantyDesc": "Todos los productos",
+    "returns": "Devoluciones 30 Días",
+    "returnsDesc": "Sin preguntas",
+    "moreIn": "Más en {{category}}",
+    "seeAll": "Ver todo"
+  },
+  "brands": {
+    "subtitle": "Comprá de los principales fabricantes de tecnología del mundo. Cada marca, cada producto, en un solo lugar.",
+    "countSuffix": "Marcas",
+    "comingSoon": "Próximamente"
+  },
+  "shelf": {
+    "seeAll": "Ver todos"
+  },
+  "pagination": {
+    "previous": "Anterior",
+    "next": "Siguiente"
+  },
+  "language": {
+    "select": "Idioma",
+    "en": "English",
+    "es": "Español"
+  }
+}
