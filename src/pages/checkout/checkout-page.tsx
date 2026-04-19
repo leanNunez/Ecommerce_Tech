@@ -3,7 +3,8 @@ import { useNavigate } from '@tanstack/react-router'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { CreditCard, MapPin, Wand2 } from 'lucide-react'
+import { ChevronDown, ChevronUp, CreditCard, MapPin, Wand2 } from 'lucide-react'
+import { calculateSubtotal, calculateTax, calculateTotal } from '@/entities/cart'
 import {
   Button,
   Form,
@@ -41,6 +42,11 @@ export function CheckoutPage() {
   const navigate = useNavigate()
   const isPlacingOrder = useRef(false)
   const [orderError, setOrderError] = useState<string | null>(null)
+  const [summaryOpen, setSummaryOpen] = useState(false)
+
+  const subtotal = calculateSubtotal(items)
+  const tax = calculateTax(subtotal, 0.1)
+  const total = calculateTotal(subtotal, tax)
 
   useEffect(() => {
     if (items.length === 0 && !isPlacingOrder.current) {
@@ -109,7 +115,7 @@ export function CheckoutPage() {
   if (items.length === 0) return null
 
   return (
-    <div className="mx-auto max-w-6xl px-6 py-10">
+    <div className="mx-auto max-w-6xl px-4 sm:px-6 py-8 sm:py-10 pb-28 lg:pb-10">
       <div className="mb-8 flex items-center justify-between gap-4">
         <PageTitle>Checkout</PageTitle>
         <button
@@ -123,14 +129,14 @@ export function CheckoutPage() {
       </div>
 
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} noValidate>
+        <form id="checkout-form" onSubmit={form.handleSubmit(onSubmit)} noValidate>
           <div className="grid gap-8 lg:grid-cols-3">
 
             {/* ── Form sections ── */}
             <div className="flex flex-col gap-8 lg:col-span-2">
 
               {/* Shipping */}
-              <section className="rounded-xl border border-secondary/20 bg-surface p-6">
+              <section className="rounded-xl border border-secondary/20 bg-surface p-4 sm:p-6">
                 <div className="mb-5 flex items-center gap-2.5">
                   <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10">
                     <MapPin className="h-4 w-4 text-primary" />
@@ -208,7 +214,7 @@ export function CheckoutPage() {
               </section>
 
               {/* Payment */}
-              <section className="rounded-xl border border-secondary/20 bg-surface p-6">
+              <section className="rounded-xl border border-secondary/20 bg-surface p-4 sm:p-6">
                 <div className="mb-5 flex items-center gap-2.5">
                   <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10">
                     <CreditCard className="h-4 w-4 text-primary" />
@@ -273,8 +279,8 @@ export function CheckoutPage() {
               </section>
             </div>
 
-            {/* ── Order summary (sticky) ── */}
-            <div className="flex flex-col gap-4 lg:sticky lg:top-24 lg:self-start">
+            {/* ── Order summary (desktop only) ── */}
+            <div className="hidden lg:flex lg:flex-col lg:gap-4 lg:sticky lg:top-24 lg:self-start">
               <div className="rounded-xl border border-secondary/20 bg-surface p-6">
                 <h2 className="mb-4 text-base font-semibold text-text">Your Order</h2>
                 <ul className="flex flex-col gap-3">
@@ -320,6 +326,53 @@ export function CheckoutPage() {
           </div>
         </form>
       </Form>
+
+      {/* ── Sticky bottom bar — mobile only ── */}
+      <div className="fixed bottom-0 left-0 right-0 z-50 lg:hidden border-t border-secondary/20 bg-surface/95 backdrop-blur-sm">
+        {/* Collapsible summary */}
+        <button
+          type="button"
+          onClick={() => setSummaryOpen((o) => !o)}
+          className="flex w-full items-center justify-between px-4 py-3 text-sm"
+        >
+          <span className="font-medium text-text">Order summary</span>
+          <div className="flex items-center gap-2">
+            <span className="font-bold text-text">{formatCurrency(total)}</span>
+            {summaryOpen ? <ChevronDown className="h-4 w-4 text-muted" /> : <ChevronUp className="h-4 w-4 text-muted" />}
+          </div>
+        </button>
+
+        {summaryOpen && (
+          <div className="border-t border-secondary/10 px-4 py-3 text-sm">
+            <div className="flex justify-between text-secondary">
+              <span>Subtotal</span><span>{formatCurrency(subtotal)}</span>
+            </div>
+            <div className="flex justify-between text-secondary mt-1">
+              <span>Tax (10%)</span><span>{formatCurrency(tax)}</span>
+            </div>
+            <div className="mt-2 flex justify-between font-bold text-text border-t border-secondary/10 pt-2">
+              <span>Total</span><span>{formatCurrency(total)}</span>
+            </div>
+          </div>
+        )}
+
+        <div className="px-4 pb-4">
+          {orderError && (
+            <p className="mb-2 rounded-lg bg-destructive/10 px-3 py-2 text-xs text-destructive">
+              {orderError}
+            </p>
+          )}
+          <Button
+            type="submit"
+            size="lg"
+            form="checkout-form"
+            className="w-full"
+            disabled={form.formState.isSubmitting}
+          >
+            {form.formState.isSubmitting ? 'Placing order…' : 'Place Order'}
+          </Button>
+        </div>
+      </div>
     </div>
   )
 }

@@ -103,7 +103,7 @@ export function ProductCard({ product }: ProductCardProps) {
               </span>
             )}
           </div>
-          <div className="flex gap-1.5">
+          <div className="flex flex-col gap-1.5 sm:flex-row">
             <AddToCartButton product={product} className="flex-1" size="sm" variant="outline" />
             {role !== 'admin' && product.stock > 0 && (
               <Button size="sm" className="flex-1" onClick={handleBuyNow}>
