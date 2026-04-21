@@ -1,5 +1,6 @@
 import { Link, useParams } from '@tanstack/react-router'
 import { ArrowLeft, Package } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { Button } from '@/shared/ui'
 import { ProductCard } from '@/widgets/product-card'
 import { useBrandBySlug } from '@/entities/brand'
@@ -27,7 +28,7 @@ const BRAND_GRADIENTS: Record<string, string> = {
   nvidia:     'linear-gradient(135deg, #76B900 0%, #2a4500 100%)',
   amd:        'linear-gradient(135deg, #ED1C24 0%, #5c0a0d 100%)',
   intel:      'linear-gradient(135deg, #0071C5 0%, #002d5c 100%)',
-  jabra:      'linear-gradient(135deg, #1a1100 0%, #000000 100%)',
+  jabra:      'linear-gradient(135deg, #FFD000 0%, #b89600 100%)',
   benq:       'linear-gradient(135deg, #C8102E 0%, #4a0010 100%)',
   kingston:   'linear-gradient(135deg, #E2231A 0%, #6b0f0b 100%)',
   seagate:    'linear-gradient(135deg, #00A651 0%, #003d1e 100%)',
@@ -62,6 +63,7 @@ function getLogoClassName(logoUrl: string, slug: string): string {
 // ─── Component ────────────────────────────────────────────────────────────────
 
 export function BrandCatalogPage() {
+  const { t } = useTranslation()
   const { brandSlug } = useParams({ from: '/brands/$brandSlug' })
 
   const { data: brandData, isLoading: brandLoading } = useBrandBySlug(brandSlug)
@@ -89,9 +91,9 @@ export function BrandCatalogPage() {
   if (!brand) {
     return (
       <div className="mx-auto max-w-7xl px-6 py-20 text-center">
-        <p className="text-lg font-semibold text-text">Brand not found</p>
+        <p className="text-lg font-semibold text-text">{t('brands.brandNotFound')}</p>
         <Button asChild variant="outline" className="mt-4">
-          <Link to="/brands">Browse all brands</Link>
+          <Link to="/brands">{t('brands.browseAllBrands')}</Link>
         </Button>
       </div>
     )
@@ -118,7 +120,7 @@ export function BrandCatalogPage() {
           to="/brands"
           className="absolute left-6 top-5 inline-flex items-center gap-1.5 text-sm font-medium text-white/50 transition-colors hover:text-white"
         >
-          <ArrowLeft className="h-4 w-4" /> All brands
+          <ArrowLeft className="h-4 w-4" /> {t('brands.allBrands')}
         </Link>
 
         {/* centered content */}
@@ -135,7 +137,7 @@ export function BrandCatalogPage() {
           <p className="max-w-sm text-base text-white/60">{brand.tagline}</p>
           <div className="mt-1 flex items-center gap-1.5 rounded-full bg-white/10 px-4 py-1.5 text-sm font-semibold text-white/80 ring-1 ring-white/15">
             <Package className="h-3.5 w-3.5" />
-            {isLoading ? '...' : `${products.length} product${products.length !== 1 ? 's' : ''}`}
+            {isLoading ? '...' : t('brands.productCount', { count: products.length })}
           </div>
         </div>
       </div>
@@ -152,8 +154,8 @@ export function BrandCatalogPage() {
           ) : products.length === 0 ? (
             <div className="flex flex-col items-center gap-3 py-24 text-center">
               <Package className="h-10 w-10 text-secondary/40" />
-              <p className="text-base font-semibold text-text">No products yet</p>
-              <p className="text-sm text-muted">Check back soon for {brand.name} products.</p>
+              <p className="text-base font-semibold text-text">{t('brands.noProducts')}</p>
+              <p className="text-sm text-muted">{t('brands.noProductsDesc', { name: brand.name })}</p>
             </div>
           ) : (
             <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">

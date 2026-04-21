@@ -1,5 +1,6 @@
 import { Link } from '@tanstack/react-router'
 import { ArrowRight, Package } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { useBrands } from '@/entities/brand'
 import type { Brand } from '@/entities/brand'
 
@@ -14,6 +15,7 @@ function getLogoClass(brand: Brand): string {
 }
 
 function BrandCard({ brand }: { brand: Brand }) {
+  const { t } = useTranslation()
   const hasBanner = Boolean(brand.bannerUrl)
 
   return (
@@ -71,7 +73,7 @@ function BrandCard({ brand }: { brand: Brand }) {
         <div className="absolute right-3 top-3">
           <span className="inline-flex items-center gap-1 rounded-full bg-black/40 px-2.5 py-1 text-[10px] font-semibold text-white/90 backdrop-blur-sm ring-1 ring-white/10">
             <Package className="h-3 w-3" />
-            {brand.productCount === 0 ? 'Coming soon' : brand.productCount}
+            {brand.productCount === 0 ? t('brands.comingSoon') : brand.productCount}
           </span>
         </div>
       </div>
@@ -91,6 +93,7 @@ function BrandCard({ brand }: { brand: Brand }) {
 }
 
 export function BrandsPage() {
+  const { t } = useTranslation()
   const { data, isLoading } = useBrands()
   const brands = data?.data ?? []
 
@@ -108,12 +111,10 @@ export function BrandsPage() {
         />
         <div className="relative mx-auto max-w-7xl px-6">
           <p className="text-sm font-semibold uppercase tracking-widest text-accent">
-            {brands.length > 0 ? `${brands.length} Brands` : '500+ Brands'}
+            {brands.length > 0 ? `${brands.length} ${t('brands.countSuffix')}` : `500+ ${t('brands.countSuffix')}`}
           </p>
-          <h1 className="mt-2 text-4xl font-extrabold text-white md:text-5xl">Browse Brands</h1>
-          <p className="mt-3 max-w-xl text-lg text-white/60">
-            Shop from the world's leading tech manufacturers. Every brand, every product, one place.
-          </p>
+          <h1 className="mt-2 text-4xl font-extrabold text-white md:text-5xl">{t('brands.title')}</h1>
+          <p className="mt-3 max-w-xl text-lg text-white/60">{t('brands.subtitle')}</p>
         </div>
       </section>
 

@@ -187,7 +187,7 @@ const BRANDS = [
   { id: 'brand14', slug: 'nvidia',    name: 'NVIDIA',    tagline: 'The Way Its Meant',       productCount: 5,  bgColor: '#76B900', logoUrl: 'https://cdn.simpleicons.org/nvidia/76B900' },
   { id: 'brand15', slug: 'amd',       name: 'AMD',       tagline: 'Together We Advance',     productCount: 5,  bgColor: '#ED1C24', logoUrl: 'https://cdn.simpleicons.org/amd/ED1C24' },
   { id: 'brand16', slug: 'intel',     name: 'Intel',     tagline: 'Intel Inside',            productCount: 4,  bgColor: '#0071C5', logoUrl: 'https://cdn.simpleicons.org/intel/0071C5' },
-  { id: 'brand17', slug: 'jabra',      name: 'Jabra',      tagline: 'Sound of Life',           productCount: 4,  bgColor: '#FFD000', logoUrl: 'https://cdn.worldvectorlogo.com/logos/jabra.svg' },
+  { id: 'brand17', slug: 'jabra',      name: 'Jabra',      tagline: 'Sound of Life',           productCount: 4,  bgColor: '#FFD000', logoUrl: 'https://res.cloudinary.com/dwwdeoa3l/image/upload/v1776734689/brands/jabra-logo.svg' },
   { id: 'brand18', slug: 'benq',       name: 'BenQ',       tagline: 'Designed for You',        productCount: 4,  bgColor: '#C8102E', logoUrl: 'https://upload.wikimedia.org/wikipedia/commons/4/41/BenQ_wordmark.svg' },
   { id: 'brand19', slug: 'kingston',   name: 'Kingston',   tagline: 'Ask a Pro',               productCount: 4,  bgColor: '#E2231A', logoUrl: 'https://cdn.simpleicons.org/kingstontechnology/E2231A' },
   { id: 'brand20', slug: 'seagate',    name: 'Seagate',    tagline: 'There Is No Try',         productCount: 3,  bgColor: '#00A651', logoUrl: 'https://cdn.simpleicons.org/seagate/00A651' },

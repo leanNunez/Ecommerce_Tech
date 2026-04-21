@@ -36,10 +36,10 @@
   },
   "home": {
     "hero": {
-      "badge": "🔥 Envío gratis en pedidos superiores a $99",
-      "title1": "Tecnología Premium,",
-      "title2": "Entregada Rápido.",
-      "subtitle": "Comprá lo último de Apple, Samsung, Sony y más. Selección curada, precios imbatibles, soporte experto.",
+      "badge": "+50.000 clientes satisfechos",
+      "title1": "La tech que querés",
+      "title2": "la encontrás acá.",
+      "subtitle": "Apple, Samsung, Sony y más. La selección más completa, al precio que merecés.",
       "shopNow": "Comprar Ahora",
       "browseBrands": "Ver Marcas"
     },
@@ -110,11 +110,15 @@
     "clearFilters": "Limpiar filtros"
   },
   "productCard": {
-    "buyNow": "Comprar Ahora",
-    "addToCart": "Agregar al carrito",
-    "added": "¡Agregado!",
+    "buyNow": "Comprar",
+    "addToCart": "Al carrito",
+    "added": "¡Listo!",
     "lowStock": "Poco Stock",
-    "outOfStock": "Sin stock"
+    "outOfStock": "Sin stock",
+    "freeShipping": "Envío gratis",
+    "installments6": "6 cuotas de {{amount}} sin interés",
+    "installments12": "12 cuotas de {{amount}}",
+    "subscribeDiscount": "Suscribite y ahorrá 10%"
   },
   "productDetail": {
     "notFound": "Producto no encontrado",
@@ -136,12 +140,54 @@
     "seeAll": "Ver todo"
   },
   "brands": {
+    "title": "Ver Marcas",
     "subtitle": "Comprá de los principales fabricantes de tecnología del mundo. Cada marca, cada producto, en un solo lugar.",
     "countSuffix": "Marcas",
-    "comingSoon": "Próximamente"
+    "comingSoon": "Próximamente",
+    "allBrands": "Todas las marcas",
+    "brandNotFound": "Marca no encontrada",
+    "browseAllBrands": "Ver todas las marcas",
+    "noProducts": "Sin productos aún",
+    "noProductsDesc": "Volvé pronto para ver productos de {{name}}.",
+    "productCount_one": "{{count}} producto",
+    "productCount_other": "{{count}} productos"
   },
   "shelf": {
     "seeAll": "Ver todos"
+  },
+  "categoryShelf": {
+    "featuredDeal": "Oferta destacada",
+    "seeAll": "Ver todos",
+    "laptops": { "slides": [
+      { "headline": "Llevá la PC de tus sueños al mejor precio", "body": "MacBooks, Dell XPS, Surface y más. Envío gratis en todos los modelos." },
+      { "headline": "Porque vos lo querés y te lo merecés", "body": "Financiación sin interés en cuotas. La notebook ideal, ahora a tu alcance." },
+      { "headline": "Tecnología que trabaja tan duro como vos", "body": "Potencia real para quienes no se conforman con menos." }
+    ]},
+    "smartphones": { "slides": [
+      { "headline": "El smartphone que siempre quisiste", "body": "iPhone, Galaxy, Pixel y más. Garantía oficial y envío el mismo día." },
+      { "headline": "Porque vos te lo merecés", "body": "Hasta 36 cuotas sin interés. El upgrade que venías postergando." },
+      { "headline": "Tu mundo, en la palma de tu mano", "body": "Los modelos más nuevos, con la mejor cámara y batería del mercado." }
+    ]},
+    "headphones": { "slides": [
+      { "headline": "Sonido que te envuelve, calidad que se siente", "body": "Sony, Bose, Apple y Sennheiser. Noise cancelling premium para trabajo y viajes." },
+      { "headline": "Escuchá diferente, vivilo diferente", "body": "Porque la música merece los mejores auriculares." },
+      { "headline": "Para los que no se conforman con menos", "body": "Audio de estudio, gaming o calle — tenemos el par perfecto para vos." }
+    ]},
+    "monitors": { "slides": [
+      { "headline": "Tu workspace merece la mejor pantalla", "body": "4K, ultrawide, gaming y profesional. Productividad en otro nivel." },
+      { "headline": "Porque tu vista lo vale", "body": "Colores precisos, refresh rate brutal. La pantalla que cambia todo." },
+      { "headline": "4K desde hoy, sin excusas", "body": "Gaming, diseño o trabajo — el monitor ideal para cada vos." }
+    ]},
+    "tablets": { "slides": [
+      { "headline": "Potencia y portabilidad en un solo dispositivo", "body": "iPad Pro, Galaxy Tab y Surface Go. Creá y trabajá desde cualquier lugar." },
+      { "headline": "Porque vos querés más libertad", "body": "La herramienta que no te frena. Ligera, potente, siempre lista." },
+      { "headline": "Tu próxima herramienta favorita te espera", "body": "Para creadores, estudiantes y profesionales que exigen lo mejor." }
+    ]},
+    "components": { "slides": [
+      { "headline": "Armá la PC que siempre soñaste", "body": "GPUs, CPUs, RAM y motherboards de las mejores marcas." },
+      { "headline": "Tu configuración perfecta te espera", "body": "Componentes originales con garantía. Tu build ideal a un clic." },
+      { "headline": "Porque vos sabés lo que querés", "body": "Las mejores marcas al mejor precio. Sin compromisos." }
+    ]}
   },
   "pagination": {
     "previous": "Anterior",
@@ -151,5 +197,144 @@
     "select": "Idioma",
     "en": "English",
     "es": "Español"
+  },
+  "cart": {
+    "title": "Tu Carrito",
+    "empty": "Tu carrito está vacío",
+    "emptyDesc": "Parece que todavía no agregaste nada.",
+    "browseProducts": "Ver productos",
+    "removeItem": "Eliminar producto",
+    "proceedToCheckout": "Ir al Checkout"
+  },
+  "orderSummary": {
+    "title": "Resumen del pedido",
+    "subtotal": "Subtotal",
+    "tax": "Impuestos (10%)",
+    "total": "Total"
+  },
+  "checkout": {
+    "title": "Checkout",
+    "fillDemo": "Datos de prueba",
+    "shippingAddress": "Dirección de envío",
+    "street": "Calle",
+    "city": "Ciudad",
+    "state": "Provincia",
+    "zipCode": "Código postal",
+    "country": "País",
+    "payment": "Pago",
+    "cardNumber": "Número de tarjeta",
+    "cardHolder": "Titular de la tarjeta",
+    "expiry": "Vencimiento",
+    "cvv": "CVV",
+    "yourOrder": "Tu pedido",
+    "qty": "Cant: {{count}}",
+    "orderSummary": "Resumen del pedido",
+    "subtotal": "Subtotal",
+    "tax": "Impuestos (10%)",
+    "total": "Total",
+    "placeOrder": "Confirmar pedido",
+    "placingOrder": "Procesando…",
+    "orderError": "Algo salió mal al realizar el pedido. Por favor, intentá de nuevo."
+  },
+  "account": {
+    "nav": {
+      "profile": "Perfil",
+      "addresses": "Direcciones",
+      "password": "Contraseña",
+      "orders": "Pedidos",
+      "wishlist": "Favoritos",
+      "notifications": "Notificaciones"
+    },
+    "profile": {
+      "title": "Mi Perfil",
+      "edit": "Editar",
+      "cancel": "Cancelar",
+      "firstName": "Nombre",
+      "lastName": "Apellido",
+      "email": "Email",
+      "role": "Rol",
+      "memberSince": "Miembro desde",
+      "roleAdmin": "Administrador",
+      "roleCustomer": "Cliente",
+      "saving": "Guardando…",
+      "saveChanges": "Guardar cambios"
+    },
+    "orders": {
+      "title": "Mis Pedidos",
+      "empty": "Sin pedidos aún",
+      "emptyDesc": "Tus pedidos aparecerán acá una vez que realices una compra.",
+      "browseProducts": "Ver productos",
+      "viewOrder": "Ver pedido",
+      "item_one": "{{count}} producto",
+      "item_other": "{{count}} productos",
+      "detailTitle": "Detalle del pedido",
+      "notFound": "Pedido no encontrado",
+      "backToOrders": "Volver a pedidos",
+      "cancelOrder": "Cancelar pedido",
+      "cancelling": "Cancelando…",
+      "items": "Productos",
+      "qty": "Cant: {{count}} · {{price}} c/u",
+      "shippingAddress": "Dirección de envío"
+    },
+    "orderStatus": {
+      "pending": "Pendiente",
+      "processing": "En proceso",
+      "shipped": "Enviado",
+      "delivered": "Entregado",
+      "cancelled": "Cancelado"
+    },
+    "wishlist": {
+      "title": "Mis Favoritos",
+      "clearAll": "Limpiar todo",
+      "empty": "Tu lista de favoritos está vacía",
+      "emptyDesc": "Guardá los productos que te gustan y volvé a verlos después.",
+      "explore": "Explorar productos"
+    },
+    "addresses": {
+      "title": "Mis Direcciones",
+      "addAddress": "Agregar dirección",
+      "newAddress": "Nueva dirección",
+      "saveAddress": "Guardar dirección",
+      "cancel": "Cancelar",
+      "street": "Calle",
+      "city": "Ciudad",
+      "state": "Provincia",
+      "zipCode": "Código postal",
+      "country": "País",
+      "empty": "Sin direcciones guardadas",
+      "emptyDesc": "Agregá una dirección de envío para agilizar el checkout.",
+      "default": "Predeterminada",
+      "saving": "Guardando…",
+      "setDefault": "Predeterminar",
+      "delete": "Eliminar dirección"
+    },
+    "password": {
+      "title": "Cambiar Contraseña",
+      "current": "Contraseña actual",
+      "new": "Nueva contraseña",
+      "confirm": "Confirmar nueva contraseña",
+      "saving": "Guardando…",
+      "update": "Actualizar contraseña",
+      "success": "Contraseña actualizada correctamente.",
+      "incorrectCurrent": "La contraseña actual es incorrecta"
+    },
+    "notifications": {
+      "title": "Notificaciones",
+      "clearAll": "Limpiar todo",
+      "empty": "Sin notificaciones aún",
+      "markAllRead": "Marcar todo como leído",
+      "viewAll": "Ver todas las notificaciones",
+      "justNow": "Ahora mismo",
+      "minutesAgo": "hace {{count}}m",
+      "hoursAgo": "hace {{count}}h",
+      "daysAgo": "hace {{count}}d"
+    }
+  },
+  "confirmation": {
+    "title": "¡Pedido Confirmado!",
+    "subtitle": "Gracias por tu compra. Comenzaremos a procesar tu pedido de inmediato.",
+    "orderId": "ID del pedido",
+    "viewOrders": "Ver mis pedidos",
+    "continueShopping": "Seguir comprando"
   }
 }
