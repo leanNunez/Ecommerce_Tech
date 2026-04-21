@@ -2,6 +2,7 @@ import 'dotenv/config'
 import express from 'express'
 import cors from 'cors'
 import cookieParser from 'cookie-parser'
+import helmet from 'helmet'
 import authRouter      from './routes/auth.js'
 import uploadRouter    from './routes/upload.js'
 import productsRouter  from './routes/products.js'
@@ -17,6 +18,7 @@ const CLIENT_ORIGIN = process.env.CLIENT_ORIGIN ?? 'http://localhost:5173'
 
 export const app = express()
 
+app.use(helmet())
 app.use(cors({ origin: CLIENT_ORIGIN, credentials: true }))
 app.use(express.json())
 app.use(cookieParser())

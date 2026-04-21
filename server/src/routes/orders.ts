@@ -43,11 +43,9 @@ const placeOrderSchema = z.object({
   items: z.array(z.object({
     productId: z.string(),
     variantId: z.string().optional(),
-    name:      z.string(),
-    price:     z.number().positive(),
     quantity:  z.number().int().positive(),
     imageUrl:  z.string(),
-  })).min(1),
+  })).min(1).max(50),
   shippingAddress: z.object({
     street:  z.string().min(1),
     city:    z.string().min(1),
@@ -60,7 +58,23 @@ const placeOrderSchema = z.object({
 router.post('/', authenticate, async (req, res, next) => {
   try {
     const { items, shippingAddress } = placeOrderSchema.parse(req.body)
-    const subtotal = items.reduce((s, i) => s + i.price * i.quantity, 0)
+
+    const productIds = [...new Set(items.map((i) => i.productId))]
+    const products = await prisma.product.findMany({
+      where:   { id: { in: productIds }, isActive: true },
+      include: { variants: true },
+    })
+
+    const resolvedItems = items.map((item) => {
+      const product = products.find((p) => p.id === item.productId)
+      if (!product) throw Object.assign(new Error(`Product ${item.productId} not found`), { status: 400 })
+      const variant = item.variantId ? product.variants.find((v) => v.id === item.variantId) : null
+      if (item.variantId && !variant) throw Object.assign(new Error(`Variant ${item.variantId} not found`), { status: 400 })
+      const price = variant?.price ?? product.price
+      return { ...item, name: product.name, price }
+    })
+
+    const subtotal = resolvedItems.reduce((s, i) => s + i.price * i.quantity, 0)
 
     const order = await prisma.order.create({
       data: {
@@ -71,7 +85,7 @@ router.post('/', authenticate, async (req, res, next) => {
           create: { ...shippingAddress, userId: req.auth!.userId, isDefault: false },
         },
         items: {
-          create: items.map((item) => ({
+          create: resolvedItems.map((item) => ({
             name:      item.name,
             price:     item.price,
             quantity:  item.quantity,

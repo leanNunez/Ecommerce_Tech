@@ -18,3 +18,4 @@
 | Context | Skill |
 |---------|-------|
 | Error 500 en upload, Cloudinary, Prisma migration, seed errors | `.claude/skills/ecommerce-gotchas/SKILL.md` |
+| Auth, login, register, roles, JWT, endpoints públicos o admin | `.claude/skills/ecommerce-security/SKILL.md` |

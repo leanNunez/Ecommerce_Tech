@@ -2,14 +2,45 @@ import { Router } from 'express'
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
 import { z } from 'zod'
+import rateLimit from 'express-rate-limit'
 import { prisma } from '../lib/prisma.js'
 import { authenticate } from '../middleware/auth.js'
 import type { User, AuthPayload } from '../types.js'
 
 const router = Router()
 
+if (process.env.NODE_ENV === 'production') {
+  if (!process.env.JWT_SECRET || !process.env.JWT_REFRESH_SECRET) {
+    throw new Error('JWT_SECRET and JWT_REFRESH_SECRET must be set in production')
+  }
+}
+
 const JWT_SECRET         = process.env.JWT_SECRET         ?? 'dev-secret'
 const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET ?? 'dev-refresh-secret'
+
+const loginLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 10,
+  message: { success: false, message: 'Too many login attempts, try again later' },
+  standardHeaders: true,
+  legacyHeaders: false,
+})
+
+const registerLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000,
+  max: 5,
+  message: { success: false, message: 'Too many accounts created, try again later' },
+  standardHeaders: true,
+  legacyHeaders: false,
+})
+
+const forgotPasswordLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 5,
+  message: { success: false, message: 'Too many requests, try again later' },
+  standardHeaders: true,
+  legacyHeaders: false,
+})
 
 function makeTokens(userId: string, role: string) {
   const access  = jwt.sign({ userId, role } as AuthPayload, JWT_SECRET,         { expiresIn: '15m' })
@@ -41,7 +72,7 @@ const loginSchema = z.object({
   password: z.string().min(8),
 })
 
-router.post('/login', async (req, res, next) => {
+router.post('/login', loginLimiter, async (req, res, next) => {
   try {
     const { email, password } = loginSchema.parse(req.body)
     const user = await prisma.user.findUnique({ where: { email } })
@@ -63,7 +94,7 @@ const registerSchema = z.object({
   password:  z.string().min(8),
 })
 
-router.post('/register', async (req, res, next) => {
+router.post('/register', registerLimiter, async (req, res, next) => {
   try {
     const data = registerSchema.parse(req.body)
     const existing = await prisma.user.findUnique({ where: { email: data.email } })
@@ -77,7 +108,7 @@ router.post('/register', async (req, res, next) => {
         passwordHash: await bcrypt.hash(data.password, 10),
         firstName:    data.firstName,
         lastName:     data.lastName,
-        role:         data.email.endsWith('@premiumtech.com') ? 'admin' : 'customer',
+        role:         'customer',
       },
     })
     const { access, refresh } = makeTokens(user.id, user.role)
@@ -159,7 +190,7 @@ router.post('/logout', (_req, res) => {
 })
 
 // ── POST /api/auth/forgot-password / reset-password (mock) ───────────────────
-router.post('/forgot-password', (req, res) => {
+router.post('/forgot-password', forgotPasswordLimiter, (req, res) => {
   const { email } = req.body as { email?: string }
   if (!email) { res.status(400).json({ success: false, message: 'Email required' }); return }
   res.json({ success: true, message: 'Reset link sent (mock)' })

@@ -72,7 +72,7 @@ router.delete('/', authenticate, async (req, res, next) => {
 // ── POST /api/cart/merge — bulk merge on login ────────────────────────────────
 router.post('/merge', authenticate, async (req, res, next) => {
   try {
-    const items = z.array(itemSchema).parse(req.body.items)
+    const items = z.array(itemSchema).max(100).parse(req.body.items)
     const userId = req.auth!.userId
 
     for (const item of items) {
