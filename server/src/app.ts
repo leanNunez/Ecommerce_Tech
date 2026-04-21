@@ -18,6 +18,7 @@ const CLIENT_ORIGIN = process.env.CLIENT_ORIGIN ?? 'http://localhost:5173'
 
 export const app = express()
 
+app.set('trust proxy', 1)
 app.use(helmet())
 app.use(cors({ origin: CLIENT_ORIGIN, credentials: true }))
 app.use(express.json())

@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { Search } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { Input } from '@/shared/ui'
 import { useSearch } from '../model/use-search'
 
@@ -8,6 +9,7 @@ interface SearchBarProps {
 }
 
 export function SearchBar({ onSearch }: SearchBarProps) {
+  const { t } = useTranslation()
   const { currentQ, search } = useSearch()
   const [value, setValue] = useState(currentQ)
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -41,15 +43,15 @@ export function SearchBar({ onSearch }: SearchBarProps) {
     <form onSubmit={handleSubmit} role="search" className="flex w-full">
       <Input
         type="search"
-        placeholder="Search products…"
+        placeholder={t('header.searchPlaceholder')}
         value={value}
         onChange={handleChange}
-        aria-label="Search products"
+        aria-label={t('header.searchPlaceholder')}
         className="rounded-r-none border-r-0 focus-visible:ring-0 focus-visible:ring-offset-0"
       />
       <button
         type="submit"
-        aria-label="Search"
+        aria-label={t('header.searchPlaceholder')}
         className="flex shrink-0 items-center justify-center rounded-r-md bg-accent px-4 text-white transition-colors hover:bg-accent-dark"
       >
         <Search className="h-4 w-4" />
