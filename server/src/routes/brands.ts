@@ -24,7 +24,7 @@ router.get('/:slug', async (req, res, next) => {
 const brandSchema = z.object({
   name:      z.string().min(2),
   slug:      z.string().min(2).regex(/^[a-z0-9-]+$/),
-  tagline:   z.string().min(2),
+  tagline:   z.object({ en: z.string().min(2), es: z.string().min(2) }),
   bgColor:   z.string().min(4),
   logoUrl:   z.string().url().optional().or(z.literal('')),
   bannerUrl: z.string().url().optional().or(z.literal('')),

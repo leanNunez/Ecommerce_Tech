@@ -26,12 +26,15 @@ import type { Brand } from '@/entities/brand'
 import { useBrands, useCreateBrand, useUpdateBrand, useDeleteBrand } from '@/entities/brand'
 
 const schema = z.object({
-  name:      z.string().min(2, 'At least 2 characters'),
-  slug:      z.string().min(2).regex(/^[a-z0-9-]+$/, 'Only lowercase letters, numbers and hyphens'),
-  tagline:   z.string().min(2, 'At least 2 characters'),
-  bgColor:   z.string().min(4, 'Required'),
-  logoUrl:   z.string().optional(),
-  bannerUrl: z.string().optional(),
+  name:       z.string().min(2, 'At least 2 characters'),
+  slug:       z.string().min(2).regex(/^[a-z0-9-]+$/, 'Only lowercase letters, numbers and hyphens'),
+  tagline:    z.object({
+    en: z.string().min(2, 'At least 2 characters'),
+    es: z.string().min(2, 'At least 2 characters'),
+  }),
+  bgColor:    z.string().min(4, 'Required'),
+  logoUrl:    z.string().optional(),
+  bannerUrl:  z.string().optional(),
 })
 
 type FormValues = z.infer<typeof schema>
@@ -59,11 +62,11 @@ export function BrandsPage() {
 
   const form = useForm<FormValues>({
     resolver: zodResolver(schema),
-    defaultValues: { name: '', slug: '', tagline: '', bgColor: '#000000', logoUrl: '', bannerUrl: '' },
+    defaultValues: { name: '', slug: '', tagline: { en: '', es: '' }, bgColor: '#000000', logoUrl: '', bannerUrl: '' },
   })
 
   function openAdd() {
-    form.reset({ name: '', slug: '', tagline: '', bgColor: '#000000', logoUrl: '', bannerUrl: '' })
+    form.reset({ name: '', slug: '', tagline: { en: '', es: '' }, bgColor: '#000000', logoUrl: '', bannerUrl: '' })
     setLogoPreview('')
     setBannerPreview('')
     setEditing(null)
@@ -180,7 +183,7 @@ export function BrandsPage() {
     }),
     col.accessor('tagline', {
       header: 'Tagline',
-      cell: ({ getValue }) => <span className="text-sm text-secondary">{getValue()}</span>,
+      cell: ({ getValue }) => <span className="text-sm text-secondary">{getValue().en}</span>,
     }),
     col.accessor('bgColor', {
       header: 'Color',
@@ -385,12 +388,26 @@ export function BrandsPage() {
 
               <FormField
                 control={form.control}
-                name="tagline"
+                name="tagline.en"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Tagline</FormLabel>
+                    <FormLabel>Tagline (EN)</FormLabel>
                     <FormControl>
                       <Input placeholder="Think Different" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="tagline.es"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Tagline (ES)</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Pensá diferente" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

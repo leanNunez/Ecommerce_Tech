@@ -73,7 +73,7 @@ model Brand {
   name         String
   logoUrl      String?
   bannerUrl    String?
-  tagline      String
+  tagline      Json
   productCount Int       @default(0)
   bgColor      String
 

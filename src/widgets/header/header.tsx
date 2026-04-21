@@ -133,7 +133,7 @@ export function Header() {
                   </Link>
 
                   <div className="mt-3 border-t border-secondary/20 pt-3 px-3">
-                    <LanguageSelector />
+                    <LanguageSelector variant="light" />
                   </div>
 
                   <div className="mt-1 border-t border-secondary/20 pt-3">

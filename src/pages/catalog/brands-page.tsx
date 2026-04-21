@@ -15,7 +15,8 @@ function getLogoClass(brand: Brand): string {
 }
 
 function BrandCard({ brand }: { brand: Brand }) {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
+  const tagline = brand.tagline[i18n.language as 'en' | 'es'] ?? brand.tagline.en
   const hasBanner = Boolean(brand.bannerUrl)
 
   return (
@@ -83,7 +84,7 @@ function BrandCard({ brand }: { brand: Brand }) {
         <div className="flex items-start justify-between gap-2">
           <div>
             <h3 className="text-base font-bold text-text">{brand.name}</h3>
-            <p className="mt-0.5 text-sm leading-snug text-muted">{brand.tagline}</p>
+            <p className="mt-0.5 text-sm leading-snug text-muted">{tagline}</p>
           </div>
           <ArrowRight className="mt-0.5 h-4 w-4 shrink-0 text-muted transition-all duration-200 group-hover:translate-x-1 group-hover:text-primary" />
         </div>

@@ -4,7 +4,7 @@ export interface Brand {
   name: string
   logoUrl?: string
   bannerUrl?: string
-  tagline: string
+  tagline: { en: string; es: string }
   productCount: number
   bgColor: string
 }

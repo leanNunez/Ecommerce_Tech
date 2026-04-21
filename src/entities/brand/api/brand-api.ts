@@ -5,7 +5,7 @@ import type { Brand } from '../model/brand.types'
 export interface BrandPayload {
   name: string
   slug: string
-  tagline: string
+  tagline: { en: string; es: string }
   bgColor: string
   logoUrl?: string
 }

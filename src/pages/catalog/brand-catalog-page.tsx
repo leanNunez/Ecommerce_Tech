@@ -63,7 +63,7 @@ function getLogoClassName(logoUrl: string, slug: string): string {
 // ─── Component ────────────────────────────────────────────────────────────────
 
 export function BrandCatalogPage() {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const { brandSlug } = useParams({ from: '/brands/$brandSlug' })
 
   const { data: brandData, isLoading: brandLoading } = useBrandBySlug(brandSlug)
@@ -134,7 +134,7 @@ export function BrandCatalogPage() {
             />
           )}
           <h1 className="text-4xl font-extrabold tracking-tight text-white">{brand.name}</h1>
-          <p className="max-w-sm text-base text-white/60">{brand.tagline}</p>
+          <p className="max-w-sm text-base text-white/60">{brand.tagline[i18n.language as 'en' | 'es'] ?? brand.tagline.en}</p>
           <div className="mt-1 flex items-center gap-1.5 rounded-full bg-white/10 px-4 py-1.5 text-sm font-semibold text-white/80 ring-1 ring-white/15">
             <Package className="h-3.5 w-3.5" />
             {isLoading ? '...' : t('brands.productCount', { count: products.length })}
