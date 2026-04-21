@@ -3,6 +3,9 @@ import multer from 'multer'
 import { v2 as cloudinary } from 'cloudinary'
 import { authenticate, requireAdmin } from '../middleware/auth.js'
 
+if (!process.env.CLOUDINARY_URL) {
+  console.error('[upload] CLOUDINARY_URL is not set — image uploads will fail')
+}
 cloudinary.config({ cloudinary_url: process.env.CLOUDINARY_URL })
 
 const router = Router()
@@ -32,7 +35,11 @@ router.post(
       { folder: 'premiumtech/products', resource_type: 'image' },
       (error, result) => {
         if (error || !result) {
-          console.error('[cloudinary error]', error)
+          console.error('[cloudinary error]', {
+            message: error?.message,
+            http_code: error?.http_code,
+            cloudinaryConfigured: !!process.env.CLOUDINARY_URL,
+          })
           res.status(500).json({ success: false, message: 'Upload failed' })
           return
         }
