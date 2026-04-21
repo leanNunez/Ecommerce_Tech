@@ -1,9 +1,11 @@
 import { Link } from '@tanstack/react-router'
 import { useParams } from '@tanstack/react-router'
+import { useTranslation } from 'react-i18next'
 import { CheckCircle2, Package, ShoppingBag } from 'lucide-react'
 import { Button } from '@/shared/ui'
 
 export function ConfirmationPage() {
+  const { t } = useTranslation()
   const { orderId } = useParams({ from: '/checkout/confirmation/$orderId' })
 
   return (
@@ -14,13 +16,13 @@ export function ConfirmationPage() {
         </div>
       </div>
 
-      <h1 className="text-3xl font-extrabold tracking-tight text-text">Order Confirmed!</h1>
+      <h1 className="text-3xl font-extrabold tracking-tight text-text">{t('confirmation.title')}</h1>
       <p className="mt-3 text-muted">
-        Thank you for your purchase. We'll start processing your order right away.
+        {t('confirmation.subtitle')}
       </p>
 
       <div className="mt-6 inline-block rounded-xl border border-secondary/20 bg-surface px-6 py-4">
-        <p className="text-xs font-medium text-secondary">Order ID</p>
+        <p className="text-xs font-medium text-secondary">{t('confirmation.orderId')}</p>
         <p className="mt-1 font-mono text-sm font-semibold text-text">{orderId}</p>
       </div>
 
@@ -28,13 +30,13 @@ export function ConfirmationPage() {
         <Button asChild size="lg">
           <Link to="/account/orders">
             <Package className="mr-2 h-4 w-4" />
-            View My Orders
+            {t('confirmation.viewOrders')}
           </Link>
         </Button>
         <Button asChild variant="outline" size="lg">
           <Link to="/catalog">
             <ShoppingBag className="mr-2 h-4 w-4" />
-            Continue Shopping
+            {t('confirmation.continueShopping')}
           </Link>
         </Button>
       </div>

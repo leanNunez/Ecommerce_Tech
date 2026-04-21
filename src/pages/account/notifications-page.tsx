@@ -1,5 +1,6 @@
 import { useEffect } from 'react'
 import { ShoppingCart, User, Package, Bell, Trash2 } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { Button, PageTitle } from '@/shared/ui'
 import { useNotificationStore, type AppNotification, type NotificationType } from '@/entities/notification'
 
@@ -15,18 +16,18 @@ const TYPE_COLOR: Record<NotificationType, string> = {
   order:   'bg-green-100 text-green-600',
 }
 
-function timeAgo(ts: number): string {
+function timeAgo(ts: number, t: (key: string, opts?: object) => string): string {
   const diff = Date.now() - ts
   const mins  = Math.floor(diff / 60_000)
   const hours = Math.floor(diff / 3_600_000)
   const days  = Math.floor(diff / 86_400_000)
-  if (mins < 1)   return 'Just now'
-  if (mins < 60)  return `${mins}m ago`
-  if (hours < 24) return `${hours}h ago`
-  return `${days}d ago`
+  if (mins < 1)   return t('account.notifications.justNow')
+  if (mins < 60)  return t('account.notifications.minutesAgo', { count: mins })
+  if (hours < 24) return t('account.notifications.hoursAgo', { count: hours })
+  return t('account.notifications.daysAgo', { count: days })
 }
 
-function NotificationRow({ n }: { n: AppNotification }) {
+function NotificationRow({ n, t }: { n: AppNotification; t: (key: string, opts?: object) => string }) {
   return (
     <div className={`flex items-start gap-4 rounded-lg border p-4 transition-all duration-300 ${
       n.read ? 'border-secondary/15 bg-surface' : 'border-l-accent border-l-2 border-secondary/15 bg-accent/[0.08]'
@@ -46,16 +47,17 @@ function NotificationRow({ n }: { n: AppNotification }) {
         </p>
       </div>
 
-      <span className="shrink-0 text-xs text-muted">{timeAgo(n.createdAt)}</span>
+      <span className="shrink-0 text-xs text-muted">{timeAgo(n.createdAt, t)}</span>
     </div>
   )
 }
 
 export function NotificationsPage() {
-  const notifications     = useNotificationStore((s) => s.notifications)
-  const markAllRead       = useNotificationStore((s) => s.markAllRead)
+  const { t } = useTranslation()
+  const notifications      = useNotificationStore((s) => s.notifications)
+  const markAllRead        = useNotificationStore((s) => s.markAllRead)
   const clearNotifications = useNotificationStore((s) => s.clearNotifications)
-  const unreadCount       = notifications.filter((n) => !n.read).length
+  const unreadCount        = notifications.filter((n) => !n.read).length
 
   useEffect(() => {
     if (unreadCount > 0) markAllRead()
@@ -64,11 +66,11 @@ export function NotificationsPage() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <PageTitle>Notifications</PageTitle>
+        <PageTitle>{t('account.notifications.title')}</PageTitle>
         {notifications.length > 0 && (
           <Button variant="ghost" size="sm" onClick={clearNotifications} className="gap-1.5 text-secondary hover:text-destructive">
             <Trash2 className="h-3.5 w-3.5" />
-            Clear all
+            {t('account.notifications.clearAll')}
           </Button>
         )}
       </div>
@@ -78,12 +80,12 @@ export function NotificationsPage() {
           <span className="flex h-14 w-14 items-center justify-center rounded-full bg-background">
             <Bell className="h-6 w-6 text-muted" />
           </span>
-          <p className="text-sm text-secondary">No notifications yet</p>
+          <p className="text-sm text-secondary">{t('account.notifications.empty')}</p>
         </div>
       ) : (
         <div className="flex flex-col gap-2">
           {notifications.map((n) => (
-            <NotificationRow key={n.id} n={n} />
+            <NotificationRow key={n.id} n={n} t={t} />
           ))}
         </div>
       )}

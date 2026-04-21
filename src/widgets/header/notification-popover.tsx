@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link } from '@tanstack/react-router'
+import { useTranslation } from 'react-i18next'
 import { Bell, ShoppingCart, User, Package } from 'lucide-react'
 import { useNotificationStore, type AppNotification, type NotificationType } from '@/entities/notification'
 
@@ -15,18 +16,18 @@ const TYPE_COLOR: Record<NotificationType, string> = {
   order:   'bg-green-100 text-green-600',
 }
 
-function timeAgo(ts: number): string {
+function timeAgo(ts: number, t: (key: string, opts?: object) => string): string {
   const diff  = Date.now() - ts
   const mins  = Math.floor(diff / 60_000)
   const hours = Math.floor(diff / 3_600_000)
   const days  = Math.floor(diff / 86_400_000)
-  if (mins < 1)   return 'Just now'
-  if (mins < 60)  return `${mins}m ago`
-  if (hours < 24) return `${hours}h ago`
-  return `${days}d ago`
+  if (mins < 1)   return t('account.notifications.justNow')
+  if (mins < 60)  return t('account.notifications.minutesAgo', { count: mins })
+  if (hours < 24) return t('account.notifications.hoursAgo', { count: hours })
+  return t('account.notifications.daysAgo', { count: days })
 }
 
-function NotificationItem({ n }: { n: AppNotification }) {
+function NotificationItem({ n, t }: { n: AppNotification; t: (key: string, opts?: object) => string }) {
   return (
     <div className={`flex items-start gap-3 px-4 py-3 transition-all duration-300 hover:bg-background ${
       !n.read ? 'bg-accent/[0.08] border-l-2 border-l-accent' : 'border-l-2 border-l-transparent'
@@ -42,13 +43,14 @@ function NotificationItem({ n }: { n: AppNotification }) {
         <p className={`text-xs leading-relaxed ${!n.read ? 'font-medium text-text' : 'text-secondary'}`}>
           {n.message}
         </p>
-        <p className="mt-0.5 text-[11px] text-muted">{timeAgo(n.createdAt)}</p>
+        <p className="mt-0.5 text-[11px] text-muted">{timeAgo(n.createdAt, t)}</p>
       </div>
     </div>
   )
 }
 
 export function NotificationPopover() {
+  const { t } = useTranslation()
   const [open, setOpen]         = useState(false)
   const ref                     = useRef<HTMLDivElement>(null)
   const notifications           = useNotificationStore((s) => s.notifications)
@@ -86,21 +88,21 @@ export function NotificationPopover() {
             </span>
           )}
         </div>
-        Notifications
+        {t('account.notifications.title')}
       </button>
 
       {open && (
         <div className="absolute right-0 top-full mt-2 w-80 overflow-hidden rounded-xl border border-secondary/15 bg-surface shadow-xl z-50">
           {/* Header */}
           <div className="flex items-center justify-between border-b border-secondary/10 px-4 py-3">
-            <span className="text-sm font-semibold text-text">Notifications</span>
+            <span className="text-sm font-semibold text-text">{t('account.notifications.title')}</span>
             {notifications.length > 0 && (
               <button
                 type="button"
                 onClick={markAllRead}
                 className="text-xs text-secondary hover:text-primary transition-colors"
               >
-                Mark all read
+                {t('account.notifications.markAllRead')}
               </button>
             )}
           </div>
@@ -109,12 +111,12 @@ export function NotificationPopover() {
           {preview.length === 0 ? (
             <div className="flex flex-col items-center gap-2 py-10 text-center">
               <Bell className="h-8 w-8 text-muted" />
-              <p className="text-xs text-secondary">No notifications yet</p>
+              <p className="text-xs text-secondary">{t('account.notifications.empty')}</p>
             </div>
           ) : (
             <div className="divide-y divide-secondary/8 max-h-80 overflow-y-auto">
               {preview.map((n) => (
-                <NotificationItem key={n.id} n={n} />
+                <NotificationItem key={n.id} n={n} t={t} />
               ))}
             </div>
           )}
@@ -127,7 +129,7 @@ export function NotificationPopover() {
                 onClick={() => setOpen(false)}
                 className="block text-center text-xs font-medium text-primary hover:text-primary/80 transition-colors"
               >
-                View all notifications
+                {t('account.notifications.viewAll')}
               </Link>
             </div>
           )}

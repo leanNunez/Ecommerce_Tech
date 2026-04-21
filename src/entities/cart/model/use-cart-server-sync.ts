@@ -22,16 +22,16 @@ export function useCartServerSync() {
     if (initialized.current) return
     initialized.current = true
 
-    const localItems = useCartStore.getState().items
+    const { items: localItems, isSynced } = useCartStore.getState()
 
     async function init() {
       try {
-        const serverItems = localItems.length > 0
+        const serverItems = localItems.length > 0 && !isSynced
           ? await cartServerApi.mergeCart(localItems)
           : await cartServerApi.getCart()
 
         const items = serverItems.map(toCartItem)
-        useCartStore.setState({ items, ...computeTotals(items) })
+        useCartStore.setState({ items, isSynced: true, ...computeTotals(items) })
       } catch (err) {
         console.error('[cart] sync failed:', err)
       }

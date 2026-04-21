@@ -32,7 +32,7 @@ export function Footer() {
   ]
 
   return (
-    <footer className="bg-gradient-to-r from-primary-dark via-primary to-accent text-surface">
+    <footer className="bg-primary-dark text-surface">
       <div className="mx-auto max-w-7xl px-6 py-12">
         <div className="grid grid-cols-2 gap-8 md:grid-cols-4">
           {/* Brand */}

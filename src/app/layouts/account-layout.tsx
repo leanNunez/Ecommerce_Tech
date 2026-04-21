@@ -1,19 +1,21 @@
 import { Outlet, Link } from '@tanstack/react-router'
+import { useTranslation } from 'react-i18next'
 import { Header } from '@/widgets/header'
 import { Footer } from '@/widgets/footer'
 import { useOrderStatusSync } from '@/entities/order'
 
-const NAV_LINKS = [
-  { to: '/account/profile', label: 'Profile' },
-  { to: '/account/addresses', label: 'Addresses' },
-  { to: '/account/password', label: 'Password' },
-  { to: '/account/orders', label: 'Orders' },
-  { to: '/account/wishlist', label: 'Wishlist' },
-  { to: '/account/notifications', label: 'Notifications' },
-] as const
-
 export function AccountLayout() {
+  const { t } = useTranslation()
   useOrderStatusSync()
+
+  const NAV_LINKS = [
+    { to: '/account/profile',       label: t('account.nav.profile') },
+    { to: '/account/addresses',     label: t('account.nav.addresses') },
+    { to: '/account/password',      label: t('account.nav.password') },
+    { to: '/account/orders',        label: t('account.nav.orders') },
+    { to: '/account/wishlist',      label: t('account.nav.wishlist') },
+    { to: '/account/notifications', label: t('account.nav.notifications') },
+  ] as const
 
   return (
     <div className="flex min-h-screen flex-col">

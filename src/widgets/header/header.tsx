@@ -132,7 +132,11 @@ export function Header() {
                     {t('header.offers')}
                   </Link>
 
-                  <div className="mt-3 border-t border-secondary/20 pt-3">
+                  <div className="mt-3 border-t border-secondary/20 pt-3 px-3">
+                    <LanguageSelector />
+                  </div>
+
+                  <div className="mt-1 border-t border-secondary/20 pt-3">
                     {isAuthenticated ? (
                       <>
                         {isAdmin ? (
@@ -152,7 +156,7 @@ export function Header() {
                             </Link>
                             <Link to="/cart" onClick={() => setMenuOpen(false)} className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium text-text hover:bg-background">
                               <ShoppingCart className="h-4 w-4" />
-                              Cart {cartCount > 0 && (
+                              {t('header.cart')} {cartCount > 0 && (
                 <span key={cartCount} className="ml-auto rounded-full bg-accent px-1.5 py-0.5 text-xs font-bold text-white animate-badge-pop">
                   {cartCount}
                 </span>
@@ -193,7 +197,7 @@ export function Header() {
                 className="flex items-center gap-1.5 rounded-md px-2.5 py-1 text-xs text-white/60 transition-colors hover:bg-white/10 hover:text-white"
               >
                 <MapPin className="h-3.5 w-3.5 shrink-0" />
-                {defaultAddress ? 'Envíos a' : 'Send to'}{' '}
+                {t('header.sendTo')}{' '}
                 <span className="font-semibold text-white/85">{deliveryLabel}</span>
               </Link>
               <span className="mx-1.5 select-none text-white/15">|</span>

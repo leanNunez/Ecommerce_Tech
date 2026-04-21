@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from '@tanstack/react-router'
+import { useTranslation } from 'react-i18next'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
@@ -36,6 +37,7 @@ const checkoutSchema = z.object({
 type CheckoutFormValues = z.infer<typeof checkoutSchema>
 
 export function CheckoutPage() {
+  const { t } = useTranslation()
   const items = useCartStore((s) => s.items)
   const clearCart = useCartStore((s) => s.clearCart)
   const { mutateAsync: placeOrder } = usePlaceOrder()
@@ -108,7 +110,7 @@ export function CheckoutPage() {
       navigate({ to: '/checkout/confirmation/$orderId', params: { orderId: res.data.id } })
     } catch {
       isPlacingOrder.current = false
-      setOrderError('Something went wrong placing your order. Please try again.')
+      setOrderError(t('checkout.orderError'))
     }
   }
 
@@ -117,14 +119,14 @@ export function CheckoutPage() {
   return (
     <div className="mx-auto max-w-6xl px-4 sm:px-6 py-8 sm:py-10 pb-28 lg:pb-10">
       <div className="mb-8 flex items-center justify-between gap-4">
-        <PageTitle>Checkout</PageTitle>
+        <PageTitle>{t('checkout.title')}</PageTitle>
         <button
           type="button"
           onClick={fillDemo}
           className="flex items-center gap-1.5 rounded-lg border border-secondary/20 bg-surface px-3 py-1.5 text-xs font-medium text-secondary transition-colors hover:border-primary/30 hover:text-primary"
         >
           <Wand2 className="h-3.5 w-3.5" />
-          Fill demo data
+          {t('checkout.fillDemo')}
         </button>
       </div>
 
@@ -141,7 +143,7 @@ export function CheckoutPage() {
                   <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10">
                     <MapPin className="h-4 w-4 text-primary" />
                   </div>
-                  <h2 className="text-base font-semibold text-text">Shipping Address</h2>
+                  <h2 className="text-base font-semibold text-text">{t('checkout.shippingAddress')}</h2>
                 </div>
 
                 <div className="grid gap-4 sm:grid-cols-2">
@@ -150,7 +152,7 @@ export function CheckoutPage() {
                     name="street"
                     render={({ field }) => (
                       <FormItem className="sm:col-span-2">
-                        <FormLabel>Street</FormLabel>
+                        <FormLabel>{t('checkout.street')}</FormLabel>
                         <FormControl>
                           <Input placeholder="123 Main St" {...field} />
                         </FormControl>
@@ -163,7 +165,7 @@ export function CheckoutPage() {
                     name="city"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>City</FormLabel>
+                        <FormLabel>{t('checkout.city')}</FormLabel>
                         <FormControl>
                           <Input placeholder="New York" {...field} />
                         </FormControl>
@@ -176,7 +178,7 @@ export function CheckoutPage() {
                     name="state"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>State</FormLabel>
+                        <FormLabel>{t('checkout.state')}</FormLabel>
                         <FormControl>
                           <Input placeholder="NY" {...field} />
                         </FormControl>
@@ -189,7 +191,7 @@ export function CheckoutPage() {
                     name="zipCode"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>ZIP Code</FormLabel>
+                        <FormLabel>{t('checkout.zipCode')}</FormLabel>
                         <FormControl>
                           <Input placeholder="10001" {...field} />
                         </FormControl>
@@ -202,7 +204,7 @@ export function CheckoutPage() {
                     name="country"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Country</FormLabel>
+                        <FormLabel>{t('checkout.country')}</FormLabel>
                         <FormControl>
                           <Input placeholder="United States" {...field} />
                         </FormControl>
@@ -219,7 +221,7 @@ export function CheckoutPage() {
                   <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10">
                     <CreditCard className="h-4 w-4 text-primary" />
                   </div>
-                  <h2 className="text-base font-semibold text-text">Payment</h2>
+                  <h2 className="text-base font-semibold text-text">{t('checkout.payment')}</h2>
                 </div>
 
                 <div className="grid gap-4 sm:grid-cols-2">
@@ -228,7 +230,7 @@ export function CheckoutPage() {
                     name="cardNumber"
                     render={({ field }) => (
                       <FormItem className="sm:col-span-2">
-                        <FormLabel>Card Number</FormLabel>
+                        <FormLabel>{t('checkout.cardNumber')}</FormLabel>
                         <FormControl>
                           <Input placeholder="1234567890123456" maxLength={16} {...field} />
                         </FormControl>
@@ -241,7 +243,7 @@ export function CheckoutPage() {
                     name="cardHolder"
                     render={({ field }) => (
                       <FormItem className="sm:col-span-2">
-                        <FormLabel>Cardholder Name</FormLabel>
+                        <FormLabel>{t('checkout.cardHolder')}</FormLabel>
                         <FormControl>
                           <Input placeholder="John Doe" {...field} />
                         </FormControl>
@@ -254,7 +256,7 @@ export function CheckoutPage() {
                     name="expiry"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Expiry</FormLabel>
+                        <FormLabel>{t('checkout.expiry')}</FormLabel>
                         <FormControl>
                           <Input placeholder="MM/YY" maxLength={5} {...field} />
                         </FormControl>
@@ -267,7 +269,7 @@ export function CheckoutPage() {
                     name="cvv"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>CVV</FormLabel>
+                        <FormLabel>{t('checkout.cvv')}</FormLabel>
                         <FormControl>
                           <Input placeholder="123" maxLength={4} type="password" {...field} />
                         </FormControl>
@@ -282,7 +284,7 @@ export function CheckoutPage() {
             {/* ── Order summary (desktop only) ── */}
             <div className="hidden lg:flex lg:flex-col lg:gap-4 lg:sticky lg:top-24 lg:self-start">
               <div className="rounded-xl border border-secondary/20 bg-surface p-6">
-                <h2 className="mb-4 text-base font-semibold text-text">Your Order</h2>
+                <h2 className="mb-4 text-base font-semibold text-text">{t('checkout.yourOrder')}</h2>
                 <ul className="flex flex-col gap-3">
                   {items.map((item) => (
                     <li
@@ -296,7 +298,7 @@ export function CheckoutPage() {
                       />
                       <div className="min-w-0 flex-1">
                         <p className="truncate text-sm font-medium text-text">{item.name}</p>
-                        <p className="text-xs text-secondary">Qty: {item.quantity}</p>
+                        <p className="text-xs text-secondary">{t('checkout.qty', { count: item.quantity })}</p>
                       </div>
                       <span className="shrink-0 text-sm font-semibold text-primary">
                         {formatCurrency(item.price * item.quantity)}
@@ -319,7 +321,7 @@ export function CheckoutPage() {
                 className="w-full"
                 disabled={form.formState.isSubmitting}
               >
-                {form.formState.isSubmitting ? 'Placing order…' : 'Place Order'}
+                {form.formState.isSubmitting ? t('checkout.placingOrder') : t('checkout.placeOrder')}
               </Button>
             </div>
 
@@ -335,7 +337,7 @@ export function CheckoutPage() {
           onClick={() => setSummaryOpen((o) => !o)}
           className="flex w-full items-center justify-between px-4 py-3 text-sm"
         >
-          <span className="font-medium text-text">Order summary</span>
+          <span className="font-medium text-text">{t('checkout.orderSummary')}</span>
           <div className="flex items-center gap-2">
             <span className="font-bold text-text">{formatCurrency(total)}</span>
             {summaryOpen ? <ChevronDown className="h-4 w-4 text-muted" /> : <ChevronUp className="h-4 w-4 text-muted" />}
@@ -345,13 +347,13 @@ export function CheckoutPage() {
         {summaryOpen && (
           <div className="border-t border-secondary/10 px-4 py-3 text-sm">
             <div className="flex justify-between text-secondary">
-              <span>Subtotal</span><span>{formatCurrency(subtotal)}</span>
+              <span>{t('checkout.subtotal')}</span><span>{formatCurrency(subtotal)}</span>
             </div>
             <div className="flex justify-between text-secondary mt-1">
-              <span>Tax (10%)</span><span>{formatCurrency(tax)}</span>
+              <span>{t('checkout.tax')}</span><span>{formatCurrency(tax)}</span>
             </div>
             <div className="mt-2 flex justify-between font-bold text-text border-t border-secondary/10 pt-2">
-              <span>Total</span><span>{formatCurrency(total)}</span>
+              <span>{t('checkout.total')}</span><span>{formatCurrency(total)}</span>
             </div>
           </div>
         )}
@@ -369,7 +371,7 @@ export function CheckoutPage() {
             className="w-full"
             disabled={form.formState.isSubmitting}
           >
-            {form.formState.isSubmitting ? 'Placing order…' : 'Place Order'}
+            {form.formState.isSubmitting ? t('checkout.placingOrder') : t('checkout.placeOrder')}
           </Button>
         </div>
       </div>

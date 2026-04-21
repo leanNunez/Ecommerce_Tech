@@ -3,6 +3,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { CheckCircle2 } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import {
   Alert,
   AlertDescription,
@@ -33,6 +34,7 @@ const passwordSchema = z
 type PasswordFormValues = z.infer<typeof passwordSchema>
 
 export function PasswordChangePage() {
+  const { t } = useTranslation()
   const { mutateAsync: changePassword } = useChangePassword()
   const [success, setSuccess] = useState(false)
 
@@ -52,20 +54,20 @@ export function PasswordChangePage() {
     } catch (err) {
       const apiError = err as ApiError
       form.setError('currentPassword', {
-        message: apiError.message ?? 'Current password is incorrect',
+        message: apiError.message ?? t('account.password.incorrectCurrent'),
       })
     }
   }
 
   return (
     <div>
-      <PageTitle className="mb-6">Change Password</PageTitle>
+      <PageTitle className="mb-6">{t('account.password.title')}</PageTitle>
 
       {success && (
         <Alert className="mb-6 border-emerald-500/30 bg-emerald-500/10">
           <CheckCircle2 className="h-4 w-4 text-emerald-600" />
           <AlertDescription className="text-emerald-700">
-            Password updated successfully.
+            {t('account.password.success')}
           </AlertDescription>
         </Alert>
       )}
@@ -78,7 +80,7 @@ export function PasswordChangePage() {
               name="currentPassword"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Current password</FormLabel>
+                  <FormLabel>{t('account.password.current')}</FormLabel>
                   <FormControl>
                     <Input type="password" placeholder="••••••••" {...field} />
                   </FormControl>
@@ -91,7 +93,7 @@ export function PasswordChangePage() {
               name="newPassword"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>New password</FormLabel>
+                  <FormLabel>{t('account.password.new')}</FormLabel>
                   <FormControl>
                     <Input type="password" placeholder="••••••••" {...field} />
                   </FormControl>
@@ -104,7 +106,7 @@ export function PasswordChangePage() {
               name="confirmPassword"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Confirm new password</FormLabel>
+                  <FormLabel>{t('account.password.confirm')}</FormLabel>
                   <FormControl>
                     <Input type="password" placeholder="••••••••" {...field} />
                   </FormControl>
@@ -113,7 +115,7 @@ export function PasswordChangePage() {
               )}
             />
             <Button type="submit" disabled={form.formState.isSubmitting}>
-              {form.formState.isSubmitting ? 'Saving…' : 'Update password'}
+              {form.formState.isSubmitting ? t('account.password.saving') : t('account.password.update')}
             </Button>
           </form>
         </Form>

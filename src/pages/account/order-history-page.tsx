@@ -1,20 +1,22 @@
 import { Link } from '@tanstack/react-router'
 import { Package } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { Button, EmptyState, PageTitle, Spinner } from '@/shared/ui'
 import { formatCurrency } from '@/shared/lib/format-currency'
 import { formatDate } from '@/shared/lib/format-date'
 import { useOrders } from '@/entities/order'
 import type { OrderStatus } from '@/entities/order'
 
-const STATUS_CONFIG: Record<OrderStatus, { label: string; className: string }> = {
-  pending:    { label: 'Pending',    className: 'bg-amber-500/10 text-amber-600' },
-  processing: { label: 'Processing', className: 'bg-blue-500/10 text-blue-600' },
-  shipped:    { label: 'Shipped',    className: 'bg-indigo-500/10 text-indigo-600' },
-  delivered:  { label: 'Delivered',  className: 'bg-emerald-500/10 text-emerald-600' },
-  cancelled:  { label: 'Cancelled',  className: 'bg-destructive/10 text-destructive' },
+const STATUS_CLASS: Record<OrderStatus, string> = {
+  pending:    'bg-amber-500/10 text-amber-600',
+  processing: 'bg-blue-500/10 text-blue-600',
+  shipped:    'bg-indigo-500/10 text-indigo-600',
+  delivered:  'bg-emerald-500/10 text-emerald-600',
+  cancelled:  'bg-destructive/10 text-destructive',
 }
 
 export function OrderHistoryPage() {
+  const { t } = useTranslation()
   const { data: orders = [], isLoading } = useOrders()
 
   if (isLoading) {
@@ -28,13 +30,13 @@ export function OrderHistoryPage() {
   if (orders.length === 0) {
     return (
       <div>
-        <PageTitle className="mb-6">My Orders</PageTitle>
+        <PageTitle className="mb-6">{t('account.orders.title')}</PageTitle>
         <EmptyState
-          message="No orders yet"
-          description="Your orders will appear here once you make a purchase."
+          message={t('account.orders.empty')}
+          description={t('account.orders.emptyDesc')}
           action={
             <Button asChild>
-              <Link to="/catalog">Browse products</Link>
+              <Link to="/catalog">{t('account.orders.browseProducts')}</Link>
             </Button>
           }
         />
@@ -44,11 +46,10 @@ export function OrderHistoryPage() {
 
   return (
     <div>
-      <PageTitle className="mb-6">My Orders</PageTitle>
+      <PageTitle className="mb-6">{t('account.orders.title')}</PageTitle>
 
       <ul className="flex flex-col gap-3">
         {orders.map((order) => {
-          const status = STATUS_CONFIG[order.status]
           const itemCount = order.items.reduce((s, i) => s + i.quantity, 0)
 
           return (
@@ -63,12 +64,12 @@ export function OrderHistoryPage() {
                     <p className="text-sm font-semibold text-text truncate max-w-[160px]">
                       {order.id.slice(0, 8)}…
                     </p>
-                    <span className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${status.className}`}>
-                      {status.label}
+                    <span className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${STATUS_CLASS[order.status]}`}>
+                      {t(`account.orderStatus.${order.status}`)}
                     </span>
                   </div>
                   <p className="mt-0.5 text-xs text-secondary">
-                    {formatDate(order.createdAt)} · {itemCount} {itemCount === 1 ? 'item' : 'items'}
+                    {formatDate(order.createdAt)} · {t('account.orders.item', { count: itemCount })}
                   </p>
                 </div>
 
@@ -76,7 +77,7 @@ export function OrderHistoryPage() {
                   <p className="text-sm font-bold text-primary">{formatCurrency(order.total)}</p>
                   <Button asChild variant="outline" size="sm">
                     <Link to="/account/orders/$orderId" params={{ orderId: order.id }}>
-                      View order
+                      {t('account.orders.viewOrder')}
                     </Link>
                   </Button>
                 </div>

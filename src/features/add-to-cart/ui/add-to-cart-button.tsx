@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from '@tanstack/react-router'
+import { useTranslation } from 'react-i18next'
 import { Button } from '@/shared/ui'
 import { useCartStore, cartServerApi } from '@/entities/cart'
 import { useAuthStore } from '@/features/authenticate'
@@ -15,6 +16,7 @@ interface AddToCartButtonProps {
 }
 
 export function AddToCartButton({ product, variantId, quantity = 1, className, size, variant }: AddToCartButtonProps) {
+  const { t } = useTranslation()
   const addItem = useCartStore((s) => s.addItem)
   const role = useAuthStore((s) => s.role)
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated)
@@ -26,7 +28,7 @@ export function AddToCartButton({ product, variantId, quantity = 1, className, s
   if (product.stock === 0) {
     return (
       <Button disabled variant="secondary" size={size}>
-        Out of stock
+        {t('productCard.outOfStock')}
       </Button>
     )
   }
@@ -58,7 +60,7 @@ export function AddToCartButton({ product, variantId, quantity = 1, className, s
 
   return (
     <Button onClick={handleClick} className={className} size={size} variant={variant}>
-      {added ? 'Added!' : 'Add to cart'}
+      {added ? t('productCard.added') : t('productCard.addToCart')}
     </Button>
   )
 }

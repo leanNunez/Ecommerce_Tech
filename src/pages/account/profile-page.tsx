@@ -3,6 +3,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { Pencil, X } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import {
   Button,
   Form,
@@ -26,6 +27,7 @@ const profileSchema = z.object({
 type ProfileFormValues = z.infer<typeof profileSchema>
 
 export function ProfilePage() {
+  const { t } = useTranslation()
   const user = useAuthStore((s) => s.user)
   const setUser = useAuthStore((s) => s.setUser)
   const { mutateAsync: updateProfile, isPending } = useUpdateProfile()
@@ -45,24 +47,24 @@ export function ProfilePage() {
   }
 
   const fields = [
-    { label: 'Email', value: user.email },
-    { label: 'Role', value: user.role === 'admin' ? 'Administrator' : 'Customer' },
-    { label: 'Member since', value: formatDate(user.createdAt) },
+    { label: t('account.profile.email'),       value: user.email },
+    { label: t('account.profile.role'),        value: user.role === 'admin' ? t('account.profile.roleAdmin') : t('account.profile.roleCustomer') },
+    { label: t('account.profile.memberSince'), value: formatDate(user.createdAt) },
   ]
 
   return (
     <div>
       <div className="mb-6 flex items-center justify-between">
-        <PageTitle>My Profile</PageTitle>
+        <PageTitle>{t('account.profile.title')}</PageTitle>
         {!editing ? (
           <Button variant="outline" size="sm" onClick={() => setEditing(true)}>
             <Pencil className="mr-1.5 h-3.5 w-3.5" />
-            Edit
+            {t('account.profile.edit')}
           </Button>
         ) : (
           <Button variant="ghost" size="sm" onClick={() => { setEditing(false); form.reset() }}>
             <X className="mr-1.5 h-3.5 w-3.5" />
-            Cancel
+            {t('account.profile.cancel')}
           </Button>
         )}
       </div>
@@ -76,7 +78,7 @@ export function ProfilePage() {
                 name="firstName"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>First name</FormLabel>
+                    <FormLabel>{t('account.profile.firstName')}</FormLabel>
                     <FormControl><Input {...field} /></FormControl>
                     <FormMessage />
                   </FormItem>
@@ -87,7 +89,7 @@ export function ProfilePage() {
                 name="lastName"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Last name</FormLabel>
+                    <FormLabel>{t('account.profile.lastName')}</FormLabel>
                     <FormControl><Input {...field} /></FormControl>
                     <FormMessage />
                   </FormItem>
@@ -96,10 +98,10 @@ export function ProfilePage() {
             </div>
             <div className="flex gap-3">
               <Button type="submit" disabled={isPending}>
-                {isPending ? 'Saving…' : 'Save changes'}
+                {isPending ? t('account.profile.saving') : t('account.profile.saveChanges')}
               </Button>
               <Button type="button" variant="outline" onClick={() => { setEditing(false); form.reset() }}>
-                Cancel
+                {t('account.profile.cancel')}
               </Button>
             </div>
           </form>
@@ -107,8 +109,8 @@ export function ProfilePage() {
       ) : (
         <div className="rounded-xl border border-secondary/20 bg-surface">
           {[
-            { label: 'First name', value: user.firstName },
-            { label: 'Last name', value: user.lastName },
+            { label: t('account.profile.firstName'), value: user.firstName },
+            { label: t('account.profile.lastName'),  value: user.lastName },
             ...fields,
           ].map((f, i, arr) => (
             <div

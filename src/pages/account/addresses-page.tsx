@@ -3,6 +3,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { MapPin, Plus, Star, Trash2, X } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import {
   Button,
   EmptyState,
@@ -34,6 +35,7 @@ const addressSchema = z.object({
 type AddressFormValues = z.infer<typeof addressSchema>
 
 export function AddressesPage() {
+  const { t } = useTranslation()
   const { data: addresses = [], isLoading } = useAddresses()
   const { mutate: createAddress, isPending: isCreating } = useCreateAddress()
   const { mutate: setDefault, isPending: isSettingDefault, variables: defaultVars } = useSetDefaultAddress()
@@ -69,11 +71,11 @@ export function AddressesPage() {
   return (
     <div>
       <div className="mb-6 flex items-center justify-between">
-        <PageTitle>My Addresses</PageTitle>
+        <PageTitle>{t('account.addresses.title')}</PageTitle>
         {!showForm && (
           <Button size="sm" onClick={() => setShowForm(true)}>
             <Plus className="mr-1.5 h-3.5 w-3.5" />
-            Add address
+            {t('account.addresses.addAddress')}
           </Button>
         )}
       </div>
@@ -81,7 +83,7 @@ export function AddressesPage() {
       {showForm && (
         <div className="mb-6 rounded-xl border border-secondary/20 bg-surface p-6">
           <div className="mb-4 flex items-center justify-between">
-            <h3 className="text-sm font-semibold text-text">New address</h3>
+            <h3 className="text-sm font-semibold text-text">{t('account.addresses.newAddress')}</h3>
             <button
               type="button"
               onClick={() => { setShowForm(false); form.reset() }}
@@ -97,7 +99,7 @@ export function AddressesPage() {
                 name="street"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Street</FormLabel>
+                    <FormLabel>{t('account.addresses.street')}</FormLabel>
                     <FormControl><Input placeholder="123 Main St" {...field} /></FormControl>
                     <FormMessage />
                   </FormItem>
@@ -109,7 +111,7 @@ export function AddressesPage() {
                   name="city"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>City</FormLabel>
+                      <FormLabel>{t('account.addresses.city')}</FormLabel>
                       <FormControl><Input placeholder="New York" {...field} /></FormControl>
                       <FormMessage />
                     </FormItem>
@@ -120,7 +122,7 @@ export function AddressesPage() {
                   name="state"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>State</FormLabel>
+                      <FormLabel>{t('account.addresses.state')}</FormLabel>
                       <FormControl><Input placeholder="NY" {...field} /></FormControl>
                       <FormMessage />
                     </FormItem>
@@ -131,7 +133,7 @@ export function AddressesPage() {
                   name="zipCode"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>ZIP Code</FormLabel>
+                      <FormLabel>{t('account.addresses.zipCode')}</FormLabel>
                       <FormControl><Input placeholder="10001" {...field} /></FormControl>
                       <FormMessage />
                     </FormItem>
@@ -142,7 +144,7 @@ export function AddressesPage() {
                   name="country"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Country</FormLabel>
+                      <FormLabel>{t('account.addresses.country')}</FormLabel>
                       <FormControl><Input placeholder="United States" {...field} /></FormControl>
                       <FormMessage />
                     </FormItem>
@@ -150,9 +152,9 @@ export function AddressesPage() {
                 />
               </div>
               <div className="flex gap-3">
-                <Button type="submit" disabled={isCreating}>Save address</Button>
+                <Button type="submit" disabled={isCreating}>{t('account.addresses.saveAddress')}</Button>
                 <Button type="button" variant="outline" onClick={() => { setShowForm(false); form.reset() }}>
-                  Cancel
+                  {t('account.addresses.cancel')}
                 </Button>
               </div>
             </form>
@@ -162,12 +164,12 @@ export function AddressesPage() {
 
       {addresses.length === 0 ? (
         <EmptyState
-          message="No addresses saved"
-          description="Add a shipping address to speed up checkout."
+          message={t('account.addresses.empty')}
+          description={t('account.addresses.emptyDesc')}
           action={
             <Button onClick={() => setShowForm(true)}>
               <Plus className="mr-1.5 h-4 w-4" />
-              Add address
+              {t('account.addresses.addAddress')}
             </Button>
           }
         />
@@ -195,7 +197,7 @@ export function AddressesPage() {
                     {addr.isDefault && (
                       <span className="mt-2 inline-flex items-center gap-1 rounded-full bg-primary/10 px-2.5 py-0.5 text-xs font-semibold text-primary">
                         <Star className="h-3 w-3 fill-current" />
-                        Default
+                        {t('account.addresses.default')}
                       </span>
                     )}
                   </div>
@@ -209,7 +211,7 @@ export function AddressesPage() {
                       disabled={pendingDefault || pendingDelete}
                       onClick={() => setDefault(addr.id)}
                     >
-                      {pendingDefault ? 'Saving…' : 'Set default'}
+                      {pendingDefault ? t('account.addresses.saving') : t('account.addresses.setDefault')}
                     </Button>
                   )}
                   <button
@@ -217,7 +219,7 @@ export function AddressesPage() {
                     disabled={pendingDelete}
                     onClick={() => removeAddress(addr.id)}
                     className="text-secondary hover:text-destructive transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
-                    aria-label="Delete address"
+                    aria-label={t('account.addresses.delete')}
                   >
                     <Trash2 className="h-4 w-4" />
                   </button>

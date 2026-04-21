@@ -1,4 +1,5 @@
 import { Link } from '@tanstack/react-router'
+import { useTranslation } from 'react-i18next'
 import { Button, EmptyState, PageTitle } from '@/shared/ui'
 import { formatCurrency } from '@/shared/lib/format-currency'
 import { OrderSummary } from '@/widgets/order-summary'
@@ -7,6 +8,7 @@ import { useAuthStore } from '@/features/authenticate'
 import { Minus, Plus, Trash2 } from 'lucide-react'
 
 export function CartPage() {
+  const { t } = useTranslation()
   const items = useCartStore((s) => s.items)
   const updateQuantity = useCartStore((s) => s.updateQuantity)
   const removeItem = useCartStore((s) => s.removeItem)
@@ -35,11 +37,11 @@ export function CartPage() {
     return (
       <div className="mx-auto max-w-3xl px-6 py-12">
         <EmptyState
-          message="Your cart is empty"
-          description="Looks like you haven't added anything yet."
+          message={t('cart.empty')}
+          description={t('cart.emptyDesc')}
           action={
             <Button asChild>
-              <Link to="/catalog">Browse products</Link>
+              <Link to="/catalog">{t('cart.browseProducts')}</Link>
             </Button>
           }
         />
@@ -49,7 +51,7 @@ export function CartPage() {
 
   return (
     <div className="mx-auto max-w-5xl px-6 py-10">
-      <PageTitle className="mb-8">Your Cart</PageTitle>
+      <PageTitle className="mb-8">{t('cart.title')}</PageTitle>
 
       <div className="grid gap-8 lg:grid-cols-3">
         {/* Items */}
@@ -68,7 +70,7 @@ export function CartPage() {
                     <button
                       onClick={() => handleRemove(item.productId, item.variantId)}
                       className="text-secondary hover:text-destructive transition-colors"
-                      aria-label="Remove item"
+                      aria-label={t('cart.removeItem')}
                     >
                       <Trash2 className="h-4 w-4" />
                     </button>
@@ -110,7 +112,7 @@ export function CartPage() {
         <div className="flex flex-col gap-4">
           <OrderSummary items={items} />
           <Button asChild size="lg" className="w-full">
-            <Link to="/checkout">Proceed to Checkout</Link>
+            <Link to="/checkout">{t('cart.proceedToCheckout')}</Link>
           </Button>
         </div>
       </div>

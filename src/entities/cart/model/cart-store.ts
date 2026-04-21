@@ -14,6 +14,7 @@ interface CartState {
   items: CartItem[]
   cartTotal: number
   cartCount: number
+  isSynced: boolean
   addItem: (item: CartItem) => void
   removeItem: (productId: string, variantId?: string) => void
   updateQuantity: (productId: string, quantity: number, variantId?: string) => void
@@ -37,6 +38,7 @@ export const useCartStore = create<CartState>()(
       items: [],
       cartTotal: 0,
       cartCount: 0,
+      isSynced: false,
 
       addItem: (item) =>
         set((state) => {
@@ -66,7 +68,7 @@ export const useCartStore = create<CartState>()(
           return { items, ...computeTotals(items) }
         }),
 
-      clearCart: () => set({ items: [], cartTotal: 0, cartCount: 0 }),
+      clearCart: () => set({ items: [], cartTotal: 0, cartCount: 0, isSynced: false }),
     }),
     { name: 'ecommerce-cart' },
   ),
