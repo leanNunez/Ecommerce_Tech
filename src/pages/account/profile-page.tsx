@@ -48,7 +48,6 @@ export function ProfilePage() {
 
   const fields = [
     { label: t('account.profile.email'),       value: user.email },
-    { label: t('account.profile.role'),        value: user.role === 'admin' ? t('account.profile.roleAdmin') : t('account.profile.roleCustomer') },
     { label: t('account.profile.memberSince'), value: formatDate(user.createdAt) },
   ]
 
