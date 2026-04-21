@@ -1,5 +1,6 @@
 import { Link } from '@tanstack/react-router'
 import { useTranslation } from 'react-i18next'
+import type { TFunction } from 'i18next'
 import { Truck, CreditCard, Tag } from 'lucide-react'
 import { formatCurrency } from '@/shared/lib/format-currency'
 import { WishlistToggleButton } from '@/features/add-to-wishlist'
@@ -12,7 +13,7 @@ interface ProductCardProps {
 
 const FREE_SHIPPING_THRESHOLD = 99
 
-function getPromos(price: number, t: (key: string, opts?: object) => string) {
+function getPromos(price: number, t: TFunction) {
   const promos: { icon: React.ReactNode; text: string; color: string }[] = []
 
   if (price >= FREE_SHIPPING_THRESHOLD) {

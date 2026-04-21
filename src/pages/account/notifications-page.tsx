@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import { ShoppingCart, User, Package, Bell, Trash2 } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
+import type { TFunction } from 'i18next'
 import { Button, PageTitle } from '@/shared/ui'
 import { useNotificationStore, type AppNotification, type NotificationType } from '@/entities/notification'
 
@@ -16,7 +17,7 @@ const TYPE_COLOR: Record<NotificationType, string> = {
   order:   'bg-green-100 text-green-600',
 }
 
-function timeAgo(ts: number, t: (key: string, opts?: object) => string): string {
+function timeAgo(ts: number, t: TFunction): string {
   const diff = Date.now() - ts
   const mins  = Math.floor(diff / 60_000)
   const hours = Math.floor(diff / 3_600_000)
@@ -27,7 +28,7 @@ function timeAgo(ts: number, t: (key: string, opts?: object) => string): string 
   return t('account.notifications.daysAgo', { count: days })
 }
 
-function NotificationRow({ n, t }: { n: AppNotification; t: (key: string, opts?: object) => string }) {
+function NotificationRow({ n, t }: { n: AppNotification; t: TFunction }) {
   return (
     <div className={`flex items-start gap-4 rounded-lg border p-4 transition-all duration-300 ${
       n.read ? 'border-secondary/15 bg-surface' : 'border-l-accent border-l-2 border-secondary/15 bg-accent/[0.08]'
