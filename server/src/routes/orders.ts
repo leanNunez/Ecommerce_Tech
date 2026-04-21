@@ -67,9 +67,9 @@ router.post('/', authenticate, async (req, res, next) => {
 
     const resolvedItems = items.map((item) => {
       const product = products.find((p) => p.id === item.productId)
-      if (!product) throw Object.assign(new Error(`Product ${item.productId} not found`), { status: 400 })
+      if (!product) throw Object.assign(new Error('Product not found'), { status: 400 })
       const variant = item.variantId ? product.variants.find((v) => v.id === item.variantId) : null
-      if (item.variantId && !variant) throw Object.assign(new Error(`Variant ${item.variantId} not found`), { status: 400 })
+      if (item.variantId && !variant) throw Object.assign(new Error('Variant not found'), { status: 400 })
       const price = variant?.price ?? product.price
       return { ...item, name: product.name, price }
     })

@@ -1,6 +1,8 @@
 import { ZodError } from 'zod'
 import type { Request, Response, NextFunction } from 'express'
 
+const isProd = process.env.NODE_ENV === 'production'
+
 export function errorHandler(
   err: unknown,
   _req: Request,
@@ -11,7 +13,16 @@ export function errorHandler(
     res.status(400).json({ success: false, message: 'Validation error', errors: err.errors })
     return
   }
+
+  const status = (err instanceof Error && 'status' in err && typeof err.status === 'number')
+    ? err.status
+    : 500
+
   console.error('[error]', err)
-  const message = err instanceof Error ? err.message : 'Internal server error'
-  res.status(500).json({ success: false, message })
+
+  const message = isProd
+    ? status < 500 ? (err instanceof Error ? err.message : 'Bad request') : 'Internal server error'
+    : err instanceof Error ? err.message : 'Internal server error'
+
+  res.status(status).json({ success: false, message })
 }
