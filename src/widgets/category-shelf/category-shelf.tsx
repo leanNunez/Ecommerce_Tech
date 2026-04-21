@@ -103,7 +103,6 @@ export function CategoryShelf({ slug, label, Icon, promo }: CategoryShelfProps) 
     <section ref={sectionRef} className="bg-background border-b border-secondary/10">
       <div className="mx-auto max-w-7xl px-6 py-12">
 
-        {/* Section header */}
         <div className={`mb-6 flex items-center justify-between ${inView ? 'animate-slide-right' : 'opacity-0'}`}>
           <div className="flex items-center gap-2.5">
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10">
@@ -120,7 +119,6 @@ export function CategoryShelf({ slug, label, Icon, promo }: CategoryShelfProps) 
           </Link>
         </div>
 
-        {/* Promo banner — slide carousel */}
         <Link
           to="/catalog/$categorySlug"
           params={{ categorySlug: slug }}
@@ -129,7 +127,6 @@ export function CategoryShelf({ slug, label, Icon, promo }: CategoryShelfProps) 
           onMouseEnter={() => setHovering(true)}
           onMouseLeave={() => setHovering(false)}
         >
-          {/* Dot grid overlay */}
           <div
             className="pointer-events-none absolute inset-0 z-10 opacity-[0.06]"
             style={{
@@ -165,7 +162,6 @@ export function CategoryShelf({ slug, label, Icon, promo }: CategoryShelfProps) 
           )}
         </Link>
 
-        {/* Scrollable product row */}
         <div
           className={`relative ${inView ? 'animate-fade-up' : 'opacity-0'}`}
           style={{ animationDelay: '200ms' }}

@@ -127,7 +127,6 @@ export function ProductCard({ product }: ProductCardProps) {
             )}
           </div>
 
-          {/* Promos */}
           <ul className="flex flex-col gap-1">
             {promos.map((promo, i) => (
               <li key={i} className={`flex items-center gap-1.5 text-[11px] font-medium ${promo.color}`}>
