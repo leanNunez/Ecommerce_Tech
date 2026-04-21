@@ -25,79 +25,13 @@ import { formatCurrency } from '@/shared/lib/format-currency'
 
 // ─── Static config (no data dependency) ──────────────────────────────────────
 
-const CATEGORY_SHELVES = [
-  {
-    slug: 'laptops',
-    label: 'Laptops',
-    Icon: Laptop,
-    promo: {
-      headline: 'Llevá la PC de tus sueños al mejor precio',
-      body: 'MacBooks, Dell XPS, Surface y más. Financiación sin interés y envío gratis en todos los modelos.',
-      cta: 'Ver laptops',
-      gradient: 'from-slate-900 via-blue-950 to-slate-900',
-      accentColor: 'bg-blue-500 hover:bg-blue-600',
-    },
-  },
-  {
-    slug: 'smartphones',
-    label: 'Smartphones',
-    Icon: Smartphone,
-    promo: {
-      headline: 'El smartphone que siempre quisiste, ahora al alcance',
-      body: 'iPhone, Galaxy, Pixel y más. Hasta 36 cuotas sin interés con tarjeta seleccionada.',
-      cta: 'Ver smartphones',
-      gradient: 'from-purple-950 via-fuchsia-950 to-purple-950',
-      accentColor: 'bg-fuchsia-600 hover:bg-fuchsia-700',
-    },
-  },
-  {
-    slug: 'headphones',
-    label: 'Headphones',
-    Icon: Headphones,
-    promo: {
-      headline: 'Sonido que te envuelve. Escuchá diferente.',
-      body: 'Sony, Bose, Apple y Sennheiser. Noise cancelling premium para trabajo y viajes.',
-      cta: 'Ver auriculares',
-      gradient: 'from-emerald-950 via-teal-950 to-emerald-950',
-      accentColor: 'bg-emerald-500 hover:bg-emerald-600',
-    },
-  },
-  {
-    slug: 'monitors',
-    label: 'Monitors',
-    Icon: Monitor,
-    promo: {
-      headline: 'Tu workspace merece la mejor pantalla',
-      body: '4K, ultrawide, gaming y profesional. Productividad y entretenimiento en otro nivel.',
-      cta: 'Ver monitores',
-      gradient: 'from-orange-950 via-amber-950 to-orange-950',
-      accentColor: 'bg-orange-500 hover:bg-orange-600',
-    },
-  },
-  {
-    slug: 'tablets',
-    label: 'Tablets',
-    Icon: Tablet,
-    promo: {
-      headline: 'La potencia de una PC, la portabilidad de un tablet',
-      body: 'iPad Pro, Galaxy Tab y Surface Go. Creá, estudiá y trabajá desde cualquier lugar.',
-      cta: 'Ver tablets',
-      gradient: 'from-rose-950 via-pink-950 to-rose-950',
-      accentColor: 'bg-rose-500 hover:bg-rose-600',
-    },
-  },
-  {
-    slug: 'components',
-    label: 'Components',
-    Icon: Cpu,
-    promo: {
-      headline: 'Armá la PC que siempre soñaste',
-      body: 'GPUs, CPUs, RAM y motherboards de las mejores marcas. Tu configuración ideal a un clic.',
-      cta: 'Ver componentes',
-      gradient: 'from-cyan-950 via-sky-950 to-cyan-950',
-      accentColor: 'bg-cyan-500 hover:bg-cyan-600',
-    },
-  },
+const CATEGORY_SHELVES_CONFIG = [
+  { slug: 'laptops',     Icon: Laptop,      gradients: ['from-slate-900 via-blue-950 to-slate-900',    'from-blue-950 via-indigo-950 to-blue-900',    'from-indigo-950 via-slate-900 to-blue-950'] },
+  { slug: 'smartphones', Icon: Smartphone,  gradients: ['from-purple-950 via-fuchsia-950 to-purple-950','from-fuchsia-950 via-purple-900 to-fuchsia-900','from-violet-950 via-fuchsia-950 to-purple-950'] },
+  { slug: 'headphones',  Icon: Headphones,  gradients: ['from-emerald-950 via-teal-950 to-emerald-950', 'from-teal-950 via-emerald-900 to-teal-900',    'from-emerald-900 via-teal-950 to-emerald-950'] },
+  { slug: 'monitors',    Icon: Monitor,     gradients: ['from-orange-950 via-amber-950 to-orange-950',  'from-amber-950 via-orange-900 to-amber-900',   'from-orange-900 via-amber-950 to-orange-950'] },
+  { slug: 'tablets',     Icon: Tablet,      gradients: ['from-rose-950 via-pink-950 to-rose-950',       'from-pink-950 via-rose-900 to-pink-900',       'from-rose-900 via-pink-950 to-rose-950'] },
+  { slug: 'components',  Icon: Cpu,         gradients: ['from-cyan-950 via-sky-950 to-cyan-950',        'from-sky-950 via-cyan-900 to-sky-900',         'from-cyan-900 via-sky-950 to-cyan-950'] },
 ] as const
 
 const STATS_KEYS = [
@@ -109,19 +43,11 @@ const STATS_KEYS = [
   { valueKey: 'home.stats.shippingValue', labelKey: 'home.stats.shippingLabel' },
 ] as const
 
-const CATEGORIES = [
-  { label: 'Laptops',     slug: 'laptops',     Icon: Laptop },
-  { label: 'Smartphones', slug: 'smartphones', Icon: Smartphone },
-  { label: 'Headphones',  slug: 'headphones',  Icon: Headphones },
-  { label: 'Monitors',    slug: 'monitors',    Icon: Monitor },
-  { label: 'Tablets',     slug: 'tablets',     Icon: Tablet },
-  { label: 'Components',  slug: 'components',  Icon: Cpu },
-] as const
 
 const VALUE_PROPS = [
-  { Icon: Truck,       titleKey: 'home.valueProps.freeShipping',  descKey: 'home.valueProps.freeShippingDesc', iconClass: 'group-hover:animate-truck-start group-active:animate-truck-start' },
-  { Icon: ShieldCheck, titleKey: 'home.valueProps.warranty',       descKey: 'home.valueProps.warrantyDesc',     iconClass: 'group-hover:scale-125 group-active:scale-125 transition-transform duration-300' },
-  { Icon: RefreshCw,   titleKey: 'home.valueProps.returns',        descKey: 'home.valueProps.returnsDesc',      iconClass: 'group-hover:rotate-180 group-active:rotate-180 transition-transform duration-500' },
+  { Icon: Truck,       titleKey: 'home.valueProps.freeShipping',  descKey: 'home.valueProps.freeShippingDesc', iconClass: 'auto-truck group-hover:animate-truck-start group-active:animate-truck-start' },
+  { Icon: ShieldCheck, titleKey: 'home.valueProps.warranty',       descKey: 'home.valueProps.warrantyDesc',     iconClass: 'auto-shield group-hover:scale-125 group-active:scale-125 transition-transform duration-300' },
+  { Icon: RefreshCw,   titleKey: 'home.valueProps.returns',        descKey: 'home.valueProps.returnsDesc',      iconClass: 'auto-spin group-hover:rotate-180 group-active:rotate-180 transition-transform duration-500' },
 ]
 
 const MARQUEE_STATS_KEYS = [...STATS_KEYS, ...STATS_KEYS]
@@ -131,7 +57,6 @@ const MARQUEE_STATS_KEYS = [...STATS_KEYS, ...STATS_KEYS]
 export function HomePage() {
   const { t } = useTranslation()
   const brandsScrollRef = useRef<HTMLDivElement>(null)
-  const [pillsRef, pillsInView] = useInView()
   const [brandsRef, brandsInView] = useInView()
   const [valueRef, valueInView] = useInView()
 
@@ -165,8 +90,11 @@ export function HomePage() {
           <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-2">
             {/* Left: copy */}
             <div>
-              <span className="inline-flex animate-fade-up items-center gap-2 rounded-full bg-white/10 px-4 py-1.5 text-sm font-medium text-white/80 ring-1 ring-white/20">
+              <span className="group relative inline-flex animate-fade-up items-center gap-2 rounded-full bg-white/10 px-4 py-1.5 text-sm font-medium text-white/80 ring-1 ring-white/20 transition-all duration-300 hover:bg-white/20 hover:ring-white/40 cursor-default">
+                <span className="auto-star transition-transform duration-300 group-hover:rotate-[20deg] group-hover:scale-125 inline-block">⭐</span>
                 {t('home.hero.badge')}
+                <span className="auto-sparkle-1 pointer-events-none absolute -top-1 -right-1 opacity-0 group-hover:animate-sparkle text-yellow-300 text-xs">✦</span>
+                <span className="auto-sparkle-2 pointer-events-none absolute -bottom-1 left-2 opacity-0 group-hover:animate-sparkle text-yellow-200 text-[9px]">✶</span>
               </span>
               <h1
                 className="mt-4 animate-fade-up text-4xl font-extrabold leading-[1.1] tracking-tight text-white md:text-5xl lg:text-6xl"
@@ -289,29 +217,22 @@ export function HomePage() {
         </div>
       </section>
 
-      {/* Category pills */}
-      <section ref={pillsRef} className="border-b border-secondary/15 bg-background">
-        <div className="mx-auto max-w-7xl px-6 py-8">
-          <div className="flex flex-wrap items-center justify-center gap-3">
-            {CATEGORIES.map(({ label, slug, Icon }, i) => (
-              <Link
-                key={label}
-                to="/catalog/$categorySlug"
-                params={{ categorySlug: slug }}
-                className={`flex shrink-0 items-center gap-2 rounded-full bg-surface px-5 py-2.5 text-sm font-medium text-text shadow-sm ring-1 ring-secondary/20 transition-all duration-200 hover:-translate-y-1 hover:bg-primary hover:text-white hover:shadow-lg hover:ring-primary ${pillsInView ? 'animate-fade-up' : 'opacity-0'}`}
-                style={{ animationDelay: `${i * 70}ms` }}
-              >
-                <Icon className="h-4 w-4 transition-transform duration-200 group-hover:scale-110" />
-                {label}
-              </Link>
-            ))}
-          </div>
-        </div>
-      </section>
 
       {/* Category Shelves */}
-      {CATEGORY_SHELVES.map((shelf) => (
-        <CategoryShelf key={shelf.slug} {...shelf} />
+      {CATEGORY_SHELVES_CONFIG.map(({ slug, Icon, gradients }) => (
+        <CategoryShelf
+          key={slug}
+          slug={slug}
+          Icon={Icon}
+          label={t(`categories.${slug}`)}
+          promo={{
+            slides: gradients.map((gradient, i) => ({
+              gradient,
+              headline: t(`categoryShelf.${slug}.slides.${i}.headline`),
+              body: t(`categoryShelf.${slug}.slides.${i}.body`),
+            })),
+          }}
+        />
       ))}
 
       {/* Featured Brands */}
@@ -375,7 +296,7 @@ export function HomePage() {
       </section>
 
       {/* Value Props */}
-      <section ref={valueRef} className="bg-gradient-to-r from-primary-dark via-primary to-accent">
+      <section ref={valueRef} className="bg-primary-dark">
         <div className="mx-auto max-w-7xl px-6 py-12">
           <div className="grid grid-cols-1 gap-8 sm:grid-cols-3">
             {VALUE_PROPS.map(({ Icon, titleKey, descKey, iconClass }, i) => (
