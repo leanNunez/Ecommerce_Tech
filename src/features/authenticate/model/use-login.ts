@@ -25,7 +25,7 @@ export function useLogin() {
 
     onSuccess: ({ data, accessToken }) => {
       setAccessToken(accessToken)
-      setUser(data)
+      setUser(data, accessToken)
       queryClient.setQueryData(meQueryOptions.queryKey, { data })
     },
   })

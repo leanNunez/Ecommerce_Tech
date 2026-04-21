@@ -62,7 +62,7 @@ function setRefreshCookie(res: ReturnType<typeof import('express').response>, to
 }
 
 function safeUser(u: User & { passwordHash: string }) {
-  const { passwordHash: _, ...rest } = u
+  const { passwordHash: _, role: __, ...rest } = u
   return rest
 }
 

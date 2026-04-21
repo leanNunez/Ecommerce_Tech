@@ -17,6 +17,10 @@ export function setAccessToken(token: string | null) {
   accessToken = token
 }
 
+export function getAccessToken(): string | null {
+  return accessToken
+}
+
 // ── Request interceptor — attach Authorization header ─────────────────────────
 apiClient.interceptors.request.use((config) => {
   if (accessToken) {
