@@ -8,6 +8,9 @@
 ![Express](https://img.shields.io/badge/Express-000000?style=for-the-badge&logo=express&logoColor=white)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white)
 ![Prisma](https://img.shields.io/badge/Prisma_7-2D3748?style=for-the-badge&logo=prisma&logoColor=white)
+![Vitest](https://img.shields.io/badge/Vitest-6E9F18?style=for-the-badge&logo=vitest&logoColor=white)
+![Testing Library](https://img.shields.io/badge/Testing_Library-E33332?style=for-the-badge&logo=testing-library&logoColor=white)
+![Supertest](https://img.shields.io/badge/Supertest-000000?style=for-the-badge&logoColor=white)
 
 Full-stack e-commerce SPA for technology products. React 19 frontend with Feature-Sliced Design architecture, Node.js + Express REST API, and PostgreSQL on Neon.
 
@@ -63,6 +66,23 @@ server/src/
 | Auth | JWT (access + refresh token, HttpOnly cookie) |
 | File upload | Cloudinary |
 | Deploy | Vercel (frontend) + Render (backend) |
+| Testing | Vitest · React Testing Library · Supertest |
+
+## Testing
+
+```bash
+# Frontend unit + component tests
+npm run test
+
+# Backend integration tests (requires .env with real DATABASE_URL)
+cd server && bun run test
+```
+
+| Type | What's covered |
+|---|---|
+| Unit | Zustand store — cart logic (add, remove, quantity, totals) |
+| Component | `AddToCartButton` — renders, interactions, mocked i18n / router / auth |
+| Integration | REST endpoints `/auth` and `/products` against real Neon PostgreSQL |
 
 ## Local Setup
 
