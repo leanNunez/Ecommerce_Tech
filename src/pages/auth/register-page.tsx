@@ -1,9 +1,11 @@
 import { useEffect } from 'react'
 import { Link, useNavigate, useSearch } from '@tanstack/react-router'
+import { useTranslation } from 'react-i18next'
 import { RegisterForm } from '@/features/authenticate'
 import { useAuthStore } from '@/features/authenticate'
 
 export function RegisterPage() {
+  const { t } = useTranslation()
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated)
   const navigate = useNavigate()
   const search = useSearch({ strict: false }) as { returnUrl?: string }
@@ -18,16 +20,16 @@ export function RegisterPage() {
   return (
     <div>
       <div className="mb-6">
-        <h1 className="text-2xl font-extrabold tracking-tight text-text">Create your account</h1>
-        <p className="mt-1 text-sm text-secondary">Join thousands of tech enthusiasts today.</p>
+        <h1 className="text-2xl font-extrabold tracking-tight text-text">{t('auth.register.title')}</h1>
+        <p className="mt-1 text-sm text-secondary">{t('auth.register.subtitle')}</p>
       </div>
 
       <RegisterForm onSuccess={() => void navigate({ to: returnUrl })} />
 
       <p className="mt-6 text-center text-sm text-secondary">
-        Already have an account?{' '}
+        {t('auth.register.alreadyHaveAccount')}{' '}
         <Link to="/login" className="font-semibold text-primary hover:underline">
-          Sign in
+          {t('auth.register.signIn')}
         </Link>
       </p>
     </div>

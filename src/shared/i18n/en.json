@@ -330,6 +330,54 @@
       "daysAgo": "{{count}}d ago"
     }
   },
+  "authLayout": {
+    "headline": "Your premium",
+    "headlineHighlight": "tech destination.",
+    "subheadline": "Top-tier products, unbeatable prices, and a seamless shopping experience built for tech enthusiasts.",
+    "perkFreeShipping": "Free shipping",
+    "perkFreeShippingDesc": "On orders over $99",
+    "perkWarranty": "2-year warranty",
+    "perkWarrantyDesc": "On all products",
+    "perkReturns": "30-day returns",
+    "perkReturnsDesc": "No questions asked",
+    "copyright": "© {{year}} PremiumTech. All rights reserved."
+  },
+  "auth": {
+    "login": {
+      "title": "Welcome back",
+      "subtitle": "Sign in to your account to continue.",
+      "demoAccounts": "Demo accounts — click to fill",
+      "clickToFill": "click to fill",
+      "noAccount": "Don't have an account?",
+      "createOne": "Create one",
+      "emailLabel": "Email",
+      "passwordLabel": "Password",
+      "signingIn": "Signing in…",
+      "signIn": "Sign in",
+      "emailInvalid": "Please enter a valid email address",
+      "passwordMin": "Password must be at least 8 characters",
+      "demoCustomer": "Customer",
+      "demoAdmin": "Admin"
+    },
+    "register": {
+      "title": "Create your account",
+      "subtitle": "Join thousands of tech enthusiasts today.",
+      "firstNameLabel": "First name",
+      "lastNameLabel": "Last name",
+      "emailLabel": "Email",
+      "passwordLabel": "Password",
+      "confirmPasswordLabel": "Confirm password",
+      "firstNameMin": "First name must be at least 2 characters",
+      "lastNameMin": "Last name must be at least 2 characters",
+      "emailInvalid": "Please enter a valid email address",
+      "passwordMin": "Password must be at least 8 characters",
+      "passwordsNoMatch": "Passwords do not match",
+      "creatingAccount": "Creating account…",
+      "createAccount": "Create account",
+      "alreadyHaveAccount": "Already have an account?",
+      "signIn": "Sign in"
+    }
+  },
   "confirmation": {
     "title": "Order Confirmed!",
     "subtitle": "Thank you for your purchase. We'll start processing your order right away.",

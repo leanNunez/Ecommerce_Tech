@@ -1,6 +1,8 @@
+import { useMemo } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
+import { useTranslation } from 'react-i18next'
 import {
   Alert,
   AlertDescription,
@@ -16,28 +18,33 @@ import {
 import type { ApiError } from '@/shared/types/api.types'
 import { useRegister } from '../model/use-register'
 
-const registerSchema = z
-  .object({
-    firstName: z.string().min(2, 'First name must be at least 2 characters'),
-    lastName: z.string().min(2, 'Last name must be at least 2 characters'),
-    email: z.string().email('Please enter a valid email address'),
-    password: z.string().min(8, 'Password must be at least 8 characters'),
-    confirmPassword: z.string(),
-  })
-  .refine((data) => data.password === data.confirmPassword, {
-    message: 'Passwords do not match',
-    path: ['confirmPassword'],
-  })
-
-type RegisterFormValues = z.infer<typeof registerSchema>
-
 interface RegisterFormProps {
   onSuccess?: () => void
 }
 
 export function RegisterForm({ onSuccess }: RegisterFormProps) {
+  const { t } = useTranslation()
   const { mutate: register, isPending, error } = useRegister()
   const apiError = error as ApiError | null
+
+  const registerSchema = useMemo(
+    () =>
+      z
+        .object({
+          firstName: z.string().min(2, t('auth.register.firstNameMin')),
+          lastName: z.string().min(2, t('auth.register.lastNameMin')),
+          email: z.string().email(t('auth.register.emailInvalid')),
+          password: z.string().min(8, t('auth.register.passwordMin')),
+          confirmPassword: z.string(),
+        })
+        .refine((data) => data.password === data.confirmPassword, {
+          message: t('auth.register.passwordsNoMatch'),
+          path: ['confirmPassword'],
+        }),
+    [t],
+  )
+
+  type RegisterFormValues = z.infer<typeof registerSchema>
 
   const form = useForm<RegisterFormValues>({
     resolver: zodResolver(registerSchema),
@@ -64,7 +71,7 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
             name="firstName"
             render={(props) => (
               <FormItem>
-                <FormLabel>First name</FormLabel>
+                <FormLabel>{t('auth.register.firstNameLabel')}</FormLabel>
                 <FormControl>
                   <Input placeholder="John" {...props.field} />
                 </FormControl>
@@ -78,7 +85,7 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
             name="lastName"
             render={(props) => (
               <FormItem>
-                <FormLabel>Last name</FormLabel>
+                <FormLabel>{t('auth.register.lastNameLabel')}</FormLabel>
                 <FormControl>
                   <Input placeholder="Doe" {...props.field} />
                 </FormControl>
@@ -93,7 +100,7 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
           name="email"
           render={(props) => (
             <FormItem>
-              <FormLabel>Email</FormLabel>
+              <FormLabel>{t('auth.register.emailLabel')}</FormLabel>
               <FormControl>
                 <Input type="email" placeholder="you@example.com" {...props.field} />
               </FormControl>
@@ -107,7 +114,7 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
           name="password"
           render={(props) => (
             <FormItem>
-              <FormLabel>Password</FormLabel>
+              <FormLabel>{t('auth.register.passwordLabel')}</FormLabel>
               <FormControl>
                 <Input type="password" placeholder="••••••••" {...props.field} />
               </FormControl>
@@ -121,7 +128,7 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
           name="confirmPassword"
           render={(props) => (
             <FormItem>
-              <FormLabel>Confirm password</FormLabel>
+              <FormLabel>{t('auth.register.confirmPasswordLabel')}</FormLabel>
               <FormControl>
                 <Input type="password" placeholder="••••••••" {...props.field} />
               </FormControl>
@@ -137,7 +144,7 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
         )}
 
         <Button type="submit" className="w-full" disabled={isPending}>
-          {isPending ? 'Creating account…' : 'Create account'}
+          {isPending ? t('auth.register.creatingAccount') : t('auth.register.createAccount')}
         </Button>
       </form>
     </Form>

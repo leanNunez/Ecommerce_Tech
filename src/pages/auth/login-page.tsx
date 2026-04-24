@@ -1,16 +1,18 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate, useSearch } from '@tanstack/react-router'
+import { useTranslation } from 'react-i18next'
 import { LoginForm } from '@/features/authenticate'
 import { useAuthStore } from '@/features/authenticate'
 
 const DEMO_CREDENTIALS = [
-  { label: 'Customer', email: 'sofia.martin@gmail.com', password: 'password123' },
-  { label: 'Admin', email: 'admin@premiumtech.com', password: 'password123' },
+  { labelKey: 'auth.login.demoCustomer', email: 'sofia.martin@gmail.com', password: 'password123' },
+  { labelKey: 'auth.login.demoAdmin', email: 'admin@premiumtech.com', password: 'password123' },
 ] as const
 
 type Prefill = { email: string; password: string }
 
 export function LoginPage() {
+  const { t } = useTranslation()
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated)
   const navigate = useNavigate()
   const search = useSearch({ from: '/login' }) as { returnUrl?: string }
@@ -26,14 +28,14 @@ export function LoginPage() {
   return (
     <div>
       <div className="mb-6">
-        <h1 className="text-2xl font-extrabold tracking-tight text-text">Welcome back</h1>
-        <p className="mt-1 text-sm text-secondary">Sign in to your account to continue.</p>
+        <h1 className="text-2xl font-extrabold tracking-tight text-text">{t('auth.login.title')}</h1>
+        <p className="mt-1 text-sm text-secondary">{t('auth.login.subtitle')}</p>
       </div>
 
       {/* Demo credentials */}
       <div className="mb-6 rounded-xl border border-secondary/20 bg-background p-4">
         <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-secondary">
-          Demo accounts — click to fill
+          {t('auth.login.demoAccounts')}
         </p>
         <div className="flex flex-col gap-1.5">
           {DEMO_CREDENTIALS.map((cred) => (
@@ -44,10 +46,10 @@ export function LoginPage() {
               className="flex items-center justify-between rounded-lg border border-secondary/15 bg-surface px-3 py-2 text-left transition-colors hover:border-primary/30 hover:bg-primary/5"
             >
               <div>
-                <span className="text-xs font-semibold text-text">{cred.label}</span>
+                <span className="text-xs font-semibold text-text">{t(cred.labelKey)}</span>
                 <p className="text-xs text-secondary">{cred.email}</p>
               </div>
-              <span className="text-[10px] text-muted">click to fill</span>
+              <span className="text-[10px] text-muted">{t('auth.login.clickToFill')}</span>
             </button>
           ))}
         </div>
@@ -59,9 +61,9 @@ export function LoginPage() {
       />
 
       <p className="mt-6 text-center text-sm text-secondary">
-        Don't have an account?{' '}
+        {t('auth.login.noAccount')}{' '}
         <Link to="/register" className="font-semibold text-primary hover:underline">
-          Create one
+          {t('auth.login.createOne')}
         </Link>
       </p>
     </div>

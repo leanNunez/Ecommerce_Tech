@@ -330,6 +330,54 @@
       "daysAgo": "hace {{count}}d"
     }
   },
+  "authLayout": {
+    "headline": "Tu destino",
+    "headlineHighlight": "tech premium.",
+    "subheadline": "Productos top, precios imbatibles y una experiencia de compra hecha para entusiastas de la tecnología.",
+    "perkFreeShipping": "Envío gratis",
+    "perkFreeShippingDesc": "En pedidos mayores a $99",
+    "perkWarranty": "Garantía 2 años",
+    "perkWarrantyDesc": "En todos los productos",
+    "perkReturns": "Devoluciones 30 días",
+    "perkReturnsDesc": "Sin preguntas",
+    "copyright": "© {{year}} PremiumTech. Todos los derechos reservados."
+  },
+  "auth": {
+    "login": {
+      "title": "Bienvenido de vuelta",
+      "subtitle": "Iniciá sesión en tu cuenta para continuar.",
+      "demoAccounts": "Cuentas demo — hacé clic para completar",
+      "clickToFill": "clic para completar",
+      "noAccount": "¿No tenés cuenta?",
+      "createOne": "Creá una",
+      "emailLabel": "Email",
+      "passwordLabel": "Contraseña",
+      "signingIn": "Iniciando sesión…",
+      "signIn": "Iniciar sesión",
+      "emailInvalid": "Ingresá un email válido",
+      "passwordMin": "La contraseña debe tener al menos 8 caracteres",
+      "demoCustomer": "Cliente",
+      "demoAdmin": "Admin"
+    },
+    "register": {
+      "title": "Creá tu cuenta",
+      "subtitle": "Unite a miles de entusiastas de la tecnología.",
+      "firstNameLabel": "Nombre",
+      "lastNameLabel": "Apellido",
+      "emailLabel": "Email",
+      "passwordLabel": "Contraseña",
+      "confirmPasswordLabel": "Confirmar contraseña",
+      "firstNameMin": "El nombre debe tener al menos 2 caracteres",
+      "lastNameMin": "El apellido debe tener al menos 2 caracteres",
+      "emailInvalid": "Ingresá un email válido",
+      "passwordMin": "La contraseña debe tener al menos 8 caracteres",
+      "passwordsNoMatch": "Las contraseñas no coinciden",
+      "creatingAccount": "Creando cuenta…",
+      "createAccount": "Crear cuenta",
+      "alreadyHaveAccount": "¿Ya tenés cuenta?",
+      "signIn": "Iniciá sesión"
+    }
+  },
   "confirmation": {
     "title": "¡Pedido Confirmado!",
     "subtitle": "Gracias por tu compra. Comenzaremos a procesar tu pedido de inmediato.",

@@ -14,13 +14,26 @@ import addressesRouter from './routes/addresses.js'
 import usersRouter     from './routes/users.js'
 import { errorHandler } from './middleware/error.js'
 
-const CLIENT_ORIGIN = process.env.CLIENT_ORIGIN ?? 'http://localhost:5173'
+const ALLOWED_ORIGINS = (process.env.CLIENT_ORIGIN ?? 'http://localhost:5173,http://localhost:5174')
+  .split(',')
+  .map((s) => s.trim())
 
 export const app = express()
 
 app.set('trust proxy', 1)
 app.use(helmet())
-app.use(cors({ origin: CLIENT_ORIGIN, credentials: true }))
+app.use(
+  cors({
+    origin(origin, callback) {
+      if (!origin || ALLOWED_ORIGINS.includes(origin)) {
+        callback(null, true)
+      } else {
+        callback(new Error(`Origin ${origin} not allowed`))
+      }
+    },
+    credentials: true,
+  }),
+)
 app.use(express.json())
 app.use(cookieParser())
 

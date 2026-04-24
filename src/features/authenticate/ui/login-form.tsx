@@ -1,7 +1,8 @@
-import { useEffect } from 'react'
+import { useEffect, useMemo } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
+import { useTranslation } from 'react-i18next'
 import {
   Alert,
   AlertDescription,
@@ -17,21 +18,26 @@ import {
 import type { ApiError } from '@/shared/types/api.types'
 import { useLogin } from '../model/use-login'
 
-const loginSchema = z.object({
-  email: z.string().email('Please enter a valid email address'),
-  password: z.string().min(8, 'Password must be at least 8 characters'),
-})
-
-type LoginFormValues = z.infer<typeof loginSchema>
-
 interface LoginFormProps {
   onSuccess?: () => void
   prefill?: { email: string; password: string }
 }
 
 export function LoginForm({ onSuccess, prefill }: LoginFormProps) {
+  const { t } = useTranslation()
   const { mutate: login, isPending, error } = useLogin()
   const apiError = error as ApiError | null
+
+  const loginSchema = useMemo(
+    () =>
+      z.object({
+        email: z.string().email(t('auth.login.emailInvalid')),
+        password: z.string().min(8, t('auth.login.passwordMin')),
+      }),
+    [t],
+  )
+
+  type LoginFormValues = z.infer<typeof loginSchema>
 
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
@@ -64,7 +70,7 @@ export function LoginForm({ onSuccess, prefill }: LoginFormProps) {
           name="email"
           render={(props) => (
             <FormItem>
-              <FormLabel>Email</FormLabel>
+              <FormLabel>{t('auth.login.emailLabel')}</FormLabel>
               <FormControl>
                 <Input type="email" placeholder="you@example.com" {...props.field} />
               </FormControl>
@@ -78,7 +84,7 @@ export function LoginForm({ onSuccess, prefill }: LoginFormProps) {
           name="password"
           render={(props) => (
             <FormItem>
-              <FormLabel>Password</FormLabel>
+              <FormLabel>{t('auth.login.passwordLabel')}</FormLabel>
               <FormControl>
                 <Input type="password" placeholder="••••••••" {...props.field} />
               </FormControl>
@@ -88,7 +94,7 @@ export function LoginForm({ onSuccess, prefill }: LoginFormProps) {
         />
 
         <Button type="submit" className="w-full" disabled={isPending}>
-          {isPending ? 'Signing in…' : 'Sign in'}
+          {isPending ? t('auth.login.signingIn') : t('auth.login.signIn')}
         </Button>
       </form>
     </Form>
