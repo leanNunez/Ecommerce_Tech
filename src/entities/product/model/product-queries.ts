@@ -7,8 +7,11 @@ import {
   createProduct,
   updateProduct,
   deleteProduct,
+  searchProducts,
+  getSimilarProducts,
   type CreateProductPayload,
 } from '../api/product-api'
+import type { SearchParams } from './product.types'
 
 export const productKeys = {
   all: ['products'] as const,
@@ -17,6 +20,8 @@ export const productKeys = {
   adminAll: () => [...productKeys.all, 'admin-all'] as const,
   details: () => [...productKeys.all, 'detail'] as const,
   detail: (slug: string) => [...productKeys.details(), slug] as const,
+  search: (params: SearchParams) => ['semantic-search', params] as const,
+  similar: (id: string) => ['similar-products', id] as const,
 } as const
 
 export function useProducts(filters: ProductFilters) {
@@ -63,5 +68,22 @@ export function useDeleteProduct() {
   return useMutation({
     mutationFn: (id: string) => deleteProduct(id),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: productKeys.all }),
+  })
+}
+
+export function useSemanticSearch(params: SearchParams) {
+  const hasQuery = Boolean(params.q && params.q.trim().length >= 2)
+  return useQuery({
+    queryKey: productKeys.search(params),
+    queryFn: () => searchProducts(params),
+    enabled: hasQuery,
+  })
+}
+
+export function useSimilarProducts(productId: string | undefined) {
+  return useQuery({
+    queryKey: productKeys.similar(productId ?? ''),
+    queryFn: () => getSimilarProducts(productId!),
+    enabled: Boolean(productId),
   })
 }

@@ -6,7 +6,11 @@ export function useSearch() {
   const currentQ = search.q ?? ''
 
   function searchProducts(term: string) {
-    void navigate({ to: '/search', search: { q: term } })
+    if (term) {
+      void navigate({ to: '/search', search: { q: term } })
+    } else {
+      void navigate({ to: '/' })
+    }
   }
 
   return { currentQ, search: searchProducts }

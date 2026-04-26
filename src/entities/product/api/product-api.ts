@@ -1,6 +1,6 @@
 import { apiClient } from '@/shared/api/axios-instance'
 import type { ApiResponse, PaginatedResponse } from '@/shared/types/api.types'
-import type { Product, ProductFilters } from '../model/product.types'
+import type { Product, ProductFilters, SearchParams, SearchProduct, SearchResponse } from '../model/product.types'
 
 export function getProducts(filters: ProductFilters): Promise<PaginatedResponse<Product>> {
   return apiClient.get<PaginatedResponse<Product>>('/api/products', { params: filters }).then((r) => r.data)
@@ -46,4 +46,12 @@ export function updateProduct(id: string, payload: Partial<CreateProductPayload>
 
 export function deleteProduct(id: string): Promise<void> {
   return apiClient.delete(`/api/products/${id}`).then(() => undefined)
+}
+
+export function searchProducts(params: SearchParams): Promise<ApiResponse<SearchResponse>> {
+  return apiClient.get<ApiResponse<SearchResponse>>('/api/search', { params }).then((r) => r.data)
+}
+
+export function getSimilarProducts(productId: string, limit = 6): Promise<ApiResponse<SearchProduct[]>> {
+  return apiClient.get<ApiResponse<SearchProduct[]>>(`/api/products/${productId}/similar`, { params: { limit } }).then((r) => r.data)
 }

@@ -13,9 +13,10 @@ export function SearchBar({ onSearch }: SearchBarProps) {
   const { currentQ, search } = useSearch()
   const [value, setValue] = useState(currentQ)
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const isFocusedRef = useRef(false)
 
   useEffect(() => {
-    setValue(currentQ)
+    if (!isFocusedRef.current) setValue(currentQ)
   }, [currentQ])
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -23,10 +24,8 @@ export function SearchBar({ onSearch }: SearchBarProps) {
     setValue(term)
     if (timerRef.current) clearTimeout(timerRef.current)
     timerRef.current = setTimeout(() => {
-      if (term.trim()) {
-        search(term.trim())
-        onSearch?.()
-      }
+      search(term.trim())
+      if (term.trim()) onSearch?.()
     }, 300)
   }
 
@@ -47,6 +46,8 @@ export function SearchBar({ onSearch }: SearchBarProps) {
         value={value}
         onChange={handleChange}
         aria-label={t('header.searchPlaceholder')}
+        onFocus={() => { isFocusedRef.current = true }}
+        onBlur={() => { isFocusedRef.current = false }}
         className="rounded-r-none border-r-0 focus-visible:ring-0 focus-visible:ring-offset-0"
       />
       <button

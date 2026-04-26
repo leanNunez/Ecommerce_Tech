@@ -5,6 +5,7 @@ import {
   ChevronRight,
   RefreshCw,
   ShieldCheck,
+  Sparkles,
   Star,
   Truck,
 } from 'lucide-react'
@@ -16,7 +17,7 @@ import { AddToCartButton } from '@/features/add-to-cart'
 import { WishlistToggleButton } from '@/features/add-to-wishlist'
 import { useAuthStore } from '@/features/authenticate'
 import { useCartStore } from '@/entities/cart'
-import { useProductBySlug, useProducts } from '@/entities/product'
+import { useProductBySlug, useSimilarProducts, toProduct } from '@/entities/product'
 import { useBrands } from '@/entities/brand'
 
 // ─── Static maps ─────────────────────────────────────────────────────────────
@@ -96,12 +97,8 @@ export function ProductDetailPage() {
     ? brandsData?.data.find((b) => b.id === product.brandId)
     : undefined
 
-  const { data: relatedData } = useProducts({
-    category: category?.slug,
-    perPage: 5,
-  }, )
-
-  const related = relatedData?.data.filter((p) => p.id !== product?.id).slice(0, 5) ?? []
+  const { data: similarData } = useSimilarProducts(product?.id)
+  const similar = (similarData?.data ?? []).map(toProduct)
 
   const [selectedVariantId, setSelectedVariantId] = useState<string | undefined>(undefined)
   const selectedVariant = product?.variants.find(
@@ -329,18 +326,19 @@ export function ProductDetailPage() {
           </div>
         </div>
 
-        {/* Related products */}
-        {related.length > 0 && (
+        {/* Similar products */}
+        {similar.length > 0 && (
           <section className="mt-16">
             <div className="mb-6 flex items-end justify-between">
               <div>
-                <p className="text-xs font-bold uppercase tracking-[0.2em] text-accent">
-                  More in {category?.label ?? 'this category'}
+                <p className="text-xs font-bold uppercase tracking-[0.2em] text-accent flex items-center gap-1.5">
+                  <Sparkles className="h-3 w-3" />
+                  AI Recommendations
                 </p>
                 <h2 className="mt-1.5 text-2xl font-extrabold tracking-tight text-text">
-                  Related{' '}
+                  You May Also{' '}
                   <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-                    Products
+                    Like
                   </span>
                 </h2>
               </div>
@@ -356,7 +354,7 @@ export function ProductDetailPage() {
             </div>
 
             <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
-              {related.map((p) => (
+              {similar.map((p) => (
                 <ProductCard key={p.id} product={p} />
               ))}
             </div>

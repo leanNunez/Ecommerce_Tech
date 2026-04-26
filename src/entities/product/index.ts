@@ -1,5 +1,6 @@
-export type { Product, ProductVariant, ProductImage, ProductFilters } from './model/product.types'
-export { getProducts, getProductBySlug, getAllProductsAdmin, createProduct, updateProduct, deleteProduct } from './api/product-api'
+export type { Product, ProductVariant, ProductImage, ProductFilters, SearchProduct, SearchParams, SearchResponse } from './model/product.types'
+export { toProduct } from './model/product.types'
+export { getProducts, getProductBySlug, getAllProductsAdmin, createProduct, updateProduct, deleteProduct, searchProducts, getSimilarProducts } from './api/product-api'
 export type { CreateProductPayload } from './api/product-api'
 export {
   productKeys,
@@ -9,4 +10,6 @@ export {
   useCreateProduct,
   useUpdateProduct,
   useDeleteProduct,
+  useSemanticSearch,
+  useSimilarProducts,
 } from './model/product-queries'

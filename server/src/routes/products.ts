@@ -1,5 +1,6 @@
 import { Router } from 'express'
 import { z } from 'zod'
+import { Prisma } from '../generated/prisma/client.js'
 import { prisma } from '../lib/prisma.js'
 import { authenticate, requireAdmin } from '../middleware/auth.js'
 
@@ -58,6 +59,97 @@ router.get('/', async (req, res, next) => {
       success: true,
       data,
       meta: { total, page: pageN, perPage: perPageN, totalPages: Math.ceil(total / perPageN) },
+    })
+  } catch (err) { next(err) }
+})
+
+// ── GET /api/products/:id/similar ─────────────────────────────────────────────
+type SimilarRow = {
+  id: string; slug: string; name: string
+  price: unknown; compare_at_price: unknown; stock: unknown
+  brand_id: string; brand_name: string; brand_slug: string
+  category_name: string; category_slug: string
+  image_url: string | null; similarity: unknown
+}
+
+router.get('/:id/similar', async (req, res, next) => {
+  try {
+    const { id } = req.params
+    const limit = Math.min(Number(req.query.limit ?? 6), 20)
+
+    const product = await prisma.product.findUnique({
+      where:  { id },
+      select: { id: true, categoryId: true, embeddingVersion: true },
+    })
+    if (!product) return void res.status(404).json({ success: false, message: 'Product not found' })
+
+    // Fallback: producto sin embedding → top por stock en la misma categoría
+    if (product.embeddingVersion === 0) {
+      const fallback = await prisma.product.findMany({
+        where:   { isActive: true, id: { not: id }, categoryId: product.categoryId },
+        orderBy: { stock: 'desc' },
+        take:    limit,
+        include: { images: { orderBy: { order: 'asc' as const }, take: 1 }, brand: true, category: true },
+      })
+      return void res.json({
+        success: true,
+        data: fallback.map(p => ({
+          id: p.id, slug: p.slug, name: p.name,
+          price: p.price, compareAtPrice: p.compareAtPrice, stock: p.stock,
+          image: p.images[0]?.url ?? null,
+          brand: { name: p.brand.name, slug: p.brand.slug },
+          category: { name: p.category.name, slug: p.category.slug },
+        })),
+        fallback: true,
+      })
+    }
+
+    // Vector similarity — embedding stays in DB, no round-trip to Node
+    const candidates = await prisma.$queryRaw<SimilarRow[]>(Prisma.sql`
+      SELECT
+        p.id, p.slug, p.name,
+        p.price, p."compareAtPrice"  AS compare_at_price, p.stock,
+        p."brandId"                  AS brand_id,
+        b.name AS brand_name,        b.slug AS brand_slug,
+        c.name AS category_name,     c.slug AS category_slug,
+        (SELECT url FROM "ProductImage" WHERE "productId" = p.id ORDER BY "order" LIMIT 1) AS image_url,
+        1 - (p.embedding <=> (SELECT embedding FROM "Product" WHERE id = ${id})) AS similarity
+      FROM       "Product"  p
+      JOIN       "Brand"    b ON b.id = p."brandId"
+      JOIN       "Category" c ON c.id = p."categoryId"
+      WHERE p."isActive" = true
+        AND p.id        != ${id}
+        AND p.embedding IS NOT NULL
+      ORDER BY p.embedding <=> (SELECT embedding FROM "Product" WHERE id = ${id})
+      LIMIT ${limit * 3}
+    `)
+
+    // Brand diversification: max 2 results per brand
+    const brandCount = new Map<string, number>()
+    const results: SimilarRow[] = []
+    for (const row of candidates) {
+      const n = brandCount.get(row.brand_id) ?? 0
+      if (n >= 2) continue
+      brandCount.set(row.brand_id, n + 1)
+      results.push(row)
+      if (results.length >= limit) break
+    }
+
+    res.json({
+      success: true,
+      data: results.map(r => ({
+        id:             r.id,
+        slug:           r.slug,
+        name:           r.name,
+        price:          Number(r.price),
+        compareAtPrice: r.compare_at_price != null ? Number(r.compare_at_price) : null,
+        stock:          Number(r.stock),
+        image:          r.image_url,
+        brandId:        r.brand_id,
+        brand:          { name: r.brand_name, slug: r.brand_slug },
+        category:       { name: r.category_name, slug: r.category_slug },
+        _similarity:    Number(r.similarity),
+      })),
     })
   } catch (err) { next(err) }
 })

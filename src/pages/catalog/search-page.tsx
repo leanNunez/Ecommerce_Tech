@@ -1,18 +1,17 @@
 import { useSearch } from '@tanstack/react-router'
-import { Search } from 'lucide-react'
+import { Search, Sparkles } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { ProductCard } from '@/widgets/product-card'
-import { useProducts } from '@/entities/product'
+import { useSemanticSearch, toProduct } from '@/entities/product'
 
 export function SearchPage() {
+  const { t } = useTranslation()
   const { q } = useSearch({ from: '/search' })
   const query = q?.trim() ?? ''
 
-  const { data, isLoading } = useProducts({
-    search: query,
-    perPage: 50,
-  })
+  const { data, isLoading } = useSemanticSearch({ q: query, perPage: 50 })
 
-  const results = data?.data ?? []
+  const results = (data?.data?.products ?? []).map(toProduct)
   const ready   = !isLoading && query.length >= 2
 
   return (
@@ -20,34 +19,42 @@ export function SearchPage() {
       <div className="mb-8">
         {query ? (
           <>
-            <p className="text-sm text-muted">
-              {ready && results.length === 0
-                ? 'No results for'
-                : ready
-                  ? `${results.length} result${results.length !== 1 ? 's' : ''} for`
-                  : 'Searching for'}
-            </p>
+            <div className="flex items-center gap-2">
+              <p className="text-sm text-muted">
+                {ready && results.length === 0
+                  ? t('search.noResultsFor', 'No results for')
+                  : ready
+                    ? t('search.resultsFor', '{{count}} result(s) for', { count: results.length })
+                    : t('search.searchingFor', 'Searching for')}
+              </p>
+              <span className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-primary">
+                <Sparkles className="h-3 w-3" />
+                AI
+              </span>
+            </div>
             <h1 className="mt-0.5 text-2xl font-extrabold tracking-tight text-text">
               "{query}"
             </h1>
           </>
         ) : (
-          <h1 className="text-2xl font-extrabold tracking-tight text-text">Search</h1>
+          <h1 className="text-2xl font-extrabold tracking-tight text-text">
+            {t('search.title', 'Search')}
+          </h1>
         )}
       </div>
 
       {!query && (
         <div className="flex flex-col items-center gap-3 py-24 text-center">
           <Search className="h-10 w-10 text-secondary/40" />
-          <p className="text-sm text-muted">Type at least 2 characters to search.</p>
+          <p className="text-sm text-muted">{t('search.placeholder', 'Type at least 2 characters to search.')}</p>
         </div>
       )}
 
       {ready && results.length === 0 && (
         <div className="flex flex-col items-center gap-3 py-24 text-center">
           <Search className="h-10 w-10 text-secondary/40" />
-          <p className="text-base font-semibold text-text">No products found</p>
-          <p className="text-sm text-muted">Try different keywords or browse the catalog.</p>
+          <p className="text-base font-semibold text-text">{t('search.noProducts', 'No products found')}</p>
+          <p className="text-sm text-muted">{t('search.tryDifferent', 'Try different keywords or browse the catalog.')}</p>
         </div>
       )}
 
