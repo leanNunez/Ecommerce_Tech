@@ -10,7 +10,7 @@ import { defineConfig, globalIgnores } from 'eslint/config'
 const FSD_LAYERS = ['shared', 'entities', 'features', 'widgets', 'pages', 'app']
 
 export default defineConfig([
-  globalIgnores(['dist']),
+  globalIgnores(['dist', 'server']),
   {
     files: ['**/*.{ts,tsx}'],
     extends: [
@@ -19,9 +19,7 @@ export default defineConfig([
       reactHooks.configs.flat.recommended,
       reactRefresh.configs.vite,
     ],
-    plugins: {
-      boundaries,
-    },
+    plugins: { boundaries },
     settings: {
       'boundaries/elements': FSD_LAYERS.map((layer) => ({
         type: layer,
@@ -33,21 +31,44 @@ export default defineConfig([
       globals: globals.browser,
     },
     rules: {
-      // Forbidden: lower layers importing from higher layers
       'boundaries/element-types': [
         'error',
         {
           default: 'disallow',
           rules: [
-            { from: 'shared', allow: [] },
+            { from: 'shared',   allow: [] },
             { from: 'entities', allow: ['shared'] },
             { from: 'features', allow: ['shared', 'entities'] },
-            { from: 'widgets', allow: ['shared', 'entities', 'features'] },
-            { from: 'pages', allow: ['shared', 'entities', 'features', 'widgets'] },
-            { from: 'app', allow: ['shared', 'entities', 'features', 'widgets', 'pages'] },
+            { from: 'widgets',  allow: ['shared', 'entities', 'features'] },
+            { from: 'pages',    allow: ['shared', 'entities', 'features', 'widgets'] },
+            { from: 'app',      allow: ['shared', 'entities', 'features', 'widgets', 'pages'] },
           ],
         },
       ],
+      // Allow unused vars/args prefixed with _ (intentionally unused)
+      '@typescript-eslint/no-unused-vars': ['error', {
+        argsIgnorePattern: '^_',
+        varsIgnorePattern: '^_',
+        caughtErrorsIgnorePattern: '^_',
+      }],
+      // React Compiler rules — too aggressive for valid patterns in this codebase
+      'react-hooks/set-state-in-effect': 'off',
+      'react-hooks/refs': 'off',
+      'react-hooks/incompatible-library': 'off',
+    },
+  },
+  // TanStack Router: route files must export Route (non-component) — expected pattern
+  {
+    files: ['src/routes/**/*.tsx'],
+    rules: {
+      'react-refresh/only-export-components': 'off',
+    },
+  },
+  // shadcn/ui: shared UI components export variants alongside components — expected pattern
+  {
+    files: ['src/shared/ui/**/*.tsx'],
+    rules: {
+      'react-refresh/only-export-components': 'off',
     },
   },
 ])

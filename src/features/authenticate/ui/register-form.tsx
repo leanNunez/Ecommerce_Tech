@@ -58,7 +58,7 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
     },
   })
 
-  function onSubmit({ confirmPassword: _, ...values }: RegisterFormValues) {
+  function onSubmit({ confirmPassword: _confirmPassword, ...values }: RegisterFormValues) {
     register(values, { onSuccess })
   }
 
