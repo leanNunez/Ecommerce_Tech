@@ -49,6 +49,10 @@ function getIp(req: Request): string {
   return req.ip ?? req.socket?.remoteAddress ?? 'unknown'
 }
 
+export function _resetStrikesForTesting(): void {
+  strikes.clear()
+}
+
 export function injectionGuard(req: Request, res: Response, next: NextFunction): void {
   const ip = getIp(req)
   const now = Date.now()
@@ -61,7 +65,7 @@ export function injectionGuard(req: Request, res: Response, next: NextFunction):
     return
   }
 
-  if (record && record.bannedUntil <= now) strikes.delete(ip)
+  if (record && record.bannedUntil > 0 && record.bannedUntil <= now) strikes.delete(ip)
 
   const body = req.body as { message?: unknown; history?: unknown[] }
   const message = typeof body.message === 'string' ? body.message : ''

@@ -40,6 +40,10 @@ function getClient(): OpenAI {
   return _client
 }
 
+export function _setClientForTesting(client: OpenAI | null): void {
+  _client = client
+}
+
 export type ChatMessage = {
   role: 'user' | 'assistant'
   content: string
