@@ -30,6 +30,79 @@ Full-stack e-commerce SPA for technology products. React 19 frontend with Featur
 - Product variants with per-variant image upload (Cloudinary)
 - Role-based access control (customer / admin)
 - Responsive design
+- **Semantic search** — hybrid keyword + vector similarity (Cohere embeddings + pgvector)
+- **AI shopping assistant** — streaming chat with tool-calling via Groq LLM
+- Prompt injection guard with keyword filter and strike/ban system
+
+## AI Features
+
+### Semantic Search — `GET /api/search`
+
+Queries are embedded at runtime using Cohere `embed-multilingual-v3.0` and matched against product vectors stored in PostgreSQL via pgvector. Results are ranked by a hybrid score:
+
+```
+score = 0.4 × full_text_rank + 0.6 × cosine_similarity
+```
+
+Supports filters: `category`, `brand`, `minPrice`, `maxPrice`, `inStock`, `sort` (`relevance` | `price_asc` | `price_desc` | `newest`), `page`, `perPage`.
+
+### Similar Products — `GET /api/products/:id/similar`
+
+Returns products ranked by cosine similarity to the target product's embedding. Excludes the product itself and out-of-stock items. Falls back to top-rated products in the same category if no embedding is available.
+
+### AI Shopping Assistant — `POST /api/assistant/chat`
+
+Streaming conversational assistant (SSE) powered by Groq `llama-3.3-70b-versatile` with tool-calling. The assistant can search and recommend products, compare them, add items to cart, and answer catalog questions grounded in real data — it never makes up prices or stock.
+
+```
+POST /api/assistant/chat
+Content-Type: application/json
+
+{ "message": "I need a laptop under $1000 for gaming", "history": [] }
+
+→ text/event-stream
+data: {"type":"chunk","content":"Here are some options..."}
+data: {"type":"done"}
+```
+
+Rate-limited to 20 req/min. Input sanitized with a prompt injection guard (keyword filter + strike/ban). Auth is optional — guests can chat, authenticated users can add to cart.
+
+### AI Architecture
+
+```
+User query
+    │
+    ▼
+Cohere embed-multilingual-v3.0 → float[1024]
+    │
+    ▼
+PostgreSQL + pgvector
+    ├── tsvector full-text search  (weight 0.4)
+    └── cosine similarity <=>      (weight 0.6)
+    │
+    ▼
+Hybrid ranked results
+
+AI Assistant
+    │
+    ▼
+Groq llama-3.3-70b-versatile ──► SSE stream to client
+    │
+    ├── searchProducts(query, filters)
+    ├── getProductDetails(productId)
+    ├── compareProducts(productIds[])
+    ├── addToCart(productId, variantId, qty)     ← requires auth
+    └── getCartSummary()
+```
+
+### Known Tradeoffs
+
+| Decision | Tradeoff |
+|---|---|
+| Cohere free tier for embeddings | 1 000 req/month shared with indexing — sufficient for demo; swap for paid plan in production |
+| Groq free tier for LLM | 14 400 req/day — no monthly cap, zero cold start |
+| Exact vector search (no IVFFlat) | Linear scan — correct at any dataset size, but `CREATE INDEX USING ivfflat` is needed beyond ~100k products |
+| Ephemeral chat history | History lives client-side per session — no DB persistence, no cross-device continuity |
 
 ## Architecture
 
@@ -49,9 +122,10 @@ src/
 
 ```
 server/src/
-├── routes/       # Express routers (products, orders, auth, users, addresses…)
-├── middleware/   # Auth (JWT), error handler
-└── lib/          # Prisma client
+├── routes/       # Express routers (products, orders, auth, search, assistant…)
+├── middleware/   # Auth (JWT), injection guard, error handler
+├── lib/          # Prisma client, embeddings (Cohere), assistant orchestrator (Groq)
+└── scripts/      # index-products — batch embedding pipeline
 ```
 
 ## Tech Stack
@@ -70,6 +144,9 @@ server/src/
 | File upload | Cloudinary |
 | Deploy | Vercel (frontend) + Render (backend) |
 | Testing | Vitest · React Testing Library · Supertest |
+| Embeddings | Cohere `embed-multilingual-v3.0` (1024 dims) |
+| Vector store | pgvector (cosine similarity, exact search) |
+| LLM | Groq `llama-3.3-70b-versatile` (tool-calling + SSE) |
 
 ## Testing
 
@@ -132,7 +209,36 @@ bun prisma db seed
 
 # Start dev server
 bun run dev
+
+# Index product embeddings (required for semantic search)
+bun run index:full
 ```
+
+### Embedding Index Commands
+
+| Command | Description |
+|---|---|
+| `bun run index:full` | Embed all active products (run once after setup) |
+| `bun run index:changed` | Embed only products created/updated since last run |
+| `bun run index:product -- --id <id>` | Embed a single product by ID |
+
+## Demo
+
+| Role | Email | Password |
+|---|---|---|
+| Admin | `admin@premiumtech.com` | `password123` |
+| Customer | `sofia.martin@gmail.com` | `password123` |
+
+A runnable HTTP collection for all AI endpoints is at [`server/api.http`](server/api.http) (VS Code REST Client or JetBrains HTTP Client).
+
+**3-minute demo flow:**
+
+1. Open the live demo and type a natural language query in the search bar (e.g. *"gaming laptop under $1000"* or *"auriculares inalámbricos"*)
+2. Notice results blend keyword matches and semantic similarity — a query for *"headphones"* also surfaces *"auriculares"*
+3. Open a product page → scroll to "Similar Products" (vector-ranked recommendations)
+4. Click the chat bubble → ask the assistant to *"compare the two cheapest laptops"*
+5. Ask it to *"add the cheaper one to my cart"* (log in first as Sofia to persist the cart)
+6. Log in as `admin@premiumtech.com` to explore the admin panel (product CRUD, image upload, order management)
 
 ## Environment Variables
 
@@ -153,6 +259,9 @@ bun run dev
 | `CLOUDINARY_CLOUD_NAME` | Cloudinary cloud name |
 | `CLOUDINARY_API_KEY` | Cloudinary API key |
 | `CLOUDINARY_API_SECRET` | Cloudinary API secret |
+| `COHERE_API_KEY` | Cohere API key (embeddings) — [dashboard.cohere.com](https://dashboard.cohere.com/api-keys) |
+| `GROQ_API_KEY` | Groq API key (LLM) — [console.groq.com](https://console.groq.com/keys) |
+| `HEALTH_TOKEN` | Secret for `/health` endpoint (optional, recommended in prod) |
 
 ## Deploy
 
