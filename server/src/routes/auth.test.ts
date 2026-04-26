@@ -66,8 +66,10 @@ describe('POST /api/auth/register', () => {
     expect(res.status).toBe(201)
     expect(res.body.success).toBe(true)
     expect(res.body.data.email).toBe(newUser.email)
-    expect(res.body.data.role).toBe('customer')
+    expect(res.body.data.passwordHash).toBeUndefined()
     expect(res.body.accessToken).toBeDefined()
+    const payload = JSON.parse(Buffer.from(res.body.accessToken.split('.')[1], 'base64').toString())
+    expect(payload.role).toBe('customer')
   })
 
   it('assigns admin role to @premiumtech.com emails', async () => {
@@ -76,7 +78,8 @@ describe('POST /api/auth/register', () => {
       .send({ ...newUser, email: 'new.admin@premiumtech.com' })
 
     expect(res.status).toBe(201)
-    expect(res.body.data.role).toBe('admin')
+    const payload = JSON.parse(Buffer.from(res.body.accessToken.split('.')[1], 'base64').toString())
+    expect(payload.role).toBe('admin')
   })
 
   it('returns 409 when email is already registered', async () => {

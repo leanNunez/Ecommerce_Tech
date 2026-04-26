@@ -3,17 +3,31 @@ import { render, screen, fireEvent } from '@testing-library/react'
 import { AddToCartButton } from './add-to-cart-button'
 import type { Product } from '@/entities/product'
 
-const mockAddItem = vi.fn()
+const { mockAddItem, mockCartStore } = vi.hoisted(() => {
+  const mockAddItem = vi.fn()
+  const mockCartStore = Object.assign(
+    (selector: (s: { addItem: typeof mockAddItem }) => unknown) => selector({ addItem: mockAddItem }),
+    { getState: vi.fn(() => ({ items: [] })) },
+  )
+  return { mockAddItem, mockCartStore }
+})
+
 let mockRole: string | null = 'customer'
+let mockIsAuthenticated = true
+
+vi.mock('@tanstack/react-router', async () => {
+  const actual = await vi.importActual('@tanstack/react-router')
+  return { ...actual, useNavigate: () => vi.fn() }
+})
 
 vi.mock('@/entities/cart', () => ({
-  useCartStore: (selector: (s: { addItem: typeof mockAddItem }) => unknown) =>
-    selector({ addItem: mockAddItem }),
+  useCartStore: mockCartStore,
+  cartServerApi: { upsertItem: vi.fn().mockResolvedValue(undefined) },
 }))
 
 vi.mock('@/features/authenticate', () => ({
-  useAuthStore: (selector: (s: { role: string | null }) => unknown) =>
-    selector({ role: mockRole }),
+  useAuthStore: (selector: (s: { role: string | null; isAuthenticated: boolean }) => unknown) =>
+    selector({ role: mockRole, isAuthenticated: mockIsAuthenticated }),
 }))
 
 const baseProduct: Product = {
@@ -34,6 +48,7 @@ const baseProduct: Product = {
 beforeEach(() => {
   mockAddItem.mockClear()
   mockRole = 'customer'
+  mockIsAuthenticated = true
 })
 
 describe('AddToCartButton', () => {
