@@ -5,10 +5,12 @@ on:
     branches: [main]
     paths:
       - 'server/**'
+      - '.github/workflows/backend-ci.yml'
   pull_request:
     branches: [main]
     paths:
       - 'server/**'
+      - '.github/workflows/backend-ci.yml'
 
 jobs:
   ci:
@@ -32,6 +34,9 @@ jobs:
 
       - name: Install dependencies
         run: bun install --frozen-lockfile
+
+      - name: Generate Prisma client
+        run: bunx prisma generate
 
       - name: Typecheck
         run: bunx tsc --noEmit
