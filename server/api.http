@@ -2,7 +2,7 @@
 # Install "REST Client" extension in VS Code to run these directly.
 
 @base = http://localhost:3001/api
-@prod = https://premiumtech-api.onrender.com/api
+@prod = https://ecommerce-tech-ftva.onrender.com/api
 
 ### ── AUTH ─────────────────────────────────────────────────────────────────────
 
