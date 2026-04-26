@@ -12,6 +12,9 @@
 ![Testing Library](https://img.shields.io/badge/Testing_Library-E33332?style=for-the-badge&logo=testing-library&logoColor=white)
 ![Supertest](https://img.shields.io/badge/Supertest-000000?style=for-the-badge&logoColor=white)
 
+[![Frontend CI](https://github.com/leanNunez/Ecommerce_Tech/actions/workflows/frontend-ci.yml/badge.svg)](https://github.com/leanNunez/Ecommerce_Tech/actions/workflows/frontend-ci.yml)
+[![Backend CI](https://github.com/leanNunez/Ecommerce_Tech/actions/workflows/backend-ci.yml/badge.svg)](https://github.com/leanNunez/Ecommerce_Tech/actions/workflows/backend-ci.yml)
+
 Full-stack e-commerce SPA for technology products. React 19 frontend with Feature-Sliced Design architecture, Node.js + Express REST API, and PostgreSQL on Neon.
 
 ## Features
