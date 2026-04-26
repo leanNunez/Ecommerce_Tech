@@ -1,5 +1,6 @@
 import { ZodError } from 'zod'
 import type { Request, Response, NextFunction } from 'express'
+import { logger } from '../lib/logger.js'
 
 const isProd = process.env.NODE_ENV === 'production'
 
@@ -18,7 +19,7 @@ export function errorHandler(
     ? err.status
     : 500
 
-  console.error('[error]', err)
+  logger.error('unhandled error', err instanceof Error ? { message: err.message, stack: err.stack } : err)
 
   const message = isProd
     ? status < 500 ? (err instanceof Error ? err.message : 'Bad request') : 'Internal server error'
