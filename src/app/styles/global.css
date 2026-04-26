@@ -85,3 +85,35 @@
   85%  { transform: translateX(9px); }
   100% { transform: translateX(0); }
 }
+
+@keyframes robot-float {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-6px); }
+}
+
+@keyframes robot-wave {
+  0%, 50%, 100% { transform: rotate(0deg); }
+  60%  { transform: rotate(-35deg); }
+  70%  { transform: rotate(15deg); }
+  80%  { transform: rotate(-25deg); }
+  90%  { transform: rotate(8deg); }
+}
+
+@keyframes robot-blink {
+  0%, 90%, 100% { transform: scaleY(1); }
+  95%           { transform: scaleY(0.1); }
+}
+
+.robot-float { animation: robot-float 3s ease-in-out infinite; }
+
+.robot-wave {
+  transform-box: fill-box;
+  transform-origin: 50% 0%;
+  animation: robot-wave 3s ease-in-out infinite;
+}
+
+.robot-eye {
+  transform-box: fill-box;
+  transform-origin: 50% 50%;
+  animation: robot-blink 4s ease-in-out infinite;
+}

@@ -384,5 +384,28 @@
     "orderId": "Order ID",
     "viewOrders": "View My Orders",
     "continueShopping": "Continue Shopping"
+  },
+  "assistant": {
+    "title": "PremiumTech Assistant",
+    "subtitle": "AI-powered shopping help",
+    "openLabel": "Open AI assistant",
+    "closeLabel": "Close assistant",
+    "clearLabel": "Clear conversation",
+    "emptyHeading": "How can I help you?",
+    "emptySubtitle": "Ask me anything about our products",
+    "placeholder": "Ask about products…",
+    "disclaimer": "AI responses may be inaccurate. Verify prices and stock before purchasing.",
+    "bubbleMessages": [
+      "How can I help you?",
+      "I'm your shopping assistant",
+      "Find your next favorite product!",
+      "Need help choosing?"
+    ],
+    "quickActions": [
+      "Recommend me a laptop under $1000",
+      "Compare iPhone 15 Pro vs Galaxy S24",
+      "What's in my cart?",
+      "Best headphones for music"
+    ]
   }
 }

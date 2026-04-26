@@ -3,6 +3,7 @@ import type { QueryClient } from '@tanstack/react-query'
 import { AuthLayout } from '@/app/layouts/auth-layout'
 import { Header } from '@/widgets/header'
 import { Footer } from '@/widgets/footer'
+import { ChatWidget } from '@/features/ai-assistant'
 import { useAuthStore } from '@/features/authenticate'
 import { useCartServerSync } from '@/entities/cart'
 import { meQueryOptions } from './-meQueryOptions'
@@ -42,6 +43,7 @@ function RootComponent() {
           <Outlet />
         </main>
         <Footer />
+        <ChatWidget />
       </div>
     )
   }

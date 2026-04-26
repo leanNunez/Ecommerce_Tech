@@ -384,5 +384,28 @@
     "orderId": "ID del pedido",
     "viewOrders": "Ver mis pedidos",
     "continueShopping": "Seguir comprando"
+  },
+  "assistant": {
+    "title": "Asistente PremiumTech",
+    "subtitle": "Ayuda de compra con IA",
+    "openLabel": "Abrir asistente de IA",
+    "closeLabel": "Cerrar asistente",
+    "clearLabel": "Limpiar conversación",
+    "emptyHeading": "¿En qué puedo ayudarte?",
+    "emptySubtitle": "Preguntame cualquier cosa sobre nuestros productos",
+    "placeholder": "Preguntá sobre productos…",
+    "disclaimer": "Las respuestas de IA pueden no ser exactas. Verificá precios y stock antes de comprar.",
+    "bubbleMessages": [
+      "¿En qué puedo ayudarte?",
+      "Soy tu asistente de compras",
+      "¡Encontrá tu próximo favorito!",
+      "¿Necesitás ayuda para elegir?"
+    ],
+    "quickActions": [
+      "Recomendame una laptop por menos de $1000",
+      "Comparar iPhone 15 Pro vs Galaxy S24",
+      "¿Qué tengo en el carrito?",
+      "Los mejores auriculares para música"
+    ]
   }
 }

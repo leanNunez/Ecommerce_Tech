@@ -1,6 +1,7 @@
 import { Outlet } from '@tanstack/react-router'
 import { Header } from '@/widgets/header'
 import { Footer } from '@/widgets/footer'
+import { ChatWidget } from '@/features/ai-assistant'
 
 export function PublicLayout() {
   return (
@@ -10,6 +11,7 @@ export function PublicLayout() {
         <Outlet />
       </main>
       <Footer />
+      <ChatWidget />
     </div>
   )
 }

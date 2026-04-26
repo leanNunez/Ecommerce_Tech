@@ -12,6 +12,8 @@ import ordersRouter    from './routes/orders.js'
 import cartRouter      from './routes/cart.js'
 import addressesRouter from './routes/addresses.js'
 import usersRouter     from './routes/users.js'
+import searchRouter    from './routes/search.js'
+import assistantRouter from './routes/assistant.js'
 import { errorHandler } from './middleware/error.js'
 
 const ALLOWED_ORIGINS = (process.env.CLIENT_ORIGIN ?? 'http://localhost:5173,http://localhost:5174')
@@ -46,7 +48,18 @@ app.use('/api/orders',     ordersRouter)
 app.use('/api/cart',       cartRouter)
 app.use('/api/addresses',  addressesRouter)
 app.use('/api/users',      usersRouter)
+app.use('/api/search',    searchRouter)
+app.use('/api/assistant', assistantRouter)
 
-app.get('/health', (_req, res) => res.json({ status: 'ok' }))
+const IS_PROD = process.env.NODE_ENV === 'production'
+const HEALTH_TOKEN = process.env.HEALTH_TOKEN ?? ''
+
+app.get('/health', (req, res) => {
+  if (IS_PROD && HEALTH_TOKEN && req.headers['x-health-token'] !== HEALTH_TOKEN) {
+    res.status(404).end()
+    return
+  }
+  res.json({ status: 'ok' })
+})
 
 app.use(errorHandler)
