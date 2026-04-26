@@ -271,7 +271,7 @@ router.patch('/:id', authenticate, requireAdmin, async (req, res, next) => {
       : imageUrl ? [imageUrl] : []
 
     const product = await prisma.product.update({
-      where: { id: req.params.id },
+      where: { id: req.params.id as string },
       data:  {
         ...restWithoutVariants,
         ...(hasImageUpdate && {
@@ -284,7 +284,7 @@ router.patch('/:id', authenticate, requireAdmin, async (req, res, next) => {
           variants: {
             deleteMany: {},
             create: variants.map((v, i) => ({
-              sku:        v.sku || `${req.params.id}-v${i + 1}`,
+              sku:        v.sku || `${req.params.id as string}-v${i + 1}`,
               name:       v.name,
               price:      v.price,
               stock:      v.stock,
@@ -303,7 +303,7 @@ router.patch('/:id', authenticate, requireAdmin, async (req, res, next) => {
 // ── DELETE /api/products/:id — admin ─────────────────────────────────────────
 router.delete('/:id', authenticate, requireAdmin, async (req, res, next) => {
   try {
-    await prisma.product.delete({ where: { id: req.params.id } })
+    await prisma.product.delete({ where: { id: req.params.id as string } })
     res.status(204).send()
   } catch (err) { next(err) }
 })

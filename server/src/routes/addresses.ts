@@ -41,7 +41,7 @@ router.patch('/:id', authenticate, async (req, res, next) => {
   try {
     const updates = addressSchema.partial().parse(req.body)
     const existing = await prisma.address.findFirst({
-      where: { id: req.params.id, userId: req.auth!.userId },
+      where: { id: req.params.id as string, userId: req.auth!.userId },
     })
     if (!existing) { res.status(404).json({ success: false, message: 'Address not found' }); return }
     if (updates.isDefault) {
@@ -50,7 +50,7 @@ router.patch('/:id', authenticate, async (req, res, next) => {
         data:  { isDefault: false },
       })
     }
-    const address = await prisma.address.update({ where: { id: req.params.id }, data: updates })
+    const address = await prisma.address.update({ where: { id: req.params.id as string }, data: updates })
     res.json({ success: true, data: address })
   } catch (err) { next(err) }
 })
@@ -58,10 +58,10 @@ router.patch('/:id', authenticate, async (req, res, next) => {
 router.delete('/:id', authenticate, async (req, res, next) => {
   try {
     const existing = await prisma.address.findFirst({
-      where: { id: req.params.id, userId: req.auth!.userId },
+      where: { id: req.params.id as string, userId: req.auth!.userId },
     })
     if (!existing) { res.status(404).json({ success: false, message: 'Address not found' }); return }
-    await prisma.address.delete({ where: { id: req.params.id } })
+    await prisma.address.delete({ where: { id: req.params.id as string } })
     res.status(204).send()
   } catch (err) { next(err) }
 })

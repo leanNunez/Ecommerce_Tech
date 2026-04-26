@@ -48,7 +48,7 @@ function makeTokens(userId: string, role: string) {
   return { access, refresh }
 }
 
-function setRefreshCookie(res: ReturnType<typeof import('express').response>, token: string) {
+function setRefreshCookie(res: import('express').Response, token: string) {
   const isProd = process.env.NODE_ENV === 'production'
   res.cookie('refreshToken', token, {
     httpOnly: true,

@@ -26,14 +26,14 @@ const updateUserSchema = z.object({
 router.patch('/:id', authenticate, requireAdmin, async (req, res, next) => {
   try {
     const data = updateUserSchema.parse(req.body)
-    const user = await prisma.user.update({ where: { id: req.params.id }, data })
+    const user = await prisma.user.update({ where: { id: req.params.id as string }, data })
     res.json({ success: true, data: safeUser(user) })
   } catch (err) { next(err) }
 })
 
 router.delete('/:id', authenticate, requireAdmin, async (req, res, next) => {
   try {
-    await prisma.user.delete({ where: { id: req.params.id } })
+    await prisma.user.delete({ where: { id: req.params.id as string } })
     res.status(204).send()
   } catch (err) { next(err) }
 })

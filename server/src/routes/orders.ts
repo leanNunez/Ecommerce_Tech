@@ -27,7 +27,7 @@ router.get('/', authenticate, async (req, res, next) => {
 router.get('/:id', authenticate, async (req, res, next) => {
   try {
     const order = await prisma.order.findUnique({
-      where:   { id: req.params.id },
+      where:   { id: req.params.id as string },
       include: ORDER_INCLUDE,
     })
     if (!order) { res.status(404).json({ success: false, message: 'Order not found' }); return }
@@ -104,7 +104,7 @@ router.post('/', authenticate, async (req, res, next) => {
 // ── PATCH /api/orders/:id/cancel — owner only ────────────────────────────────
 router.patch('/:id/cancel', authenticate, async (req, res, next) => {
   try {
-    const order = await prisma.order.findUnique({ where: { id: req.params.id } })
+    const order = await prisma.order.findUnique({ where: { id: req.params.id as string } })
     if (!order) { res.status(404).json({ success: false, message: 'Order not found' }); return }
     if (order.userId !== req.auth!.userId) { res.status(403).json({ success: false, message: 'Forbidden' }); return }
     if (!['pending', 'processing'].includes(order.status)) {
@@ -128,7 +128,7 @@ router.patch('/:id/status', authenticate, requireAdmin, async (req, res, next) =
   try {
     const { status } = statusSchema.parse(req.body)
     const order = await prisma.order.update({
-      where:   { id: req.params.id },
+      where:   { id: req.params.id as string },
       data:    { status },
       include: ORDER_INCLUDE,
     })

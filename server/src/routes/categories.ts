@@ -45,7 +45,7 @@ const updateCategorySchema = z.object({
 router.patch('/:id', authenticate, requireAdmin, async (req, res, next) => {
   try {
     const data = updateCategorySchema.parse(req.body)
-    const category = await prisma.category.update({ where: { id: req.params.id }, data })
+    const category = await prisma.category.update({ where: { id: req.params.id as string }, data })
     res.json({ success: true, data: category })
   } catch (err) { next(err) }
 })
@@ -53,7 +53,7 @@ router.patch('/:id', authenticate, requireAdmin, async (req, res, next) => {
 // ── DELETE /api/categories/:id — admin ────────────────────────────────────────
 router.delete('/:id', authenticate, requireAdmin, async (req, res, next) => {
   try {
-    await prisma.category.delete({ where: { id: req.params.id } })
+    await prisma.category.delete({ where: { id: req.params.id as string } })
     res.status(204).send()
   } catch (err) { next(err) }
 })

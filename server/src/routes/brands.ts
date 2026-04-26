@@ -49,7 +49,7 @@ router.patch('/:id', authenticate, requireAdmin, async (req, res, next) => {
   try {
     const data = brandSchema.partial().parse(req.body)
     const brand = await prisma.brand.update({
-      where: { id: req.params.id },
+      where: { id: req.params.id as string },
       data:  {
         ...data,
         logoUrl:   data.logoUrl   === '' ? null : data.logoUrl,
@@ -63,7 +63,7 @@ router.patch('/:id', authenticate, requireAdmin, async (req, res, next) => {
 // ── DELETE /api/brands/:id — admin ────────────────────────────────────────────
 router.delete('/:id', authenticate, requireAdmin, async (req, res, next) => {
   try {
-    await prisma.brand.delete({ where: { id: req.params.id } })
+    await prisma.brand.delete({ where: { id: req.params.id as string } })
     res.json({ success: true })
   } catch (err) { next(err) }
 })
