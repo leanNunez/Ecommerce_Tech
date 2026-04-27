@@ -45,7 +45,7 @@ export function _setClientForTesting(client: OpenAI | null): void {
   _client = client
 }
 
-// Retries on transient errors (network, 5xx). Throws on 4xx or after exhausting attempts.
+// Retries only on explicit 5xx responses or ECONNRESET. 4xx and network errors are not retried.
 async function withRetry<T>(fn: () => Promise<T>, maxAttempts = 3): Promise<T> {
   for (let attempt = 1; attempt <= maxAttempts; attempt++) {
     try {
@@ -53,10 +53,8 @@ async function withRetry<T>(fn: () => Promise<T>, maxAttempts = 3): Promise<T> {
     } catch (err) {
       const status = (err as { status?: number }).status
       const isTransient =
-        !status ||
-        status >= 500 ||
-        (err instanceof Error &&
-          (err.message.includes('timeout') || err.message.includes('ECONNRESET')))
+        (typeof status === 'number' && status >= 500) ||
+        (err instanceof Error && err.message.includes('ECONNRESET'))
       if (!isTransient || attempt === maxAttempts) throw err
       await new Promise(r => setTimeout(r, Math.pow(2, attempt - 1) * 1000))
     }
