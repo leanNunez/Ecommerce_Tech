@@ -195,58 +195,56 @@ cd server && bun run test
 
 ### Prerequisites
 
-- Node.js 20+
-- Bun
-- A [Neon](https://neon.tech) database
-- A [Cloudinary](https://cloudinary.com) account
+- [Bun](https://bun.sh) ≥ 1.0
+- [Neon](https://neon.tech) database (free tier works)
+- [Cloudinary](https://cloudinary.com) account (free tier works)
+- [Cohere](https://dashboard.cohere.com) API key (embeddings)
+- [Groq](https://console.groq.com) API key (LLM assistant)
 
-### Frontend
+### Quick start
 
 ```bash
-# Install dependencies
-npm install
-
-# Create .env.local
-echo "VITE_API_URL=http://localhost:3001" > .env.local
-
-# Start dev server
-npm run dev
+git clone <repo-url> && cd ecommerce
+bash setup.sh
 ```
 
-### Backend
+`setup.sh` installs dependencies, copies env files, runs migrations, seeds the DB, and indexes embeddings. It pauses once to let you fill in `server/.env` with your API keys.
+
+### Manual setup
 
 ```bash
-cd server
-
-# Install dependencies
+# Frontend
 bun install
+cp .env.example .env.local
+# edit .env.local → set VITE_API_URL=http://localhost:3001
 
-# Create .env (see server/env.example)
+# Backend
+cd server
+bun install
 cp env.example .env
-# Fill in DATABASE_URL, JWT_SECRET, JWT_REFRESH_SECRET, CLOUDINARY_*
-
-# Generate Prisma client
+# edit .env → fill in DATABASE_URL, JWT_SECRET, JWT_REFRESH_SECRET, CLOUDINARY_URL, COHERE_API_KEY, GROQ_API_KEY
 bun prisma generate
-
-# Run migrations
 bun prisma migrate deploy
-
-# (Optional) Seed the database
 bun prisma db seed
+bun run index:full   # indexes product embeddings for semantic search
+```
 
-# Start dev server
+### Start dev servers
+
+```bash
+# Terminal 1 — frontend
 bun run dev
 
-# Index product embeddings (required for semantic search)
-bun run index:full
+# Terminal 2 — backend
+cd server && bun run dev
 ```
 
-### Embedding Index Commands
+### Embedding index commands
 
 | Command | Description |
 |---|---|
 | `bun run index:full` | Embed all active products (run once after setup) |
-| `bun run index:changed` | Embed only products created/updated since last run |
+| `bun run index:changed` | Embed only new/updated products since last run |
 | `bun run index:product -- --id <id>` | Embed a single product by ID |
 
 ## Demo
