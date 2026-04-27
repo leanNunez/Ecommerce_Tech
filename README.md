@@ -271,28 +271,30 @@ A runnable HTTP collection for all AI endpoints is at [`server/api.http`](server
 
 ## Environment Variables
 
+Copy `.env.example` → `.env.local` (frontend) and `server/env.example` → `server/.env` (backend), then fill in real values.
+
 ### Frontend (`.env.local`)
 
-| Variable | Description |
-|---|---|
-| `VITE_API_URL` | Backend base URL |
+| Variable | Required | Description |
+|---|---|---|
+| `VITE_API_URL` | ✅ | Backend base URL (no trailing slash) |
+| `VITE_APP_NAME` | — | App display name (default: `PremiumTech`) |
 
-### Backend (`.env`)
+### Backend (`server/.env`)
 
-| Variable | Description |
-|---|---|
-| `DATABASE_URL` | Neon PostgreSQL connection string |
-| `JWT_SECRET` | Secret for access tokens |
-| `JWT_REFRESH_SECRET` | Secret for refresh tokens |
-| `CLIENT_ORIGIN` | Frontend URL (for CORS) |
-| `CLOUDINARY_CLOUD_NAME` | Cloudinary cloud name |
-| `CLOUDINARY_API_KEY` | Cloudinary API key |
-| `CLOUDINARY_API_SECRET` | Cloudinary API secret |
-| `COHERE_API_KEY` | Cohere API key (embeddings) — [dashboard.cohere.com](https://dashboard.cohere.com/api-keys) |
-| `GROQ_API_KEY` | Groq API key (LLM) — [console.groq.com](https://console.groq.com/keys) |
-| `HEALTH_TOKEN` | Secret for `/health` endpoint (optional, recommended in prod) |
+| Variable | Required | Description |
+|---|---|---|
+| `DATABASE_URL` | ✅ | Neon PostgreSQL connection string |
+| `JWT_SECRET` | ✅ | Access token signing secret (`openssl rand -base64 64`) |
+| `JWT_REFRESH_SECRET` | ✅ | Refresh token signing secret |
+| `CLIENT_ORIGIN` | ✅ | Frontend URL(s) for CORS (comma-separated) |
+| `CLOUDINARY_URL` | ✅ | `cloudinary://api_key:api_secret@cloud_name` |
+| `COHERE_API_KEY` | ✅ | Embeddings — [dashboard.cohere.com](https://dashboard.cohere.com/api-keys) |
+| `GROQ_API_KEY` | ✅ | LLM assistant — [console.groq.com](https://console.groq.com/keys) |
+| `HEALTH_TOKEN` | — | Protects `/health` in prod (`openssl rand -hex 32`) |
+| `NODE_ENV` | — | Set to `production` on Render |
+| `PORT` | — | Default `3001` |
 
 ## Deploy
 
-- **Frontend** → Vercel. Config in `vercel.json`. Set `VITE_API_URL` in Vercel environment variables.
-- **Backend** → Render. Set all backend environment variables in Render dashboard (note: `server/railway.json` can be ignored).
+See [`docs/DEPLOY.md`](docs/DEPLOY.md) for full instructions, release checklist, and rollback plan.
