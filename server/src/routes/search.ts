@@ -34,6 +34,8 @@ type SearchRow = {
   category_slug: string
   image_url: string | null
   score: unknown
+  in_vector: boolean
+  in_fts: boolean
 }
 
 // ── GET /api/search ────────────────────────────────────────────────────────────
@@ -161,7 +163,9 @@ router.get('/', async (req, res, next) => {
         rrf AS (
           SELECT
             COALESCE(v.id, f.id) AS id,
-            (COALESCE(1.0 / (60 + v.rank), 0) + COALESCE(1.0 / (60 + f.rank), 0)) AS score
+            (COALESCE(1.0 / (60 + v.rank), 0) + COALESCE(1.0 / (60 + f.rank), 0)) AS score,
+            v.id IS NOT NULL AS in_vector,
+            f.id IS NOT NULL AS in_fts
           FROM       vector_ranked v
           FULL OUTER JOIN fts_ranked f ON v.id = f.id
         )
@@ -185,7 +189,9 @@ router.get('/', async (req, res, next) => {
           ORDER  BY "order"
           LIMIT  1
         ) AS image_url,
-        rrf.score
+        rrf.score,
+        rrf.in_vector,
+        rrf.in_fts
       FROM       rrf
       JOIN       "Product"  p ON p.id  = rrf.id
       JOIN       "Brand"    b ON b.id  = p."brandId"
@@ -211,6 +217,7 @@ router.get('/', async (req, res, next) => {
           brand:          { name: r.brand_name, slug: r.brand_slug },
           category:       { name: r.category_name, slug: r.category_slug },
           _score:         Number(r.score),
+          why_matched:    r.in_vector && r.in_fts ? 'semantic+text' : r.in_vector ? 'semantic' : 'text',
         })),
         page,
         perPage,

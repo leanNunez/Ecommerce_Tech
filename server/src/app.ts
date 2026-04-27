@@ -17,6 +17,7 @@ import searchRouter    from './routes/search.js'
 import assistantRouter from './routes/assistant.js'
 import { errorHandler } from './middleware/error.js'
 import { logger } from './lib/logger.js'
+import { prisma } from './lib/prisma.js'
 
 const ALLOWED_ORIGINS = (process.env.CLIENT_ORIGIN ?? 'http://localhost:5173,http://localhost:5174')
   .split(',')
@@ -70,6 +71,15 @@ app.get('/health', (req, res) => {
     return
   }
   res.json({ status: 'ok' })
+})
+
+app.get('/ready', async (_req, res) => {
+  try {
+    await prisma.$queryRaw`SELECT 1`
+    res.json({ status: 'ready' })
+  } catch {
+    res.status(503).json({ status: 'not ready', reason: 'db_unreachable' })
+  }
 })
 
 app.use(errorHandler)

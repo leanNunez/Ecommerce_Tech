@@ -69,31 +69,19 @@ Rate-limited to 20 req/min. Input sanitized with a prompt injection guard (keywo
 
 ### AI Architecture
 
-```
-User query
-    │
-    ▼
-Cohere embed-multilingual-v3.0 → float[1024]
-    │
-    ▼
-PostgreSQL + pgvector
-    ├── tsvector full-text search  (weight 0.4)
-    └── cosine similarity <=>      (weight 0.6)
-    │
-    ▼
-Hybrid ranked results
+See the [system diagram](#architecture) above for the full component overview.
 
-AI Assistant
-    │
-    ▼
-Groq llama-3.3-70b-versatile ──► SSE stream to client
-    │
-    ├── searchProducts(query, filters)
-    ├── getProductDetails(productId)
-    ├── compareProducts(productIds[])
-    ├── addToCart(productId, variantId, qty)     ← requires auth
-    └── getCartSummary()
-```
+**Search flow:** query → Cohere embed (1024 dims) → RRF(pgvector cosine + tsvector FTS) → ranked results with `why_matched: "semantic" | "text" | "semantic+text"`
+
+**Assistant flow:** message → injection guard → Groq tool-calling loop (max 8 rounds) → SSE stream. Available tools:
+
+| Tool | Description |
+|---|---|
+| `searchProducts(query, filters)` | Hybrid search against the live catalog |
+| `getProductDetails(productId)` | Full specs, price, stock, variants |
+| `compareProducts(productIds[])` | Side-by-side comparison |
+| `addToCart(productId, variantId, qty)` | Requires auth |
+| `getCartSummary()` | Current cart totals |
 
 ### Known Tradeoffs
 
@@ -105,6 +93,45 @@ Groq llama-3.3-70b-versatile ──► SSE stream to client
 | Ephemeral chat history | History lives client-side per session — no DB persistence, no cross-device continuity |
 
 ## Architecture
+
+```mermaid
+graph TD
+    Browser["🌐 Browser\nReact 19 · FSD · TanStack Router"]
+
+    subgraph api["Express API  —  Node.js + Bun"]
+        Routes["REST Routes\n/api/products · /api/orders · /api/cart\n/api/auth · /api/search · /api/assistant"]
+        Guard["Injection Guard\n+ Rate Limit + requestId"]
+        Search["Hybrid Search\nvector RRF + full-text → why_matched"]
+        Orch["Assistant Orchestrator\ntool-calling loop · SSE stream"]
+    end
+
+    subgraph ext["External Services"]
+        Cohere["Cohere\nembed-multilingual-v3.0\n1024 dims · ⏱ 10 s"]
+        Groq["Groq  llama-3.3-70b-versatile\ntool-calling · ⏱ 30 s · retry ×3"]
+        Cloudinary["Cloudinary\nimage upload · ⏱ 30 s"]
+    end
+
+    subgraph db["Neon PostgreSQL"]
+        PGV["pgvector\ncosine similarity"]
+        FTS["Full-text\ntsvector"]
+        ORM["Prisma 7\npg adapter"]
+    end
+
+    Browser -- "REST · SSE · HttpOnly cookie" --> Routes
+    Routes --> Guard
+    Guard --> Search
+    Guard --> Orch
+    Search -- "embed query" --> Cohere
+    Cohere -- "float[1024]" --> Search
+    Search -- "vector scan" --> PGV
+    Search -- "plainto_tsquery" --> FTS
+    Orch -- "tool-calling" --> Groq
+    Orch -- "searchProducts · addToCart ..." --> Routes
+    Routes -- "CRUD" --> ORM
+    ORM --> PGV
+    ORM --> FTS
+    Routes -- "upload_stream" --> Cloudinary
+```
 
 ### Frontend — Feature-Sliced Design (FSD)
 
@@ -223,6 +250,8 @@ bun run index:full
 | `bun run index:product -- --id <id>` | Embed a single product by ID |
 
 ## Demo
+
+> Full step-by-step walkthrough: [`docs/DEMO.md`](docs/DEMO.md)
 
 | Role | Email | Password |
 |---|---|---|

@@ -45,6 +45,25 @@ export function _setClientForTesting(client: OpenAI | null): void {
   _client = client
 }
 
+// Retries on transient errors (network, 5xx). Throws on 4xx or after exhausting attempts.
+async function withRetry<T>(fn: () => Promise<T>, maxAttempts = 3): Promise<T> {
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    try {
+      return await fn()
+    } catch (err) {
+      const status = (err as { status?: number }).status
+      const isTransient =
+        !status ||
+        status >= 500 ||
+        (err instanceof Error &&
+          (err.message.includes('timeout') || err.message.includes('ECONNRESET')))
+      if (!isTransient || attempt === maxAttempts) throw err
+      await new Promise(r => setTimeout(r, Math.pow(2, attempt - 1) * 1000))
+    }
+  }
+  throw new Error('unreachable')
+}
+
 export type ChatMessage = {
   role: 'user' | 'assistant'
   content: string
@@ -61,14 +80,16 @@ async function runToolLoop(
   for (let round = 0; round < MAX_TOOL_ROUNDS; round++) {
     let response: OpenAI.ChatCompletion
     try {
-      response = await getClient().chat.completions.create({
-        model: MODEL,
-        messages,
-        tools: TOOL_DEFINITIONS as unknown as OpenAI.ChatCompletionTool[],
-        tool_choice: 'auto',
-      })
+      response = await withRetry(() =>
+        getClient().chat.completions.create({
+          model: MODEL,
+          messages,
+          tools: TOOL_DEFINITIONS as unknown as OpenAI.ChatCompletionTool[],
+          tool_choice: 'auto',
+        }),
+      )
     } catch {
-      // Groq rejects malformed tool call generation — exit loop and use fallback
+      // Groq unavailable or malformed tool call — exit loop and use fallback
       break
     }
 
@@ -152,10 +173,12 @@ export async function runAssistant(
 
   if (finalContent !== null) return finalContent
 
-  const fallback = await getClient().chat.completions.create({
-    model: MODEL,
-    messages: buildFallbackMessages(updated, history, userMessage),
-  })
+  const fallback = await withRetry(() =>
+    getClient().chat.completions.create({
+      model: MODEL,
+      messages: buildFallbackMessages(updated, history, userMessage),
+    }),
+  )
   return fallback.choices[0].message.content ?? ''
 }
 
@@ -174,10 +197,12 @@ export async function* streamAssistant(
 
   // Tool loop exhausted — rebuild clean context without tool_calls protocol
   // This bypasses Groq's strict validation on tool_calls in message history
-  const response = await getClient().chat.completions.create({
-    model: MODEL,
-    messages: buildFallbackMessages(updated, history, userMessage),
-  })
+  const response = await withRetry(() =>
+    getClient().chat.completions.create({
+      model: MODEL,
+      messages: buildFallbackMessages(updated, history, userMessage),
+    }),
+  )
   const content = response.choices[0].message.content ?? ''
   if (content) yield content
 }

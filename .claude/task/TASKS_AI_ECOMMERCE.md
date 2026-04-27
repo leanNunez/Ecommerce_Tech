@@ -30,14 +30,14 @@
   - [x] `index:full`
   - [x] `index:changed`
   - [x] `index:product --id`
-- [ ] Persistir logs de indexación (total, éxito, fallos, duración).
-- [ ] Implementar retry/backoff ante errores del proveedor de embeddings.
+- [x] Persistir logs de indexación (total, éxito, fallos, duración).
+- [x] Implementar retry/backoff ante errores del proveedor de embeddings.
 
 ### A4. API de búsqueda híbrida
 - [x] Crear endpoint `GET /search`.
 - [x] Soportar filtros (categoría, precio, marca, stock, sort).
 - [x] Implementar ranking híbrido (textual + semántico con RRF).
-- [ ] Exponer campos de explicación de ranking (opcional: `why_matched`).
+- [x] Exponer campos de explicación de ranking (opcional: `why_matched`).
 - [x] Agregar paginación y ordenamiento.
 - [x] Validar inputs con schema validation (Zod).
 - [x] Manejar errores y timeouts de forma consistente.
@@ -45,7 +45,7 @@
 ### A5. Recomendaciones
 - [x] Crear endpoint `GET /products/:id/similar`.
 - [x] Definir reglas de exclusión (mismo producto, sin stock).
-- [ ] Agregar diversificación de resultados (evitar resultados casi idénticos).
+- [x] Agregar diversificación de resultados (evitar resultados casi idénticos).
 - [x] Implementar fallback si no hay embeddings (top-rated por categoría).
 
 ### A6. Frontend búsqueda inteligente
@@ -83,7 +83,7 @@
 - [x] Implementar ciclo tool-calling (invocación + resultados + respuesta final).
 - [x] Implementar memoria corta de conversación por sesión.
 - [x] Implementar guardrails de seguridad y validación de tool arguments (injection guard + strike ban).
-- [ ] Implementar fallback de modelo (si provider LLM no responde).
+- [x] Implementar fallback de modelo (si provider LLM no responde).
 
 ### B4. API del asistente
 - [x] Crear endpoint `POST /api/assistant/chat`.
@@ -120,14 +120,13 @@
 - [x] Crear workflow frontend: lint + typecheck + tests.
 - [x] Ejecutar checks en PR y push a rama principal.
 - [x] Agregar badges de estado al README.
-- [ ] Configurar bloqueo de merge si checks fallan (branch protection en GitHub settings).
+- [x] Configurar bloqueo de merge si checks fallan (branch protection en GitHub settings).
 
 ### C2. Observabilidad
 - [x] Implementar logging estructurado (`logger.ts` con pino/structured logs).
-- [ ] Agregar middleware de correlación de requests (`requestId` por request).
-- [x] Implementar `/health` (con token de autenticación en prod).
 - [x] Agregar middleware de correlación de requests (`requestId` UUID por request, header `X-Request-Id`).
-- [ ] Implementar `/ready` (endpoint separado de readiness).
+- [x] Implementar `/health` (con token de autenticación en prod).
+- [x] Implementar `/ready` (endpoint separado de readiness).
 - [ ] Instrumentar métricas básicas (latencia, error rate, AI calls).
 - [ ] Crear dashboard mínimo (aunque sea básico).
 
@@ -164,7 +163,7 @@
 
 ### D1. README principal (Ecommerce_Tech)
 - [x] Agregar sección "AI Features" (búsqueda semántica + asistente).
-- [ ] Incluir arquitectura de alto nivel (diagrama visual — no solo texto).
+- [x] Incluir arquitectura de alto nivel (diagrama visual — no solo texto).
 - [x] Documentar endpoints de search/recommend/chat (`api.http` + README).
 - [x] Agregar instrucciones de indexación de embeddings (`bun run index:full`).
 - [x] Agregar "Known Tradeoffs" y próximos pasos.
@@ -173,7 +172,7 @@
 - [x] Añadir credenciales demo (admin/user en README).
 - [x] Agregar colección de requests HTTP (`api.http` — Bruno/REST Client).
 - [ ] Incluir script de setup rápido para evaluadores (`.env.example` completo + pasos en 1 comando).
-- [ ] Crear "demo script" (pasos de 3 min para mostrar búsqueda semántica + chat).
+- [x] Crear "demo script" (pasos de 3 min para mostrar búsqueda semántica + chat).
 
 ### D3. Portfolio / narrativa
 - [x] Actualizar myportfolio con sección "AI Commerce".
