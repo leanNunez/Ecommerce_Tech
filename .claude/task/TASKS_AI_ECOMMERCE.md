@@ -134,28 +134,28 @@
 - [x] Revisar CORS y headers de seguridad (trust proxy + CORS multi-origin).
 - [x] Implementar rate limiting en AI endpoints.
 - [x] Validación estricta de payloads en todos los endpoints críticos (Zod en cart, orders, addresses, users, auth, products — fixed forgot-password).
-- [ ] Revisar manejo seguro de secrets y documentar rotación.
-- [ ] Auditoría de dependencias y vulnerabilidades (`bun audit` / Snyk).
+- [x] Revisar manejo seguro de secrets y documentar rotación (`server/env.example` + `.env.example` con guía de rotación por provider).
+- [x] Auditoría de dependencias y vulnerabilidades (`bun audit` — axios, vite, follow-redirects actualizados).
 
 ### C4. Performance
 - [ ] Definir presupuesto de latencia para endpoints críticos.
 - [ ] Optimizar consultas de catálogo y búsqueda.
-- [ ] Implementar caching en rutas de alta lectura.
+- [x] Implementar caching en rutas de alta lectura (`lib/mem-cache.ts` — brands + categories con TTL 5min + invalidación en writes).
 - [ ] Evaluar compresión y optimizaciones frontend (bundle splitting).
 - [ ] Ejecutar smoke load test y guardar resultados.
 
 ### C5. Resiliencia
 - [x] Timeouts explícitos hacia servicios externos (Cohere 10s, Groq 30s, Cloudinary 30s).
-- [ ] Circuit breaker/retry para llamadas a providers AI.
+- [x] Circuit breaker/retry para llamadas a providers AI (`withRetry` en orchestrator — reintentos en 5xx/ECONNRESET).
 - [x] Fallback funcional cuando AI no esté disponible (strike ban + injection guard).
 - [x] Manejo consistente de errores de DB y red (error middleware + sanitize en prod).
 
 ### C6. Entornos
 - [x] URL de producción documentada (backend en `api.http`).
-- [ ] Verificar y documentar paridad de variables entre local/staging/prod.
-- [ ] Documentar configuración de deploy (Vercel + Render).
-- [ ] Crear checklist de release manual.
-- [ ] Crear rollback plan básico.
+- [x] Verificar y documentar paridad de variables entre local/staging/prod (`docs/DEPLOY.md`).
+- [x] Documentar configuración de deploy (Vercel + Render) (`docs/DEPLOY.md`).
+- [x] Crear checklist de release manual (`docs/DEPLOY.md`).
+- [x] Crear rollback plan básico (`docs/DEPLOY.md` — 4 escenarios).
 
 ---
 
@@ -171,7 +171,7 @@
 ### D2. Demo y DX
 - [x] Añadir credenciales demo (admin/user en README).
 - [x] Agregar colección de requests HTTP (`api.http` — Bruno/REST Client).
-- [ ] Incluir script de setup rápido para evaluadores (`.env.example` completo + pasos en 1 comando).
+- [x] Incluir script de setup rápido para evaluadores (`setup.sh` + `.env.example` + `server/env.example`).
 - [x] Crear "demo script" (pasos de 3 min para mostrar búsqueda semántica + chat).
 
 ### D3. Portfolio / narrativa
