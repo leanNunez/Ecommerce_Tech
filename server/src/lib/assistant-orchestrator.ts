@@ -35,6 +35,7 @@ function getClient(): OpenAI {
     _client = new OpenAI({
       apiKey,
       baseURL: 'https://api.groq.com/openai/v1',
+      timeout: 30_000,
     })
   }
   return _client

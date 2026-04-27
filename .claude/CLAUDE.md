@@ -19,3 +19,7 @@
 |---------|-------|
 | Error 500 en upload, Cloudinary, Prisma migration, seed errors | `.claude/skills/ecommerce-gotchas/SKILL.md` |
 | Auth, login, register, roles, JWT, endpoints públicos o admin | `.claude/skills/ecommerce-security/SKILL.md` |
+| PLP/PDP/carrito/checkout UX, filtros, empty states, búsqueda UX | `.claude/skills/ecommerce-frontend-ux/SKILL.md` |
+| Cloudinary transforms, React Query staleTime, bundle budget, prefetch | `.claude/skills/ecommerce-performance/SKILL.md` |
+| Tests de auth, carrito, checkout, búsqueda, admin, contratos de API | `.claude/skills/ecommerce-testing/SKILL.md` |
+| SEO de PDPs/PLPs, canonical de filtros, JSON-LD, hreflang EN/ES | `.claude/skills/ecommerce-seo-content/SKILL.md` |

@@ -190,10 +190,13 @@ router.post('/logout', (_req, res) => {
 })
 
 // ── POST /api/auth/forgot-password / reset-password (mock) ───────────────────
-router.post('/forgot-password', forgotPasswordLimiter, (req, res) => {
-  const { email } = req.body as { email?: string }
-  if (!email) { res.status(400).json({ success: false, message: 'Email required' }); return }
-  res.json({ success: true, message: 'Reset link sent (mock)' })
+const forgotPasswordSchema = z.object({ email: z.string().email() })
+
+router.post('/forgot-password', forgotPasswordLimiter, (req, res, next) => {
+  try {
+    forgotPasswordSchema.parse(req.body)
+    res.json({ success: true, message: 'Reset link sent (mock)' })
+  } catch (err) { next(err) }
 })
 
 router.post('/reset-password', (_req, res) => {

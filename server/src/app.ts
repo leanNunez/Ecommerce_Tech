@@ -1,4 +1,5 @@
 import 'dotenv/config'
+import { randomUUID } from 'crypto'
 import express from 'express'
 import cors from 'cors'
 import cookieParser from 'cookie-parser'
@@ -15,6 +16,7 @@ import usersRouter     from './routes/users.js'
 import searchRouter    from './routes/search.js'
 import assistantRouter from './routes/assistant.js'
 import { errorHandler } from './middleware/error.js'
+import { logger } from './lib/logger.js'
 
 const ALLOWED_ORIGINS = (process.env.CLIENT_ORIGIN ?? 'http://localhost:5173,http://localhost:5174')
   .split(',')
@@ -38,6 +40,14 @@ app.use(
 )
 app.use(express.json())
 app.use(cookieParser())
+
+app.use((req, res, next) => {
+  const requestId = randomUUID()
+  res.setHeader('X-Request-Id', requestId)
+  res.locals.requestId = requestId
+  logger.info(`${req.method} ${req.url}`, { requestId })
+  next()
+})
 
 app.use('/api/auth',       authRouter)
 app.use('/api/upload',     uploadRouter)

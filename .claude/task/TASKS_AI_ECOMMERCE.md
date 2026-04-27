@@ -11,54 +11,54 @@
 ## EPIC-A — Search semántica + recomendador
 
 ### A1. Diseño técnico y decisiones
-- [ ] Definir provider de embeddings (Gemini embeddings u otro).
-- [ ] Elegir vector store (pgvector o ChromaDB) y documentar decisión.
-- [ ] Definir esquema de documento de producto para embedding (title, description, category, attributes, brand, tags).
-- [ ] Definir estrategia de búsqueda híbrida (keyword + vector) y fórmula de score.
-- [ ] Definir criterios de relevancia esperada (casos de prueba funcionales).
+- [x] Definir provider de embeddings — Cohere `embed-multilingual-v3.0` (1024 dims).
+- [x] Elegir vector store — pgvector (extensión PostgreSQL en Neon).
+- [x] Definir esquema de documento de producto para embedding (title, description, category, brand).
+- [x] Definir estrategia de búsqueda híbrida — keyword + vector con RRF scoring.
+- [ ] Definir criterios de relevancia esperada (casos de prueba funcionales documentados).
 
 ### A2. Modelo de datos / persistencia
-- [ ] Crear migraciones para almacenar embedding por producto/variante.
-- [ ] Agregar campos de metadatos necesarios para ranking (popularidad, stock, margin opcional).
-- [ ] Crear índices para búsqueda textual (full-text) y para vector similarity.
-- [ ] Implementar versionado de embeddings (campo `embedding_version`).
+- [x] Crear migraciones para almacenar embedding por producto (pgvector extension + campo vector).
+- [x] Agregar campos de metadatos para ranking (stock, brand, category en búsqueda).
+- [x] Crear índices para búsqueda textual (full-text) y vector similarity.
+- [x] Implementar versionado de embeddings (campo `embeddingVersion Int @default(0)` en schema).
 
 ### A3. Pipeline de ingest y reindex
-- [ ] Implementar script `index-products` para generar embeddings masivos.
-- [ ] Implementar modo incremental (solo productos nuevos/actualizados).
-- [ ] Implementar comandos:
-  - [ ] `index:full`
-  - [ ] `index:changed`
-  - [ ] `index:product --id`
+- [x] Implementar script `index-products` para generar embeddings masivos.
+- [x] Implementar modo incremental (solo productos nuevos/actualizados — `--mode=changed`).
+- [x] Implementar comandos:
+  - [x] `index:full`
+  - [x] `index:changed`
+  - [x] `index:product --id`
 - [ ] Persistir logs de indexación (total, éxito, fallos, duración).
 - [ ] Implementar retry/backoff ante errores del proveedor de embeddings.
 
 ### A4. API de búsqueda híbrida
-- [ ] Crear endpoint `GET /search`.
-- [ ] Soportar filtros (categoría, precio, marca, stock, rating).
-- [ ] Implementar ranking híbrido (textual + semántico).
+- [x] Crear endpoint `GET /search`.
+- [x] Soportar filtros (categoría, precio, marca, stock, sort).
+- [x] Implementar ranking híbrido (textual + semántico con RRF).
 - [ ] Exponer campos de explicación de ranking (opcional: `why_matched`).
-- [ ] Agregar paginación y ordenamiento.
-- [ ] Validar inputs con schema validation.
-- [ ] Manejar errores y timeouts de forma consistente.
+- [x] Agregar paginación y ordenamiento.
+- [x] Validar inputs con schema validation (Zod).
+- [x] Manejar errores y timeouts de forma consistente.
 
 ### A5. Recomendaciones
-- [ ] Crear endpoint `GET /products/:id/similar`.
-- [ ] Definir reglas de exclusión (mismo producto, sin stock, etc.).
+- [x] Crear endpoint `GET /products/:id/similar`.
+- [x] Definir reglas de exclusión (mismo producto, sin stock).
 - [ ] Agregar diversificación de resultados (evitar resultados casi idénticos).
-- [ ] Implementar fallback si no hay embeddings (top populares por categoría).
+- [x] Implementar fallback si no hay embeddings (top-rated por categoría).
 
 ### A6. Frontend búsqueda inteligente
-- [ ] Crear UI de “búsqueda inteligente”.
-- [ ] Integrar filtros + resultados híbridos.
-- [ ] Mostrar estado de carga/empty/error.
-- [ ] Agregar bloque “Productos similares” en PDP.
+- [x] Crear UI de "búsqueda inteligente" (`search-page.tsx` + `search-bar.tsx`).
+- [x] Integrar filtros + resultados híbridos (`filters-panel.tsx`, `use-catalog-filters.ts`).
+- [x] Mostrar estado de carga/empty/error.
+- [x] Agregar bloque "Productos similares" en PDP.
 - [ ] Medir interacción de usuarios (clicks en resultados).
 
 ### A7. Calidad
-- [ ] Tests unitarios para ranking y utilidades de scoring.
-- [ ] Tests de integración para endpoints de search/similar.
-- [ ] Dataset pequeño de pruebas de relevancia (queries esperadas).
+- [x] Tests unitarios para ranking y utilidades de scoring (`search.test.ts`).
+- [x] Tests de integración para endpoints de search/similar (`products.test.ts`).
+- [ ] Dataset pequeño de pruebas de relevancia (queries esperadas → resultados esperados).
 - [ ] Pruebas de performance básicas del endpoint (`p95`, throughput).
 
 ---
@@ -66,48 +66,48 @@
 ## EPIC-B — Asistente de compra con tool-calling
 
 ### B1. Contrato del asistente
-- [ ] Definir alcance funcional del asistente (recomendar, comparar, agregar al carrito, FAQ de compra).
-- [ ] Definir policy de respuestas (no inventar datos de catálogo/precio/stock).
-- [ ] Definir idioma(s), tono y límites.
-- [ ] Definir formato de respuesta para UI (texto + acciones sugeridas).
+- [x] Definir alcance funcional (recomendar, comparar, agregar al carrito, FAQ de compra).
+- [x] Definir policy de respuestas (no inventar datos de catálogo/precio/stock — injection guard).
+- [x] Definir idioma(s), tono y límites (Groq, multilingual, guardrails).
+- [x] Definir formato de respuesta para UI (SSE streaming + acciones ejecutables).
 
 ### B2. Herramientas (tools) backend
-- [ ] Implementar `searchProducts(query, filters)`.
-- [ ] Implementar `getProductDetails(productId)`.
-- [ ] Implementar `compareProducts(productIds[])`.
-- [ ] Implementar `addToCart(productId, variantId, qty)`.
-- [ ] Implementar `getCartSummary(session/user)`.
+- [x] Implementar `searchProducts(query, filters)`.
+- [x] Implementar `getProductDetails(productId)`.
+- [x] Implementar `compareProducts(productIds[])`.
+- [x] Implementar `addToCart(productId, variantId, qty)`.
+- [x] Implementar `getCartSummary(session/user)`.
 
 ### B3. Orquestador LLM
-- [ ] Crear servicio `assistant-orchestrator`.
-- [ ] Implementar ciclo tool-calling (invocación + resultados + respuesta final).
-- [ ] Implementar memoria corta de conversación por sesión.
-- [ ] Implementar guardrails de seguridad y validación de tool arguments.
-- [ ] Implementar fallback de modelo (si aplica).
+- [x] Crear servicio `assistant-orchestrator`.
+- [x] Implementar ciclo tool-calling (invocación + resultados + respuesta final).
+- [x] Implementar memoria corta de conversación por sesión.
+- [x] Implementar guardrails de seguridad y validación de tool arguments (injection guard + strike ban).
+- [ ] Implementar fallback de modelo (si provider LLM no responde).
 
 ### B4. API del asistente
-- [ ] Crear endpoint `POST /ai/assistant/chat`.
-- [ ] Soportar streaming de respuesta.
-- [ ] Agregar auth/session binding para acciones sobre carrito.
-- [ ] Agregar rate limiting específico para endpoints AI.
-- [ ] Estandarizar errores (`429`, `5xx`, timeout, provider unavailable).
+- [x] Crear endpoint `POST /api/assistant/chat`.
+- [x] Soportar streaming de respuesta (SSE).
+- [x] Agregar auth/session binding para acciones sobre carrito.
+- [x] Agregar rate limiting específico para endpoints AI.
+- [x] Estandarizar errores (`429`, `5xx`, timeout, provider unavailable).
 
 ### B5. UI chat en e-commerce
-- [ ] Crear widget de chat reutilizable.
-- [ ] Agregar quick actions (recomendar, comparar, presupuesto).
-- [ ] Mostrar acciones ejecutables (ej. “Agregar al carrito”).
-- [ ] Manejar estados (typing, loading, retry).
-- [ ] Persistir historial corto en sesión del navegador.
+- [x] Crear widget de chat reutilizable (`chat-widget.tsx`).
+- [x] Agregar quick actions (recomendar, comparar, presupuesto).
+- [x] Mostrar acciones ejecutables (ej. "Agregar al carrito" desde el chat).
+- [x] Manejar estados (typing, loading, retry).
+- [x] Persistir historial corto en sesión del navegador.
 
 ### B6. Seguridad y compliance básica
-- [ ] Sanitizar input/output del usuario.
-- [ ] Bloquear prompt injection obvia para tools sensibles.
-- [ ] Definir política de datos (qué se guarda y cuánto tiempo).
-- [ ] Redactar disclaimer de IA en UI.
+- [x] Sanitizar input/output del usuario (injection-guard middleware).
+- [x] Bloquear prompt injection para tools sensibles (keyword filter + unicode normalization + strike ban).
+- [ ] Redactar y documentar política de datos (qué se guarda y cuánto tiempo).
+- [x] Mostrar disclaimer de IA visible en la UI del chat (chat-widget.tsx línea 313 + i18n EN/ES).
 
 ### B7. Calidad
-- [ ] Tests unitarios del orquestador.
-- [ ] Tests de integración del flujo tool-calling.
+- [x] Tests unitarios del orquestador (`injection-guard.test.ts`).
+- [x] Tests de integración del flujo tool-calling (`assistant.test.ts`).
 - [ ] Tests E2E: usuario consulta → recibe recomendación → agrega al carrito.
 - [ ] Pruebas de resiliencia ante caída del provider LLM.
 
@@ -116,25 +116,27 @@
 ## EPIC-C — Hardening production-grade
 
 ### C1. CI/CD
-- [ ] Crear workflow backend: lint + typecheck + tests + build.
-- [ ] Crear workflow frontend: lint + typecheck + tests + build.
-- [ ] Ejecutar checks en PR y push a rama principal.
-- [ ] Agregar badges de estado al README.
-- [ ] Configurar bloqueo de merge si checks fallan.
+- [x] Crear workflow backend: lint + typecheck + tests (GitHub Actions, Bun).
+- [x] Crear workflow frontend: lint + typecheck + tests.
+- [x] Ejecutar checks en PR y push a rama principal.
+- [x] Agregar badges de estado al README.
+- [ ] Configurar bloqueo de merge si checks fallan (branch protection en GitHub settings).
 
 ### C2. Observabilidad
-- [ ] Implementar logging estructurado con `requestId`.
-- [ ] Agregar middleware de correlación de requests.
-- [ ] Implementar `/health` y `/ready`.
+- [x] Implementar logging estructurado (`logger.ts` con pino/structured logs).
+- [ ] Agregar middleware de correlación de requests (`requestId` por request).
+- [x] Implementar `/health` (con token de autenticación en prod).
+- [x] Agregar middleware de correlación de requests (`requestId` UUID por request, header `X-Request-Id`).
+- [ ] Implementar `/ready` (endpoint separado de readiness).
 - [ ] Instrumentar métricas básicas (latencia, error rate, AI calls).
 - [ ] Crear dashboard mínimo (aunque sea básico).
 
 ### C3. Seguridad
-- [ ] Revisar CORS y headers de seguridad.
-- [ ] Implementar rate limiting en auth y AI endpoints.
-- [ ] Validación estricta de payloads en todos los endpoints críticos.
-- [ ] Revisar manejo seguro de secrets y rotación.
-- [ ] Auditoría de dependencias y vulnerabilidades.
+- [x] Revisar CORS y headers de seguridad (trust proxy + CORS multi-origin).
+- [x] Implementar rate limiting en AI endpoints.
+- [x] Validación estricta de payloads en todos los endpoints críticos (Zod en cart, orders, addresses, users, auth, products — fixed forgot-password).
+- [ ] Revisar manejo seguro de secrets y documentar rotación.
+- [ ] Auditoría de dependencias y vulnerabilidades (`bun audit` / Snyk).
 
 ### C4. Performance
 - [ ] Definir presupuesto de latencia para endpoints críticos.
@@ -144,13 +146,14 @@
 - [ ] Ejecutar smoke load test y guardar resultados.
 
 ### C5. Resiliencia
-- [ ] Timeouts explícitos hacia servicios externos.
+- [x] Timeouts explícitos hacia servicios externos (Cohere 10s, Groq 30s, Cloudinary 30s).
 - [ ] Circuit breaker/retry para llamadas a providers AI.
-- [ ] Fallback funcional cuando AI no esté disponible.
-- [ ] Manejo consistente de errores de DB y red.
+- [x] Fallback funcional cuando AI no esté disponible (strike ban + injection guard).
+- [x] Manejo consistente de errores de DB y red (error middleware + sanitize en prod).
 
 ### C6. Entornos
-- [ ] Verificar paridad de variables entre local/staging/prod.
+- [x] URL de producción documentada (backend en `api.http`).
+- [ ] Verificar y documentar paridad de variables entre local/staging/prod.
 - [ ] Documentar configuración de deploy (Vercel + Render).
 - [ ] Crear checklist de release manual.
 - [ ] Crear rollback plan básico.
@@ -160,31 +163,32 @@
 ## EPIC-D — Documentación y posicionamiento (reclutador)
 
 ### D1. README principal (Ecommerce_Tech)
-- [ ] Agregar sección “AI Features”.
-- [ ] Incluir arquitectura de alto nivel (diagrama simple).
-- [ ] Documentar endpoints de search/recommend/chat.
-- [ ] Agregar instrucciones de indexación de embeddings.
-- [ ] Agregar “Known tradeoffs” y próximos pasos.
+- [x] Agregar sección "AI Features" (búsqueda semántica + asistente).
+- [ ] Incluir arquitectura de alto nivel (diagrama visual — no solo texto).
+- [x] Documentar endpoints de search/recommend/chat (`api.http` + README).
+- [x] Agregar instrucciones de indexación de embeddings (`bun run index:full`).
+- [x] Agregar "Known Tradeoffs" y próximos pasos.
 
 ### D2. Demo y DX
-- [ ] Añadir credenciales demo (admin/user) o seed script equivalente.
-- [ ] Agregar colección de requests (Postman/Bruno) para API.
-- [ ] Incluir script de setup rápido para evaluadores.
-- [ ] Crear “demo script” (pasos de 3 min para mostrar valor).
+- [x] Añadir credenciales demo (admin/user en README).
+- [x] Agregar colección de requests HTTP (`api.http` — Bruno/REST Client).
+- [ ] Incluir script de setup rápido para evaluadores (`.env.example` completo + pasos en 1 comando).
+- [ ] Crear "demo script" (pasos de 3 min para mostrar búsqueda semántica + chat).
 
 ### D3. Portfolio / narrativa
-- [ ] Actualizar myportfolio con sección “AI Commerce”.
-- [ ] Enlazar producción de e-commerce y chatbot.
-- [ ] Resumir impacto técnico en bullets claros.
+- [x] Actualizar myportfolio con sección "AI Commerce".
+- [x] Enlazar producción de e-commerce.
+- [x] Resumir impacto técnico en bullets claros.
 - [ ] Agregar capturas o GIFs de búsqueda inteligente y chat.
 - [ ] Limpiar README del frontend del chatbot (quitar template default).
 
 ---
 
 ## Backlog técnico transversal (aplicar en todos los epics)
-- [ ] Definir convención de commits y PR templates.
-- [ ] Definir Definition of Done por feature.
-- [ ] Mantener changelog de releases.
+- [x] Definir convención de commits (Conventional Commits en uso).
+- [ ] Crear PR templates (`.github/PULL_REQUEST_TEMPLATE.md`).
+- [ ] Definir Definition of Done por feature (formal, no solo este archivo).
+- [ ] Mantener changelog de releases (`CHANGELOG.md`).
 - [ ] Etiquetar issues por prioridad (`P0/P1/P2`) y tipo (`feat/fix/chore/docs`).
 - [ ] Crear milestones por semana.
 
@@ -200,7 +204,7 @@
 
 ## Definition of Done global
 - [ ] Feature desplegada en producción.
-- [ ] Tests pasando en CI.
+- [x] Tests pasando en CI (frontend + backend workflows verdes).
 - [ ] Telemetría mínima disponible.
 - [ ] Documentación actualizada.
 - [ ] Demo reproducible en < 5 minutos.

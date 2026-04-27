@@ -11,10 +11,9 @@ function getClient(): CohereClient {
 }
 
 export async function embedQuery(text: string): Promise<number[]> {
-  const res = await getClient().embed({
-    texts: [text],
-    model: 'embed-multilingual-v3.0',
-    inputType: 'search_query',
-  })
+  const res = await getClient().embed(
+    { texts: [text], model: 'embed-multilingual-v3.0', inputType: 'search_query' },
+    { timeoutInSeconds: 10 },
+  )
   return (res.embeddings as number[][])[0]
 }

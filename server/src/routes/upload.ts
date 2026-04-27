@@ -31,9 +31,19 @@ router.post(
       return
     }
 
+    let timedOut = false
+    const timer = setTimeout(() => {
+      timedOut = true
+      if (!res.headersSent) {
+        res.status(504).json({ success: false, message: 'Upload timeout' })
+      }
+    }, 30_000)
+
     const stream = cloudinary.uploader.upload_stream(
       { folder: 'premiumtech/products', resource_type: 'image' },
       (error, result) => {
+        clearTimeout(timer)
+        if (timedOut) return
         if (error || !result) {
           console.error('[cloudinary error]', {
             message: error?.message,
