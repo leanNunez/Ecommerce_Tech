@@ -1,5 +1,6 @@
 import OpenAI from 'openai'
 import { TOOL_DEFINITIONS, createToolExecutor } from './assistant-tools.js'
+import { recordAiCall } from './metrics.js'
 
 const MODEL = process.env.GROQ_MODEL ?? 'llama-3.3-70b-versatile'
 const MAX_TOOL_ROUNDS = 8
@@ -49,13 +50,18 @@ export function _setClientForTesting(client: OpenAI | null): void {
 async function withRetry<T>(fn: () => Promise<T>, maxAttempts = 3): Promise<T> {
   for (let attempt = 1; attempt <= maxAttempts; attempt++) {
     try {
-      return await fn()
+      const result = await fn()
+      recordAiCall('groq')
+      return result
     } catch (err) {
       const status = (err as { status?: number }).status
       const isTransient =
         (typeof status === 'number' && status >= 500) ||
         (err instanceof Error && err.message.includes('ECONNRESET'))
-      if (!isTransient || attempt === maxAttempts) throw err
+      if (!isTransient || attempt === maxAttempts) {
+        recordAiCall('groq', true)
+        throw err
+      }
       await new Promise(r => setTimeout(r, Math.pow(2, attempt - 1) * 1000))
     }
   }

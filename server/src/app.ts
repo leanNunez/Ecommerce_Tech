@@ -18,6 +18,7 @@ import assistantRouter from './routes/assistant.js'
 import { errorHandler } from './middleware/error.js'
 import { logger } from './lib/logger.js'
 import { prisma } from './lib/prisma.js'
+import { recordRequest, getMetricsSnapshot } from './lib/metrics.js'
 
 const ALLOWED_ORIGINS = (process.env.CLIENT_ORIGIN ?? 'http://localhost:5173,http://localhost:5174')
   .split(',')
@@ -44,9 +45,14 @@ app.use(cookieParser())
 
 app.use((req, res, next) => {
   const requestId = randomUUID()
+  const start = Date.now()
   res.setHeader('X-Request-Id', requestId)
   res.locals.requestId = requestId
   logger.info(`${req.method} ${req.url}`, { requestId })
+  res.on('finish', () => {
+    const route = req.route ? req.baseUrl + req.route.path : req.path
+    recordRequest(req.method, route, res.statusCode, Date.now() - start)
+  })
   next()
 })
 
@@ -71,6 +77,14 @@ app.get('/health', (req, res) => {
     return
   }
   res.json({ status: 'ok' })
+})
+
+app.get('/metrics', (req, res) => {
+  if (IS_PROD && HEALTH_TOKEN && req.headers['x-health-token'] !== HEALTH_TOKEN) {
+    res.status(404).end()
+    return
+  }
+  res.json(getMetricsSnapshot())
 })
 
 app.get('/ready', async (_req, res) => {
