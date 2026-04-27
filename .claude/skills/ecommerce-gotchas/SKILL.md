@@ -108,6 +108,36 @@ Siempre correr `prisma generate` después de cambiar el schema, antes de correr 
 
 ---
 
+### 5. Frontend CI falla con `npm ci` — lockfile desincronizado
+
+**Síntoma**:
+```
+npm error Invalid: lock file's axios@1.14.0 does not satisfy axios@1.15.2
+npm error `npm ci` can only install packages when package.json and package-lock.json are in sync
+```
+
+**Causa**: El proyecto usa Bun — `bun add` actualiza `bun.lock`, NO el `package-lock.json`. Si el workflow usa `npm ci`, falla porque el `package-lock.json` queda viejo.
+
+**Este bug se repitió 2 veces.**
+
+**Fix permanente** — el workflow DEBE usar Bun:
+```yaml
+# .github/workflows/frontend-ci.yml
+- uses: oven-sh/setup-bun@v2
+  with:
+    bun-version: latest
+
+- name: Install dependencies
+  run: bun install --frozen-lockfile
+```
+
+**Reglas**:
+- Siempre usar `bun add` / `bun install`, nunca `npm install` en este proyecto
+- Si aparece un `package-lock.json` en el root, eliminarlo: `git rm package-lock.json`
+- El workflow del frontend debe tener `oven-sh/setup-bun@v2`, no `actions/setup-node`
+
+---
+
 ## Commands
 
 ```bash
