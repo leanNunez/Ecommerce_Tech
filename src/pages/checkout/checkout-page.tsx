@@ -39,7 +39,6 @@ type CheckoutFormValues = z.infer<typeof checkoutSchema>
 type CheckoutStep = 'shipping' | 'payment'
 
 const SHIPPING_FIELDS = ['street', 'city', 'state', 'country', 'zipCode'] as const
-const _PAYMENT_FIELDS = ['cardNumber', 'cardHolder', 'expiry', 'cvv'] as const
 
 // ── Stepper ───────────────────────────────────────────────────────────────────
 
