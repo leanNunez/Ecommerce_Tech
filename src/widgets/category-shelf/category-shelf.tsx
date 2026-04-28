@@ -60,10 +60,12 @@ export function CategoryShelf({ slug, label, Icon, promo }: CategoryShelfProps) 
     })
   }, [current, promo.slides.length])
 
+  /* eslint-disable react-hooks/set-state-in-effect -- intentional: derive hovering from isMobile + inView; no external system, this is legitimate derived-state sync */
   useEffect(() => {
     if (isMobile && inView) setHovering(true)
     else if (!isMobile) setHovering(false)
   }, [isMobile, inView])
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   useEffect(() => {
     if (!hovering) return
@@ -79,6 +81,7 @@ export function CategoryShelf({ slug, label, Icon, promo }: CategoryShelfProps) 
     return () => { clearTimeout(t1); clearTimeout(t2) }
   }, [hovering, advance])
 
+  /* eslint-disable react-hooks/set-state-in-effect -- intentional: reset slide animation state on hover end; all 3 setters are atomic and belong together */
   useEffect(() => {
     if (!hovering) {
       setCurrent(0)
@@ -86,6 +89,7 @@ export function CategoryShelf({ slug, label, Icon, promo }: CategoryShelfProps) 
       setSliding(false)
     }
   }, [hovering])
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   function scroll(direction: 'left' | 'right') {
     scrollRef.current?.scrollBy({

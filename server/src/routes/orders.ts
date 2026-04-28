@@ -1,4 +1,4 @@
-import { Router } from 'express'
+import { Router, type Request } from 'express'
 import { z } from 'zod'
 import { prisma } from '../lib/prisma.js'
 import { authenticate, requireAdmin } from '../middleware/auth.js'
@@ -24,10 +24,10 @@ router.get('/', authenticate, async (req, res, next) => {
 })
 
 // ── GET /api/orders/:id ───────────────────────────────────────────────────────
-router.get('/:id', authenticate, async (req, res, next) => {
+router.get('/:id', authenticate, async (req: Request<{ id: string }>, res, next) => {
   try {
     const order = await prisma.order.findUnique({
-      where:   { id: req.params.id as string },
+      where:   { id: req.params.id },
       include: ORDER_INCLUDE,
     })
     if (!order) { res.status(404).json({ success: false, message: 'Order not found' }); return }
@@ -102,9 +102,9 @@ router.post('/', authenticate, async (req, res, next) => {
 })
 
 // ── PATCH /api/orders/:id/cancel — owner only ────────────────────────────────
-router.patch('/:id/cancel', authenticate, async (req, res, next) => {
+router.patch('/:id/cancel', authenticate, async (req: Request<{ id: string }>, res, next) => {
   try {
-    const order = await prisma.order.findUnique({ where: { id: req.params.id as string } })
+    const order = await prisma.order.findUnique({ where: { id: req.params.id } })
     if (!order) { res.status(404).json({ success: false, message: 'Order not found' }); return }
     if (order.userId !== req.auth!.userId) { res.status(403).json({ success: false, message: 'Forbidden' }); return }
     if (!['pending', 'processing'].includes(order.status)) {
@@ -124,11 +124,11 @@ const statusSchema = z.object({
   status: z.enum(['pending', 'processing', 'shipped', 'delivered', 'cancelled']),
 })
 
-router.patch('/:id/status', authenticate, requireAdmin, async (req, res, next) => {
+router.patch('/:id/status', authenticate, requireAdmin, async (req: Request<{ id: string }>, res, next) => {
   try {
     const { status } = statusSchema.parse(req.body)
     const order = await prisma.order.update({
-      where:   { id: req.params.id as string },
+      where:   { id: req.params.id },
       data:    { status },
       include: ORDER_INCLUDE,
     })

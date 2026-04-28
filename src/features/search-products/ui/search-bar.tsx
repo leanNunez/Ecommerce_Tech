@@ -16,6 +16,7 @@ export function SearchBar({ onSearch }: SearchBarProps) {
   const isFocusedRef = useRef(false)
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- intentional: sync local input with URL param only when field is not focused
     if (!isFocusedRef.current) setValue(currentQ)
   }, [currentQ])
 

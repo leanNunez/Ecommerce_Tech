@@ -1,4 +1,4 @@
-import { Router } from 'express'
+import { Router, type Request } from 'express'
 import { z } from 'zod'
 import { prisma } from '../lib/prisma.js'
 import { authenticate, requireAdmin } from '../middleware/auth.js'
@@ -54,19 +54,19 @@ const updateCategorySchema = z.object({
   slug: z.string().min(2).regex(/^[a-z0-9-]+$/).optional(),
 })
 
-router.patch('/:id', authenticate, requireAdmin, async (req, res, next) => {
+router.patch('/:id', authenticate, requireAdmin, async (req: Request<{ id: string }>, res, next) => {
   try {
     const data = updateCategorySchema.parse(req.body)
-    const category = await prisma.category.update({ where: { id: req.params.id as string }, data })
+    const category = await prisma.category.update({ where: { id: req.params.id }, data })
     cacheInvalidate(CACHE_KEY)
     res.json({ success: true, data: category })
   } catch (err) { next(err) }
 })
 
 // ── DELETE /api/categories/:id — admin ────────────────────────────────────────
-router.delete('/:id', authenticate, requireAdmin, async (req, res, next) => {
+router.delete('/:id', authenticate, requireAdmin, async (req: Request<{ id: string }>, res, next) => {
   try {
-    await prisma.category.delete({ where: { id: req.params.id as string } })
+    await prisma.category.delete({ where: { id: req.params.id } })
     cacheInvalidate(CACHE_KEY)
     res.status(204).send()
   } catch (err) { next(err) }

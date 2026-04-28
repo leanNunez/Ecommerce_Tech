@@ -1,4 +1,4 @@
-import { Router } from 'express'
+import { Router, type Request } from 'express'
 import { z } from 'zod'
 import { prisma } from '../lib/prisma.js'
 import { authenticate, requireAdmin } from '../middleware/auth.js'
@@ -23,17 +23,17 @@ const updateUserSchema = z.object({
   lastName:  z.string().min(2).optional(),
 })
 
-router.patch('/:id', authenticate, requireAdmin, async (req, res, next) => {
+router.patch('/:id', authenticate, requireAdmin, async (req: Request<{ id: string }>, res, next) => {
   try {
     const data = updateUserSchema.parse(req.body)
-    const user = await prisma.user.update({ where: { id: req.params.id as string }, data })
+    const user = await prisma.user.update({ where: { id: req.params.id }, data })
     res.json({ success: true, data: safeUser(user) })
   } catch (err) { next(err) }
 })
 
-router.delete('/:id', authenticate, requireAdmin, async (req, res, next) => {
+router.delete('/:id', authenticate, requireAdmin, async (req: Request<{ id: string }>, res, next) => {
   try {
-    await prisma.user.delete({ where: { id: req.params.id as string } })
+    await prisma.user.delete({ where: { id: req.params.id } })
     res.status(204).send()
   } catch (err) { next(err) }
 })

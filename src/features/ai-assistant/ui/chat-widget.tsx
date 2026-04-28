@@ -134,6 +134,7 @@ export function ChatWidget() {
   // Periodic bubble messages when chat is closed
   useEffect(() => {
     if (isOpen) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- intentional: reset bubble synchronously on open; timer-driven updates in the else branch handle the rest
       setShowBubble(false)
       return
     }

@@ -52,7 +52,6 @@ export default defineConfig([
         caughtErrorsIgnorePattern: '^_',
       }],
       // React Compiler rules — too aggressive for valid patterns in this codebase
-      'react-hooks/set-state-in-effect': 'off',
       'react-hooks/refs': 'off',
       'react-hooks/incompatible-library': 'off',
     },

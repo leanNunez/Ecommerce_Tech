@@ -1,4 +1,4 @@
-import { Router } from 'express'
+import { Router, type Request } from 'express'
 import { z } from 'zod'
 import { prisma } from '../lib/prisma.js'
 import { authenticate, requireAdmin } from '../middleware/auth.js'
@@ -57,11 +57,11 @@ router.post('/', authenticate, requireAdmin, async (req, res, next) => {
 })
 
 // ── PATCH /api/brands/:id — admin ─────────────────────────────────────────────
-router.patch('/:id', authenticate, requireAdmin, async (req, res, next) => {
+router.patch('/:id', authenticate, requireAdmin, async (req: Request<{ id: string }>, res, next) => {
   try {
     const data = brandSchema.partial().parse(req.body)
     const brand = await prisma.brand.update({
-      where: { id: req.params.id as string },
+      where: { id: req.params.id },
       data:  {
         ...data,
         logoUrl:   data.logoUrl   === '' ? null : data.logoUrl,
@@ -74,9 +74,9 @@ router.patch('/:id', authenticate, requireAdmin, async (req, res, next) => {
 })
 
 // ── DELETE /api/brands/:id — admin ────────────────────────────────────────────
-router.delete('/:id', authenticate, requireAdmin, async (req, res, next) => {
+router.delete('/:id', authenticate, requireAdmin, async (req: Request<{ id: string }>, res, next) => {
   try {
-    await prisma.brand.delete({ where: { id: req.params.id as string } })
+    await prisma.brand.delete({ where: { id: req.params.id } })
     cacheInvalidate(CACHE_KEY)
     res.json({ success: true })
   } catch (err) { next(err) }
