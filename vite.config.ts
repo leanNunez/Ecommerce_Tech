@@ -37,4 +37,16 @@ export default defineConfig({
       '@/routes': resolve(__dirname, 'src/routes'),
     },
   },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: (id) => {
+          if (id.includes('node_modules/react') || id.includes('node_modules/react-dom') || id.includes('node_modules/scheduler')) return 'vendor-react'
+          if (id.includes('node_modules/@tanstack')) return 'vendor-tanstack'
+          if (id.includes('node_modules/@radix-ui') || id.includes('node_modules/lucide-react')) return 'vendor-ui'
+          if (id.includes('node_modules/i18next') || id.includes('node_modules/react-i18next')) return 'vendor-i18n'
+        },
+      },
+    },
+  },
 })
