@@ -5,6 +5,16 @@ import { ProductCard, ProductCardSkeleton } from '@/widgets/product-card'
 import { useSemanticSearch, toProduct } from '@/entities/product'
 import { PageSeo } from '@/shared/ui'
 
+const API_BASE = import.meta.env.VITE_API_URL ?? 'http://localhost:3001'
+
+function trackResultClick(query: string, productId: string, position: number) {
+  const blob = new Blob(
+    [JSON.stringify({ query, productId, position })],
+    { type: 'application/json' },
+  )
+  navigator.sendBeacon(`${API_BASE}/api/search/click`, blob)
+}
+
 export function SearchPage() {
   const { t } = useTranslation()
   const { q } = useSearch({ from: '/search' })
@@ -77,8 +87,10 @@ export function SearchPage() {
 
       {ready && results.length > 0 && (
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
-          {results.map((product) => (
-            <ProductCard key={product.id} product={product} />
+          {results.map((product, index) => (
+            <div key={product.id} onClick={() => trackResultClick(query, product.id, index)}>
+              <ProductCard product={product} />
+            </div>
           ))}
         </div>
       )}

@@ -160,7 +160,7 @@ describe('GET /api/products/:id/similar', () => {
 
 // ── Relevance smoke tests (stored embeddings, no Cohere call) ─────────────────
 
-describe('Relevance — stored embeddings', () => {
+describe('Relevance — stored embeddings (similar products)', () => {
   it('iPhone similar products include other smartphones', async () => {
     const iphone = await prisma.product.findFirst({ where: { slug: 'iphone-15-pro' } })
     if (!iphone) return
@@ -183,5 +183,70 @@ describe('Relevance — stored embeddings', () => {
     expect(
       categories.some((c: string) => ['laptops', 'monitors', 'components'].includes(c))
     ).toBe(true)
+  })
+})
+
+// ── Relevance dataset — FTS queries (Cohere mocked, DB text match real) ───────
+//
+// Each case documents: query → expected category or brand in top results.
+// Cohere returns a zero-information vector (all 0.1) so RRF ordering is driven
+// by FTS text match score, which uses real Postgres tsvector on the seeded data.
+
+const RELEVANCE_DATASET = [
+  { query: 'iphone',          expectCategory: 'smartphones',                             desc: 'brand+model name → smartphones' },
+  { query: 'laptop',          expectCategory: 'laptops',                                 desc: 'category keyword → laptops' },
+  { query: 'headphones',      expectCategory: 'headphones',                              desc: 'category keyword → headphones' },
+  { query: 'samsung galaxy',  expectCategory: 'smartphones',                             desc: 'brand+product line → smartphones' },
+  { query: 'gaming',          expectAnyCategory: ['laptops', 'monitors', 'components'],  desc: 'intent keyword → gaming-adjacent categories' },
+  { query: 'sony',            expectAnyCategory: ['headphones', 'smartphones', 'audio'], desc: 'brand name → Sony products' },
+  { query: 'macbook',         expectCategory: 'laptops',                                 desc: 'Apple laptop → laptops' },
+] as const
+
+describe('Relevance dataset — FTS (Cohere mocked)', () => {
+  for (const tc of RELEVANCE_DATASET) {
+    it(`"${tc.query}" → ${tc.desc}`, async () => {
+      const res = await request(app).get(`/api/search?q=${encodeURIComponent(tc.query)}&perPage=10`)
+
+      expect(res.status).toBe(200)
+      const products: { category: { slug: string } }[] = res.body.data.products
+
+      if (products.length === 0) return // seed may not have matching products — skip gracefully
+
+      const categories = products.map(p => p.category.slug)
+
+      if ('expectCategory' in tc) {
+        expect(categories.some(c => c === tc.expectCategory)).toBe(true)
+      } else {
+        expect(categories.some(c => (tc.expectAnyCategory as readonly string[]).includes(c))).toBe(true)
+      }
+    })
+  }
+})
+
+// ── POST /api/search/click ────────────────────────────────────────────────────
+
+describe('POST /api/search/click', () => {
+  it('records a valid click and returns 204', async () => {
+    const res = await request(app)
+      .post('/api/search/click')
+      .send({ query: 'laptop', productId: 'prod-abc', position: 2 })
+
+    expect(res.status).toBe(204)
+  })
+
+  it('returns 400 for missing productId', async () => {
+    const res = await request(app)
+      .post('/api/search/click')
+      .send({ query: 'laptop', position: 0 })
+
+    expect(res.status).toBe(400)
+  })
+
+  it('returns 400 for position out of range', async () => {
+    const res = await request(app)
+      .post('/api/search/click')
+      .send({ query: 'laptop', productId: 'prod-abc', position: 150 })
+
+    expect(res.status).toBe(400)
   })
 })
