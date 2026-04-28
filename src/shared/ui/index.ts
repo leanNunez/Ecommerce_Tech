@@ -68,3 +68,4 @@ export {
 export { PageTitle } from './page-title'
 export { Spinner } from './spinner'
 export { EmptyState } from './empty-state'
+export { PageSeo } from './page-seo'

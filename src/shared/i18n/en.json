@@ -393,6 +393,27 @@
     "viewOrders": "View My Orders",
     "continueShopping": "Continue Shopping"
   },
+  "seo": {
+    "home": {
+      "title": "PremiumTech — Premium tech at the best price",
+      "description": "Shop laptops, smartphones, headphones and accessories. Free shipping on orders over $99."
+    },
+    "catalog": {
+      "title": "{{category}} | PremiumTech",
+      "titleAll": "All Products | PremiumTech",
+      "description": "Explore {{count}}+ {{category}} products. Filter by brand, price and more.",
+      "descriptionAll": "Browse our full catalog of premium tech products."
+    },
+    "product": {
+      "title": "{{name}} — {{brand}} | PremiumTech"
+    },
+    "search": {
+      "title": "\"{{query}}\" — Search | PremiumTech",
+      "titleEmpty": "Search | PremiumTech",
+      "description": "{{count}} results for \"{{query}}\" on PremiumTech.",
+      "descriptionEmpty": "Search premium tech products on PremiumTech."
+    }
+  },
   "assistant": {
     "title": "PremiumTech Assistant",
     "subtitle": "AI-powered shopping help",

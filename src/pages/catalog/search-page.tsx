@@ -3,6 +3,7 @@ import { Search, Sparkles } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { ProductCard, ProductCardSkeleton } from '@/widgets/product-card'
 import { useSemanticSearch, toProduct } from '@/entities/product'
+import { PageSeo } from '@/shared/ui'
 
 export function SearchPage() {
   const { t } = useTranslation()
@@ -14,8 +15,16 @@ export function SearchPage() {
   const results = (data?.data?.products ?? []).map(toProduct)
   const ready   = !isLoading && query.length >= 2
 
+  const seoTitle = query
+    ? t('seo.search.title', { query })
+    : t('seo.search.titleEmpty')
+  const seoDescription = query && ready
+    ? t('seo.search.description', { count: results.length, query })
+    : t('seo.search.descriptionEmpty')
+
   return (
     <div className="mx-auto max-w-7xl px-6 py-10">
+      <PageSeo title={seoTitle} description={seoDescription} />
       <div className="mb-8">
         {query ? (
           <>

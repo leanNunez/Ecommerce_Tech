@@ -1,4 +1,5 @@
 import { useRef } from 'react'
+import { PageSeo } from '@/shared/ui'
 import { useInView } from '@/shared/hooks/use-in-view'
 import { Link } from '@tanstack/react-router'
 import { useTranslation } from 'react-i18next'
@@ -72,6 +73,11 @@ export function HomePage() {
 
   return (
     <div>
+      <PageSeo
+        title={t('seo.home.title')}
+        description={t('seo.home.description')}
+        canonicalPath="/"
+      />
       {/* Hero */}
       <section
         className="relative flex flex-col overflow-hidden bg-gradient-to-br from-primary-dark via-primary to-accent"

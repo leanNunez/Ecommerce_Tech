@@ -11,7 +11,7 @@ import {
   Truck,
 } from 'lucide-react'
 import { formatCurrency } from '@/shared/lib/format-currency'
-import { Button } from '@/shared/ui'
+import { Button, PageSeo } from '@/shared/ui'
 import { ProductGallery } from '@/widgets/product-gallery'
 import { ProductCard } from '@/widgets/product-card'
 import { AddToCartButton } from '@/features/add-to-cart'
@@ -170,8 +170,55 @@ export function ProductDetailPage() {
     )
   }
 
+  const brandName  = brand?.name ?? 'PremiumTech'
+  const ogImage    = product.images[0]?.url
+  const canonicalPath = `/product/${product.slug}`
+
+  const productSchema = {
+    '@context': 'https://schema.org/',
+    '@type': 'Product',
+    name: product.name,
+    image: product.images.map((img) => img.url),
+    description: product.description,
+    brand: { '@type': 'Brand', name: brandName },
+    offers: {
+      '@type': 'Offer',
+      url: `https://premiumtech.com${canonicalPath}`,
+      priceCurrency: 'USD',
+      price: displayPrice,
+      availability:
+        product.stock > 0
+          ? 'https://schema.org/InStock'
+          : 'https://schema.org/OutOfStock',
+    },
+    aggregateRating: {
+      '@type': 'AggregateRating',
+      ratingValue: rating.toFixed(1),
+      reviewCount: ratingCount,
+    },
+  }
+
+  const breadcrumbSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://premiumtech.com' },
+      ...(category
+        ? [{ '@type': 'ListItem', position: 2, name: category.label, item: `https://premiumtech.com/catalog/${category.slug}` }]
+        : []),
+      { '@type': 'ListItem', position: category ? 3 : 2, name: product.name },
+    ],
+  }
+
   return (
     <div className="bg-background">
+      <PageSeo
+        title={t('seo.product.title', { name: product.name, brand: brandName })}
+        description={product.description.slice(0, 155)}
+        canonicalPath={canonicalPath}
+        ogImage={ogImage}
+        jsonLd={[productSchema, breadcrumbSchema]}
+      />
       {/* Breadcrumb */}
       <div className="border-b border-secondary/10 bg-surface">
         <div className="mx-auto flex max-w-7xl items-center gap-1.5 px-6 py-3 text-xs text-muted">

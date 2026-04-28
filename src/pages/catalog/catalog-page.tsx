@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useParams } from '@tanstack/react-router'
 import { useTranslation } from 'react-i18next'
 import { SlidersHorizontal } from 'lucide-react'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger, Button } from '@/shared/ui'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger, Button, PageSeo } from '@/shared/ui'
 import { FiltersPanel } from '@/widgets/filters-panel'
 import { ProductCard, ProductCardSkeleton } from '@/widgets/product-card'
 import { PaginationControls } from '@/widgets/pagination'
@@ -43,8 +43,17 @@ export function CatalogPage() {
   const total      = data?.meta.total ?? 0
   const currentPage = filters.page
 
+  const seoTitle = activeCategory
+    ? t('seo.catalog.title', { category: t(`categories.${activeCategory}`, activeCategory) })
+    : t('seo.catalog.titleAll')
+  const seoDescription = activeCategory
+    ? t('seo.catalog.description', { count: total, category: t(`categories.${activeCategory}`, activeCategory) })
+    : t('seo.catalog.descriptionAll')
+  const seoCanonical = activeCategory ? `/products?category=${activeCategory}` : '/products'
+
   return (
     <div className="mx-auto max-w-7xl px-6 py-8">
+      <PageSeo title={seoTitle} description={seoDescription} canonicalPath={seoCanonical} />
       <h1 className="mb-6 text-2xl font-bold text-text">{t('filters.title')}</h1>
 
       <div className="flex gap-8">

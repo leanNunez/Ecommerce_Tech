@@ -393,6 +393,27 @@
     "viewOrders": "Ver mis pedidos",
     "continueShopping": "Seguir comprando"
   },
+  "seo": {
+    "home": {
+      "title": "PremiumTech — Tecnología premium al mejor precio",
+      "description": "Comprá laptops, smartphones, auriculares y accesorios. Envío gratis en pedidos mayores a $99."
+    },
+    "catalog": {
+      "title": "{{category}} | PremiumTech",
+      "titleAll": "Todos los Productos | PremiumTech",
+      "description": "Explorá {{count}}+ productos de {{category}}. Filtrá por marca, precio y más.",
+      "descriptionAll": "Explorá nuestro catálogo completo de productos tech premium."
+    },
+    "product": {
+      "title": "{{name}} — {{brand}} | PremiumTech"
+    },
+    "search": {
+      "title": "\"{{query}}\" — Búsqueda | PremiumTech",
+      "titleEmpty": "Búsqueda | PremiumTech",
+      "description": "{{count}} resultados para \"{{query}}\" en PremiumTech.",
+      "descriptionEmpty": "Buscá productos tech premium en PremiumTech."
+    }
+  },
   "assistant": {
     "title": "Asistente PremiumTech",
     "subtitle": "Ayuda de compra con IA",
