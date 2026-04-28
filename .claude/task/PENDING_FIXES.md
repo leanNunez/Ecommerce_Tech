@@ -1,5 +1,21 @@
 # Pending Code Quality Fixes
 
+## 3. i18n panel admin — texto hardcodeado en inglés
+
+**Archivos afectados:**
+- `src/pages/admin/dashboard-page.tsx`
+- `src/pages/admin/brands-page.tsx` (453 líneas)
+- `src/pages/admin/categories-page.tsx` (280 líneas)
+- `src/pages/admin/product-form-page.tsx` (707 líneas)
+- `src/pages/admin/users-page.tsx` (223 líneas)
+- `src/pages/admin/admin-order-detail-page.tsx` (186 líneas)
+
+**Problema:** Ninguna página admin usa `useTranslation`. Todo el texto está hardcodeado en inglés.
+
+**Fix correcto:** Crear namespace `admin.*` en `en.json` y `es.json`, agregar `useTranslation` a cada página y reemplazar todos los strings con `t()`.
+
+---
+
 ## 1. `req.params.id as string` — tipar handlers correctamente
 
 **Archivos afectados:**

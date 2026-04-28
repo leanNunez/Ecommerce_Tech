@@ -10,7 +10,9 @@
     "test:watch": "vitest",
     "index:full": "bun src/scripts/index-products.ts --mode=full",
     "index:changed": "bun src/scripts/index-products.ts --mode=changed",
-    "index:product": "bun src/scripts/index-products.ts --mode=product"
+    "index:product": "bun src/scripts/index-products.ts --mode=product",
+    "load-test": "bun src/scripts/load-test.ts",
+    "update-taglines": "bun src/scripts/update-brand-taglines.ts"
   },
   "dependencies": {
     "@prisma/adapter-pg": "^7.7.0",
