@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { render, screen, fireEvent } from '@testing-library/react'
+import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import { AddToCartButton } from './add-to-cart-button'
 import type { Product } from '@/entities/product'
 
@@ -72,10 +72,18 @@ describe('AddToCartButton', () => {
     )
   })
 
-  it('shows "Added!" feedback immediately after clicking', () => {
+  it('disables the button (spinner) immediately after clicking', () => {
     render(<AddToCartButton product={baseProduct} />)
     fireEvent.click(screen.getByRole('button', { name: /add to cart/i }))
-    expect(screen.getByRole('button', { name: /added!/i })).toBeInTheDocument()
+    expect(screen.getByRole('button')).toBeDisabled()
+  })
+
+  it('shows "Added!" feedback after cart sync resolves', async () => {
+    render(<AddToCartButton product={baseProduct} />)
+    fireEvent.click(screen.getByRole('button', { name: /add to cart/i }))
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: /added!/i })).toBeInTheDocument()
+    })
   })
 
   it('renders a disabled "Out of stock" button when stock is 0', () => {
