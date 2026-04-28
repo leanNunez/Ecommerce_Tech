@@ -1,11 +1,12 @@
 import { Router, type Request } from 'express'
 import { z } from 'zod'
+import type { User } from '../generated/prisma/client.js'
 import { prisma } from '../lib/prisma.js'
 import { authenticate, requireAdmin } from '../middleware/auth.js'
 
 const router = Router()
 
-function safeUser(u: { passwordHash: string; [key: string]: any }) {
+function safeUser(u: User) {
   const { passwordHash: _, ...rest } = u
   return rest
 }

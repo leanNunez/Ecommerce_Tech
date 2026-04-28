@@ -19,7 +19,7 @@ router.get('/', async (req, res, next) => {
     const { category, brand, minPrice, maxPrice, search, sortBy, page = '1', perPage = '12' } =
       req.query as Record<string, string>
 
-    const where: any = { isActive: true }
+    const where: Prisma.ProductWhereInput = { isActive: true }
 
     if (category) where.category = { slug: category }
     if (brand)    where.brand    = { slug: brand }
@@ -35,7 +35,7 @@ router.get('/', async (req, res, next) => {
       ]
     }
 
-    const orderBy: any =
+    const orderBy: Prisma.ProductOrderByWithRelationInput =
       sortBy === 'price_asc'  ? { price: 'asc' }  :
       sortBy === 'price_desc' ? { price: 'desc' } :
       sortBy === 'newest'     ? { createdAt: 'desc' } :
