@@ -141,7 +141,9 @@
     "returns": "Devoluciones 30 Días",
     "returnsDesc": "Sin preguntas",
     "moreIn": "Más en {{category}}",
-    "seeAll": "Ver todo"
+    "seeAll": "Ver todo",
+    "aiRecommendations": "Recomendaciones IA",
+    "youMayAlsoLike": "También te puede gustar"
   },
   "brands": {
     "title": "Ver Marcas",

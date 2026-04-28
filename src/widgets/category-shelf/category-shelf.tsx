@@ -220,10 +220,10 @@ function SlideContent({ label, slide }: { label: string; slide: PromoSlide }) {
       <p className="text-xs font-bold uppercase tracking-[0.15em] text-white/50">
         {t('categoryShelf.featuredDeal')} · {label}
       </p>
-      <h3 className="mt-1 text-xl font-extrabold leading-snug text-white md:text-2xl">
+      <h3 className="mt-1 line-clamp-2 text-base font-extrabold leading-snug text-white sm:text-xl md:text-2xl">
         {slide.headline}
       </h3>
-      <p className="mt-2 text-sm leading-relaxed text-white/65">{slide.body}</p>
+      <p className="mt-1.5 line-clamp-2 text-xs leading-relaxed text-white/65 sm:text-sm">{slide.body}</p>
     </div>
   )
 }

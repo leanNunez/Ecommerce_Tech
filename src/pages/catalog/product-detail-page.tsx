@@ -62,21 +62,22 @@ function StarRating({ rating }: { rating: number }) {
 }
 
 function StockBadge({ stock }: { stock: number }) {
+  const { t } = useTranslation()
   if (stock === 0)
     return (
       <span className="inline-flex items-center gap-1.5 rounded-full bg-destructive/10 px-3 py-1 text-xs font-semibold text-destructive">
-        Out of stock
+        {t('productDetail.outOfStock')}
       </span>
     )
   if (stock <= 5)
     return (
       <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-500/10 px-3 py-1 text-xs font-semibold text-amber-600">
-        Only {stock} left
+        {t('productDetail.onlyLeft', { count: stock })}
       </span>
     )
   return (
     <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/10 px-3 py-1 text-xs font-semibold text-emerald-600">
-      In stock
+      {t('productDetail.inStock')}
     </span>
   )
 }
@@ -222,7 +223,7 @@ export function ProductDetailPage() {
       {/* Breadcrumb */}
       <div className="border-b border-secondary/10 bg-surface">
         <div className="mx-auto flex max-w-7xl items-center gap-1.5 px-6 py-3 text-xs text-muted">
-          <Link to="/" className="hover:text-primary transition-colors">Home</Link>
+          <Link to="/" className="hover:text-primary transition-colors">{t('productDetail.home')}</Link>
           <ChevronRight className="h-3 w-3" />
           {category && (
             <>
@@ -288,7 +289,7 @@ export function ProductDetailPage() {
             <div className="flex items-center gap-2">
               <StarRating rating={rating} />
               <span className="text-sm font-semibold text-text">{rating.toFixed(1)}</span>
-              <span className="text-sm text-muted">({ratingCount.toLocaleString()} reviews)</span>
+              <span className="text-sm text-muted">({t('productDetail.reviews_other', { count: ratingCount.toLocaleString() })})</span>
             </div>
 
             {/* Price */}
@@ -314,7 +315,7 @@ export function ProductDetailPage() {
             {/* Variants */}
             {product.variants.length > 1 && (
               <div>
-                <p className="mb-2.5 text-sm font-semibold text-text">Options</p>
+                <p className="mb-2.5 text-sm font-semibold text-text">{t('productDetail.options')}</p>
                 <div className="flex flex-wrap gap-2">
                   {product.variants.map((variant) => {
                     const activeId = selectedVariantId ?? product.variants[0]?.id
@@ -354,7 +355,7 @@ export function ProductDetailPage() {
             <div className="flex flex-col gap-2">
               {role !== 'admin' && product.stock > 0 && (
                 <Button size="lg" className="w-full" onClick={handleBuyNow}>
-                  Buy Now
+                  {t('productCard.buyNow')}
                 </Button>
               )}
               <div className="flex gap-3">
@@ -374,9 +375,9 @@ export function ProductDetailPage() {
             {/* Trust badges */}
             <div className="grid grid-cols-3 gap-3 rounded-xl border border-secondary/10 bg-surface p-4">
               {[
-                { Icon: Truck,      title: 'Free Shipping', sub: 'Orders over $99' },
-                { Icon: ShieldCheck, title: '2-Year Warranty', sub: 'All products' },
-                { Icon: RefreshCw,  title: '30-Day Returns', sub: 'No questions' },
+                { Icon: Truck,       title: t('productDetail.freeShipping'),  sub: t('productDetail.freeShippingDesc') },
+                { Icon: ShieldCheck, title: t('productDetail.warranty'),       sub: t('productDetail.warrantyDesc') },
+                { Icon: RefreshCw,   title: t('productDetail.returns'),        sub: t('productDetail.returnsDesc') },
               ].map(({ Icon, title, sub }) => (
                 <div key={title} className="flex flex-col items-center gap-1.5 text-center">
                   <div className="flex h-9 w-9 items-center justify-center rounded-full bg-primary/10">
@@ -398,13 +399,10 @@ export function ProductDetailPage() {
               <div>
                 <p className="text-xs font-bold uppercase tracking-[0.2em] text-accent flex items-center gap-1.5">
                   <Sparkles className="h-3 w-3" />
-                  AI Recommendations
+                  {t('productDetail.aiRecommendations')}
                 </p>
                 <h2 className="mt-1.5 text-2xl font-extrabold tracking-tight text-text">
-                  You May Also{' '}
-                  <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-                    Like
-                  </span>
+                  {t('productDetail.youMayAlsoLike')}
                 </h2>
               </div>
               {category && (
@@ -413,7 +411,7 @@ export function ProductDetailPage() {
                   params={{ categorySlug: category.slug }}
                   className="flex items-center gap-1 text-sm font-medium text-primary hover:underline"
                 >
-                  See all <ChevronRight className="h-4 w-4" />
+                  {t('productDetail.seeAll')} <ChevronRight className="h-4 w-4" />
                 </Link>
               )}
             </div>

@@ -141,7 +141,9 @@
     "returns": "30-Day Returns",
     "returnsDesc": "No questions",
     "moreIn": "More in {{category}}",
-    "seeAll": "See all"
+    "seeAll": "See all",
+    "aiRecommendations": "AI Recommendations",
+    "youMayAlsoLike": "You May Also Like"
   },
   "brands": {
     "title": "Browse Brands",
