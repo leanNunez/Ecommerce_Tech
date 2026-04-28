@@ -1,7 +1,7 @@
 import { Link, useParams } from '@tanstack/react-router'
 import { ArrowLeft, Package } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
-import { Button } from '@/shared/ui'
+import { Button, PageSeo } from '@/shared/ui'
 import { ProductCard } from '@/widgets/product-card'
 import { useBrandBySlug } from '@/entities/brand'
 import { useProducts } from '@/entities/product'
@@ -101,6 +101,11 @@ export function BrandCatalogPage() {
 
   return (
     <div>
+      <PageSeo
+        title={`${brand.name} | PremiumTech`}
+        description={`${t('brands.productCount_other', { count: products.length })} de ${brand.name} en PremiumTech. Envío gratis en pedidos mayores a $99.`}
+        canonicalPath={`/brands/${brand.slug}`}
+      />
       {/* Hero */}
       <div
         className="relative flex min-h-56 items-center justify-center px-6 py-16"

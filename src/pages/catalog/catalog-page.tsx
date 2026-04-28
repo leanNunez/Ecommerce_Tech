@@ -49,7 +49,7 @@ export function CatalogPage() {
   const seoDescription = activeCategory
     ? t('seo.catalog.description', { count: total, category: t(`categories.${activeCategory}`, activeCategory) })
     : t('seo.catalog.descriptionAll')
-  const seoCanonical = activeCategory ? `/products?category=${activeCategory}` : '/products'
+  const seoCanonical = activeCategory ? `/catalog/${activeCategory}` : '/catalog'
 
   return (
     <div className="mx-auto max-w-7xl px-6 py-8">
