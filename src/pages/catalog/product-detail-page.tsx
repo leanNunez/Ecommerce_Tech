@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Link, useNavigate, useParams } from '@tanstack/react-router'
+import { useTranslation } from 'react-i18next'
 import {
   ArrowLeft,
   ChevronRight,
@@ -88,7 +89,8 @@ export function ProductDetailPage() {
   const addItem = useCartStore((s) => s.addItem)
   const role = useAuthStore((s) => s.role)
 
-  const { data: productData, isLoading, isError } = useProductBySlug(productSlug)
+  const { t } = useTranslation()
+  const { data: productData, isLoading, isError, refetch } = useProductBySlug(productSlug)
   const { data: brandsData } = useBrands()
   const product = productData?.data
 
@@ -141,12 +143,28 @@ export function ProductDetailPage() {
   }
 
   // ── Error / not found ────────────────────────────────────────────────────────
-  if (isError || !product) {
+  if (isError) {
     return (
       <div className="mx-auto max-w-7xl px-6 py-24 text-center">
-        <p className="text-lg font-semibold text-text">Product not found</p>
+        <p className="text-lg font-semibold text-text">{t('productDetail.loadError')}</p>
+        <div className="mt-4 flex items-center justify-center gap-3">
+          <Button variant="outline" size="sm" onClick={() => void refetch()}>
+            {t('productDetail.retry')}
+          </Button>
+          <Link to="/catalog" className="inline-flex items-center gap-1 text-sm text-primary hover:underline">
+            <ArrowLeft className="h-4 w-4" /> {t('productDetail.backToCatalog')}
+          </Link>
+        </div>
+      </div>
+    )
+  }
+
+  if (!product) {
+    return (
+      <div className="mx-auto max-w-7xl px-6 py-24 text-center">
+        <p className="text-lg font-semibold text-text">{t('productDetail.notFound')}</p>
         <Link to="/catalog" className="mt-4 inline-flex items-center gap-1 text-sm text-primary hover:underline">
-          <ArrowLeft className="h-4 w-4" /> Back to catalog
+          <ArrowLeft className="h-4 w-4" /> {t('productDetail.backToCatalog')}
         </Link>
       </div>
     )

@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from '@tanstack/react-router'
 import { useTranslation } from 'react-i18next'
+import { Loader2 } from 'lucide-react'
 import { Button } from '@/shared/ui'
 import { useCartStore, cartServerApi } from '@/entities/cart'
 import { useAuthStore } from '@/features/authenticate'
@@ -21,7 +22,9 @@ export function AddToCartButton({ product, variantId, quantity = 1, className, s
   const role = useAuthStore((s) => s.role)
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated)
   const navigate = useNavigate()
+  const [isPending, setIsPending] = useState(false)
   const [added, setAdded] = useState(false)
+  const [failed, setFailed] = useState(false)
 
   if (role === 'admin') return null
 
@@ -33,7 +36,7 @@ export function AddToCartButton({ product, variantId, quantity = 1, className, s
     )
   }
 
-  function handleClick() {
+  async function handleClick() {
     if (!isAuthenticated) {
       void navigate({ to: '/login' })
       return
@@ -48,19 +51,40 @@ export function AddToCartButton({ product, variantId, quantity = 1, className, s
       imageUrl: product.images[0]?.url ?? '',
     }
     addItem(item)
-    if (isAuthenticated) {
+
+    setIsPending(true)
+    try {
       const updatedItem = useCartStore.getState().items.find(
         (i) => i.productId === item.productId && i.variantId === item.variantId,
       )
-      cartServerApi.upsertItem(updatedItem ?? item).catch((err) => console.error('[cart] upsertItem failed:', err))
+      await cartServerApi.upsertItem(updatedItem ?? item)
+      setAdded(true)
+      setTimeout(() => setAdded(false), 1500)
+    } catch {
+      setFailed(true)
+      setTimeout(() => setFailed(false), 2000)
+    } finally {
+      setIsPending(false)
     }
-    setAdded(true)
-    setTimeout(() => setAdded(false), 1000)
+  }
+
+  function getLabel() {
+    if (isPending) return <Loader2 className="h-4 w-4 animate-spin" />
+    if (added) return t('productCard.added')
+    if (failed) return t('productCard.addFailed')
+    return t('productCard.addToCart')
   }
 
   return (
-    <Button onClick={handleClick} className={className} size={size} variant={variant}>
-      {added ? t('productCard.added') : t('productCard.addToCart')}
+    <Button
+      onClick={() => void handleClick()}
+      disabled={isPending}
+      className={className}
+      size={size}
+      variant={variant}
+      aria-live="polite"
+    >
+      {getLabel()}
     </Button>
   )
 }

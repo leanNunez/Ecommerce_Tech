@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { SlidersHorizontal } from 'lucide-react'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger, Button } from '@/shared/ui'
 import { FiltersPanel } from '@/widgets/filters-panel'
-import { ProductCard } from '@/widgets/product-card'
+import { ProductCard, ProductCardSkeleton } from '@/widgets/product-card'
 import { PaginationControls } from '@/widgets/pagination'
 import { useCatalogSort } from '@/features/sort-catalog'
 import { useCatalogFilters } from '@/features/filter-catalog'
@@ -28,7 +28,7 @@ export function CatalogPage() {
   // Path param takes precedence over search param (e.g. /catalog/laptops)
   const activeCategory = params.categorySlug ?? filters.category
 
-  const { data, isLoading, isError } = useProducts({
+  const { data, isLoading, isError, refetch } = useProducts({
     category: activeCategory,
     brand: filters.brand,
     minPrice: filters.minPrice,
@@ -93,9 +93,12 @@ export function CatalogPage() {
 
           {/* Error */}
           {isError && (
-            <div className="flex flex-col items-center gap-2 py-24 text-center">
+            <div className="flex flex-col items-center gap-3 py-24 text-center">
               <p className="text-lg font-semibold text-text">{t('catalog.failedToLoad')}</p>
               <p className="text-sm text-muted">{t('catalog.tryAgain')}</p>
+              <Button variant="outline" size="sm" onClick={() => void refetch()}>
+                {t('catalog.retry')}
+              </Button>
             </div>
           )}
 
@@ -103,7 +106,7 @@ export function CatalogPage() {
           {isLoading && (
             <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
               {Array.from({ length: PER_PAGE }).map((_, i) => (
-                <div key={i} className="rounded-xl bg-surface/60 animate-pulse" style={{ height: 280 }} />
+                <ProductCardSkeleton key={i} />
               ))}
             </div>
           )}

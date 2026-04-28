@@ -1,7 +1,7 @@
 import { useSearch } from '@tanstack/react-router'
 import { Search, Sparkles } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
-import { ProductCard } from '@/widgets/product-card'
+import { ProductCard, ProductCardSkeleton } from '@/widgets/product-card'
 import { useSemanticSearch, toProduct } from '@/entities/product'
 
 export function SearchPage() {
@@ -61,7 +61,7 @@ export function SearchPage() {
       {isLoading && query.length >= 2 && (
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
           {Array.from({ length: 8 }).map((_, i) => (
-            <div key={i} className="h-64 animate-pulse rounded-xl bg-surface/60" />
+            <ProductCardSkeleton key={i} />
           ))}
         </div>
       )}

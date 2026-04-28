@@ -96,6 +96,7 @@
     "productsFound_other": "{{count}} productos encontrados",
     "failedToLoad": "Error al cargar productos",
     "tryAgain": "Por favor, intentá más tarde.",
+    "retry": "Reintentar",
     "noProducts": "No se encontraron productos",
     "adjustFilters": "Intentá ajustar los filtros.",
     "clearAllFilters": "Limpiar todos los filtros"
@@ -113,6 +114,7 @@
     "buyNow": "Comprar",
     "addToCart": "Al carrito",
     "added": "¡Listo!",
+    "addFailed": "Error",
     "lowStock": "Poco Stock",
     "outOfStock": "Sin stock",
     "freeShipping": "Envío gratis",
@@ -122,6 +124,8 @@
   },
   "productDetail": {
     "notFound": "Producto no encontrado",
+    "loadError": "Error al cargar el producto",
+    "retry": "Intentar de nuevo",
     "backToCatalog": "Volver al catálogo",
     "home": "Inicio",
     "options": "Opciones",
