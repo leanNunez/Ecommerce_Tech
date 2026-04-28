@@ -236,6 +236,10 @@
     "subtotal": "Subtotal",
     "tax": "Impuestos (10%)",
     "total": "Total",
+    "stepShipping": "Envío",
+    "stepPayment": "Pago",
+    "continue": "Continuar",
+    "back": "Volver",
     "placeOrder": "Confirmar pedido",
     "placingOrder": "Procesando…",
     "orderError": "Algo salió mal al realizar el pedido. Por favor, intentá de nuevo."

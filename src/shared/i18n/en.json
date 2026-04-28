@@ -236,6 +236,10 @@
     "subtotal": "Subtotal",
     "tax": "Tax (10%)",
     "total": "Total",
+    "stepShipping": "Shipping",
+    "stepPayment": "Payment",
+    "continue": "Continue",
+    "back": "Back",
     "placeOrder": "Place Order",
     "placingOrder": "Placing order…",
     "orderError": "Something went wrong placing your order. Please try again."
