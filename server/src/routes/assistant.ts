@@ -30,6 +30,7 @@ const chatSchema = z.object({
     )
     .max(20)
     .default([]),
+  locale: z.enum(['en', 'es']).default('en'),
 })
 
 function optionalAuth(req: Request, _res: Response, next: NextFunction) {
@@ -51,7 +52,7 @@ router.post('/chat', aiLimiter, injectionGuard, optionalAuth, async (req, res) =
     return
   }
 
-  const { message, history } = parsed.data
+  const { message, history, locale } = parsed.data
   const userId = req.auth?.userId ?? null
 
   res.setHeader('Content-Type', 'text/event-stream')
@@ -64,7 +65,7 @@ router.post('/chat', aiLimiter, injectionGuard, optionalAuth, async (req, res) =
   }
 
   try {
-    for await (const chunk of streamAssistant(message, history, userId)) {
+    for await (const chunk of streamAssistant(message, history, userId, locale)) {
       send({ type: 'chunk', content: chunk })
     }
     send({ type: 'done' })

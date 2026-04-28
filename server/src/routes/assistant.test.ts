@@ -191,3 +191,94 @@ describe('POST /api/assistant/chat — SSE streaming', () => {
     expect(events.find((e) => e.type === 'error')).toBeUndefined()
   })
 })
+
+// ── E2E multi-turn flow ────────────────────────────────────────────────────────
+
+describe('POST /api/assistant/chat — E2E multi-turn', () => {
+  beforeEach(() => {
+    mockCreate.mockReset()
+    _resetStrikesForTesting()
+  })
+
+  it('recommend → add to cart: unauthenticated user gets sign-in prompt', async () => {
+    // Turn 1: user asks for recommendation
+    mockCreate
+      .mockResolvedValueOnce(groqToolCall('searchProducts', { query: 'gaming laptop' }))
+      .mockResolvedValueOnce(groqText('Found 2 great gaming laptops: ASUS ROG ($1,299) and MSI Raider ($1,499).'))
+
+    const turn1 = await request(app)
+      .post('/api/assistant/chat')
+      .send({ message: 'recommend a gaming laptop', history: [] })
+
+    expect(turn1.status).toBe(200)
+    const assistantReply = parseSSE(turn1.text).find((e) => e.type === 'chunk')?.content as string
+    expect(assistantReply).toBeTruthy()
+
+    // Turn 2: user confirms add to cart — no auth token → addToCart returns "must sign in"
+    mockCreate
+      .mockResolvedValueOnce(groqToolCall('addToCart', { productId: 'asus-rog', quantity: 1 }))
+      .mockResolvedValueOnce(groqText('You need to sign in to add items to your cart.'))
+
+    const turn2 = await request(app)
+      .post('/api/assistant/chat')
+      .send({
+        message: 'add the ASUS to my cart',
+        history: [
+          { role: 'user',      content: 'recommend a gaming laptop' },
+          { role: 'assistant', content: assistantReply },
+        ],
+      })
+
+    expect(turn2.status).toBe(200)
+    const turn2Events = parseSSE(turn2.text)
+    expect(turn2Events.find((e) => e.type === 'chunk')).toBeDefined()
+    expect(turn2Events.find((e) => e.type === 'done')).toBeDefined()
+    expect(turn2Events.find((e) => e.type === 'error')).toBeUndefined()
+    // 4 Groq calls total: 2 rounds × 2 turns
+    expect(mockCreate).toHaveBeenCalledTimes(4)
+  })
+})
+
+// ── Provider resiliencia ───────────────────────────────────────────────────────
+
+describe('POST /api/assistant/chat — resiliencia del provider', () => {
+  beforeEach(() => {
+    mockCreate.mockReset()
+    _resetStrikesForTesting()
+  })
+
+  it('429 rate limit — no retry, returns sanitized error without leaking provider details', async () => {
+    const rateLimitErr = Object.assign(new Error('Rate limit exceeded'), { status: 429 })
+    mockCreate.mockRejectedValue(rateLimitErr)
+
+    const res = await request(app)
+      .post('/api/assistant/chat')
+      .send({ message: 'hello', history: [] })
+
+    expect(res.status).toBe(200) // SSE always opens as 200
+    const events = parseSSE(res.text)
+    const error = events.find((e) => e.type === 'error')
+    expect(error).toBeDefined()
+    // Provider details must not leak
+    expect(String(error?.message)).not.toMatch(/groq|rate.?limit|429/i)
+    // 429 is not retried — 1 call in tool loop + 1 in fallback
+    expect(mockCreate).toHaveBeenCalledTimes(2)
+  })
+
+  it('ECONNRESET — retries 3×2 times then returns sanitized error', { timeout: 10_000 }, async () => {
+    // withRetry runs twice: once in runToolLoop, once in streamAssistant fallback
+    // Each run: 3 attempts with exponential backoff (1s + 2s = 3s per run = 6s total)
+    mockCreate.mockRejectedValue(new Error('ECONNRESET'))
+
+    const res = await request(app)
+      .post('/api/assistant/chat')
+      .send({ message: 'hello', history: [] })
+
+    expect(res.status).toBe(200)
+    const events = parseSSE(res.text)
+    const error = events.find((e) => e.type === 'error')
+    expect(error).toBeDefined()
+    expect(String(error?.message)).not.toMatch(/econnreset|connection/i)
+    expect(mockCreate).toHaveBeenCalledTimes(6) // 3 attempts × 2 withRetry calls
+  })
+})

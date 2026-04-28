@@ -15,7 +15,7 @@
 - [x] Elegir vector store — pgvector (extensión PostgreSQL en Neon).
 - [x] Definir esquema de documento de producto para embedding (title, description, category, brand).
 - [x] Definir estrategia de búsqueda híbrida — keyword + vector con RRF scoring.
-- [ ] Definir criterios de relevancia esperada (casos de prueba funcionales documentados).
+- [x] Definir criterios de relevancia esperada — `RELEVANCE_DATASET` en `search.test.ts`: 7 queries con expectativas documentadas por categoría/brand.
 
 ### A2. Modelo de datos / persistencia
 - [x] Crear migraciones para almacenar embedding por producto (pgvector extension + campo vector).
@@ -53,13 +53,13 @@
 - [x] Integrar filtros + resultados híbridos (`filters-panel.tsx`, `use-catalog-filters.ts`).
 - [x] Mostrar estado de carga/empty/error.
 - [x] Agregar bloque "Productos similares" en PDP.
-- [ ] Medir interacción de usuarios (clicks en resultados).
+- [x] Medir interacción de usuarios — `POST /api/search/click` (in-memory en metrics), `sendBeacon` desde search-page al click en resultado.
 
 ### A7. Calidad
 - [x] Tests unitarios para ranking y utilidades de scoring (`search.test.ts`).
 - [x] Tests de integración para endpoints de search/similar (`products.test.ts`).
-- [ ] Dataset pequeño de pruebas de relevancia (queries esperadas → resultados esperados).
-- [ ] Pruebas de performance básicas del endpoint (`p95`, throughput).
+- [x] Dataset pequeño de pruebas de relevancia — 7 casos en `search.test.ts` (FTS real, Cohere mockeado). Queries: iphone, laptop, headphones, samsung galaxy, gaming, sony, macbook.
+- [x] Pruebas de performance básicas — test `'responds within 2 seconds'` en search.test.ts + script `load-test.ts` con budget p95 por endpoint.
 
 ---
 
@@ -102,14 +102,14 @@
 ### B6. Seguridad y compliance básica
 - [x] Sanitizar input/output del usuario (injection-guard middleware).
 - [x] Bloquear prompt injection para tools sensibles (keyword filter + unicode normalization + strike ban).
-- [ ] Redactar y documentar política de datos (qué se guarda y cuánto tiempo).
+- [x] Redactar y documentar política de datos (`docs/DATA-POLICY.md` — qué persiste, TTL, providers third-party).
 - [x] Mostrar disclaimer de IA visible en la UI del chat (chat-widget.tsx línea 313 + i18n EN/ES).
 
 ### B7. Calidad
 - [x] Tests unitarios del orquestador (`injection-guard.test.ts`).
 - [x] Tests de integración del flujo tool-calling (`assistant.test.ts`).
-- [ ] Tests E2E: usuario consulta → recibe recomendación → agrega al carrito.
-- [ ] Pruebas de resiliencia ante caída del provider LLM.
+- [x] Tests E2E: usuario consulta → recomendación → addToCart (unauthenticated → sign-in prompt). Multi-turn con history real.
+- [x] Pruebas de resiliencia ante caída del provider LLM: 429 (no retry, sanitized) + ECONNRESET (3×2 intentos, sanitized).
 
 ---
 
@@ -138,11 +138,11 @@
 - [x] Auditoría de dependencias y vulnerabilidades (`bun audit` — axios, vite, follow-redirects actualizados).
 
 ### C4. Performance
-- [ ] Definir presupuesto de latencia para endpoints críticos.
-- [ ] Optimizar consultas de catálogo y búsqueda.
+- [x] Definir presupuesto de latencia para endpoints críticos (`docs/performance-baseline.md` — tabla p95 por endpoint).
+- [x] Optimizar consultas de catálogo y búsqueda — split PRODUCT_INCLUDE (list sin variants), cache de embeddings por query string (TTL 1h).
 - [x] Implementar caching en rutas de alta lectura (`lib/mem-cache.ts` — brands + categories con TTL 5min + invalidación en writes).
-- [ ] Evaluar compresión y optimizaciones frontend (bundle splitting).
-- [ ] Ejecutar smoke load test y guardar resultados.
+- [x] Evaluar compresión y optimizaciones frontend — `manualChunks` en vite.config.ts (vendor-react, vendor-tanstack, vendor-ui, vendor-i18n).
+- [x] Ejecutar smoke load test y guardar resultados — script `src/scripts/load-test.ts`, `bun run load-test [BASE_URL]`.
 
 ### C5. Resiliencia
 - [x] Timeouts explícitos hacia servicios externos (Cohere 10s, Groq 30s, Cloudinary 30s).
