@@ -3,6 +3,7 @@ import { ArrowLeft, MapPin, Package, XCircle } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { Button, PageTitle, Spinner } from '@/shared/ui'
 import { formatCurrency } from '@/shared/lib/format-currency'
+import { cloudinaryUrl } from '@/shared/lib/cloudinary'
 import { formatDate } from '@/shared/lib/format-date'
 import { useOrderById, useCancelOrder } from '@/entities/order'
 import type { OrderStatus } from '@/entities/order'
@@ -98,7 +99,7 @@ export function OrderDetailPage() {
                 <li key={item.id} className="flex items-center gap-4 px-5 py-4">
                   <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-lg bg-background">
                     {item.imageUrl ? (
-                      <img src={item.imageUrl} alt={item.name} className="h-full w-full rounded-lg object-cover" />
+                      <img src={cloudinaryUrl(item.imageUrl, 'thumb')} alt={item.name} className="h-full w-full rounded-lg object-cover" />
                     ) : (
                       <Package className="h-6 w-6 text-secondary/40" />
                     )}

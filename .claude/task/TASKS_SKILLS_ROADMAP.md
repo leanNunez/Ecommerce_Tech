@@ -47,7 +47,7 @@
 
 ## Fase 4 — Performance
 
-- **4.1 Cloudinary transforms por contexto** — PENDIENTE: las imágenes se sirven crudas. Sin `f_auto/q_auto/w_X` el peso en PLP/PDP es innecesariamente alto. Helper central en `shared/lib/cloudinary.ts`.
+- ✅ **4.1 Cloudinary transforms por contexto** — HECHO: helper `src/shared/lib/cloudinary.ts` con sizes `plp` (400x400), `pdp` (800x800), `thumb` (80x80), `og` (1200x630). Aplicado en product-card, product-gallery (hero + thumbs + lightbox), cart-sidebar, cart-page, order-detail-page.
 - ✅ **4.2 React Query staleTime** — HECHO: `staleTime: 5min`, `gcTime: 30min`, `refetchOnWindowFocus: false` configurados globalmente en `query-client.ts`.
 - **4.3 Prefetch PLP→PDP** — PENDIENTE: aplicar `queryClient.prefetchQuery` en hover/focus de product cards.
 - **4.4 Bundle audit por ruta** — PENDIENTE: medir peso actual de chunks por ruta y comparar con budgets del skill. Documentar en `docs/performance-baseline.md`.
@@ -66,9 +66,9 @@
 ## Fase 6 — Refactor técnico
 
 - **6.1 Eliminar `any` en backend** — PENDIENTE: `where: any` y `orderBy: any` en `products.ts`, `search.ts` y otros routes. Usar tipos de Prisma (`Prisma.ProductWhereInput`).
-- **6.2 Pendientes de código** (de `PENDING_FIXES.md`):
-  - `req.params.id as string` en 6 rutas → tipar handlers con `Request<{ id: string }>`.
-  - `react-hooks/set-state-in-effect` desactivada globalmente → reactivar + `eslint-disable-next-line` localizado en los 3 componentes justificados.
+- ✅ **6.2 Pendientes de código** (de `PENDING_FIXES.md`):
+  - `req.params.id as string` en 6 rutas → tipados con `Request<{ id: string }>` en `orders.ts`, `addresses.ts`, `products.ts`, `users.ts`, `brands.ts`, `categories.ts`.
+  - `react-hooks/set-state-in-effect` re-habilitada globalmente + `eslint-disable` localizado en `search-bar.tsx`, `chat-widget.tsx`, `category-shelf.tsx`.
 - ⏭ **6.2 React 19 patterns audit** — SKIP como tarea: React 19 ya está en uso y el compiler no está activo. Sin Compiler no tiene sentido auditar `useMemo`/`useCallback`. Evaluar cuando se active.
 - ⏭ **6.3 Tailwind 4 consistency pass** — SKIP: riesgo de regresiones visuales sin ganancia clara si el sistema ya es funcional. Solo aplicar si aparece inconsistencia concreta.
 

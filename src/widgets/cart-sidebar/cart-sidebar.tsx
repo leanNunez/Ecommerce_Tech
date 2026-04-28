@@ -1,6 +1,7 @@
 import { Link } from '@tanstack/react-router'
 import { Button } from '@/shared/ui'
 import { formatCurrency } from '@/shared/lib/format-currency'
+import { cloudinaryUrl } from '@/shared/lib/cloudinary'
 import { useCartStore } from '@/entities/cart'
 
 export function CartSidebar() {
@@ -19,7 +20,7 @@ export function CartSidebar() {
             {items.map((item) => (
               <li key={`${item.productId}-${item.variantId ?? ''}`} className="flex items-center gap-3">
                 <img
-                  src={item.imageUrl}
+                  src={cloudinaryUrl(item.imageUrl, 'thumb')}
                   alt={item.name}
                   className="h-12 w-12 rounded-lg object-cover bg-background"
                 />

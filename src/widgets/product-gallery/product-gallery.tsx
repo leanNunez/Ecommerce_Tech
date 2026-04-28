@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { X, ZoomIn } from 'lucide-react'
 import { cn } from '@/shared/lib/cn'
+import { cloudinaryUrl } from '@/shared/lib/cloudinary'
 import { Dialog, DialogContent, DialogTitle } from '@/shared/ui'
 import type { ProductImage } from '@/entities/product'
 
@@ -35,7 +36,7 @@ export function ProductGallery({ images, name = '', activeVariantImageUrl }: Pro
           onClick={() => setLightboxOpen(true)}
         >
           <img
-            src={mainImageUrl}
+            src={cloudinaryUrl(mainImageUrl, 'pdp')}
             alt={mainImageAlt}
             className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
           />
@@ -62,7 +63,7 @@ export function ProductGallery({ images, name = '', activeVariantImageUrl }: Pro
                 aria-label={`View image ${i + 1}`}
               >
                 <img
-                  src={img.url}
+                  src={cloudinaryUrl(img.url, 'thumb')}
                   alt={img.altText ?? `${name} ${i + 1}`}
                   className="h-full w-full object-cover"
                 />
@@ -85,7 +86,7 @@ export function ProductGallery({ images, name = '', activeVariantImageUrl }: Pro
           </button>
           <div className="flex max-h-[85vh] items-center justify-center p-4">
             <img
-              src={mainImageUrl}
+              src={cloudinaryUrl(mainImageUrl, 'pdp')}
               alt={mainImageAlt}
               className="max-h-full max-w-full rounded-lg object-contain"
             />
@@ -101,7 +102,7 @@ export function ProductGallery({ images, name = '', activeVariantImageUrl }: Pro
                     i === activeIndex ? 'border-white' : 'border-white/20 opacity-60 hover:opacity-100',
                   )}
                 >
-                  <img src={img.url} alt={`${name} ${i + 1}`} className="h-full w-full object-cover" />
+                  <img src={cloudinaryUrl(img.url, 'thumb')} alt={`${name} ${i + 1}`} className="h-full w-full object-cover" />
                 </button>
               ))}
             </div>

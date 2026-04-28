@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import type { TFunction } from 'i18next'
 import { Truck, CreditCard, Tag } from 'lucide-react'
 import { formatCurrency } from '@/shared/lib/format-currency'
+import { cloudinaryUrl } from '@/shared/lib/cloudinary'
 import { WishlistToggleButton } from '@/features/add-to-wishlist'
 import { useBrands } from '@/entities/brand'
 import type { Product } from '@/entities/product'
@@ -93,7 +94,7 @@ export function ProductCard({ product }: ProductCardProps) {
       <div className="aspect-[4/3] overflow-hidden bg-background">
         {image ? (
           <img
-            src={image.url}
+            src={cloudinaryUrl(image.url, 'plp')}
             alt={image.altText ?? product.name}
             className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
           />

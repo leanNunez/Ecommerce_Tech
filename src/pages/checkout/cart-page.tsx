@@ -2,6 +2,7 @@ import { Link } from '@tanstack/react-router'
 import { useTranslation } from 'react-i18next'
 import { Button, EmptyState, PageTitle } from '@/shared/ui'
 import { formatCurrency } from '@/shared/lib/format-currency'
+import { cloudinaryUrl } from '@/shared/lib/cloudinary'
 import { OrderSummary } from '@/widgets/order-summary'
 import { useCartStore, cartServerApi } from '@/entities/cart'
 import { useAuthStore } from '@/features/authenticate'
@@ -60,7 +61,7 @@ export function CartPage() {
             {items.map((item) => (
               <li key={`${item.productId}-${item.variantId ?? ''}`} className="flex gap-4 py-5">
                 <img
-                  src={item.imageUrl || 'https://placehold.co/80x80/F9FAFB/6B7280?text=...'}
+                  src={cloudinaryUrl(item.imageUrl, 'thumb') || 'https://placehold.co/80x80/F9FAFB/6B7280?text=...'}
                   alt={item.name}
                   className="h-20 w-20 rounded-lg object-cover bg-background shrink-0"
                 />

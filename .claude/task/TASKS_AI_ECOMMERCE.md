@@ -127,8 +127,8 @@
 - [x] Agregar middleware de correlación de requests (`requestId` UUID por request, header `X-Request-Id`).
 - [x] Implementar `/health` (con token de autenticación en prod).
 - [x] Implementar `/ready` (endpoint separado de readiness).
-- [ ] Instrumentar métricas básicas (latencia, error rate, AI calls).
-- [ ] Crear dashboard mínimo (aunque sea básico).
+- [x] Instrumentar métricas básicas (latencia p50/p95/p99, error rate 4xx/5xx, AI calls — `lib/metrics.ts`).
+- [x] Crear dashboard mínimo — `GET /metrics` endpoint JSON protegido con HEALTH_TOKEN.
 
 ### C3. Seguridad
 - [x] Revisar CORS y headers de seguridad (trust proxy + CORS multi-origin).
@@ -179,15 +179,15 @@
 - [x] Enlazar producción de e-commerce.
 - [x] Resumir impacto técnico en bullets claros.
 - [ ] Agregar capturas o GIFs de búsqueda inteligente y chat.
-- [ ] Limpiar README del frontend del chatbot (quitar template default).
+- [x] Limpiar README del frontend del chatbot — reescrito `backend/README.md` con endpoints, seguridad y arquitectura.
 
 ---
 
 ## Backlog técnico transversal (aplicar en todos los epics)
 - [x] Definir convención de commits (Conventional Commits en uso).
-- [ ] Crear PR templates (`.github/PULL_REQUEST_TEMPLATE.md`).
+- [x] Crear PR templates (`.github/PULL_REQUEST_TEMPLATE.md`).
 - [ ] Definir Definition of Done por feature (formal, no solo este archivo).
-- [ ] Mantener changelog de releases (`CHANGELOG.md`).
+- [x] Mantener changelog de releases (`CHANGELOG.md`).
 - [ ] Etiquetar issues por prioridad (`P0/P1/P2`) y tipo (`feat/fix/chore/docs`).
 - [ ] Crear milestones por semana.
 
@@ -204,6 +204,6 @@
 ## Definition of Done global
 - [ ] Feature desplegada en producción.
 - [x] Tests pasando en CI (frontend + backend workflows verdes).
-- [ ] Telemetría mínima disponible.
-- [ ] Documentación actualizada.
+- [x] Telemetría mínima disponible (`/metrics` con latencia, errors, AI calls).
+- [x] Documentación actualizada (README, DEPLOY.md, DEMO.md, env examples).
 - [ ] Demo reproducible en < 5 minutos.
