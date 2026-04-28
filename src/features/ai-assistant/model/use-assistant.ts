@@ -1,4 +1,5 @@
 import { useRef, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { getAccessToken } from '@/shared/api/axios-instance'
 
 export type ChatRole = 'user' | 'assistant'
@@ -11,6 +12,7 @@ export type ChatMessage = {
 const API_BASE = import.meta.env.VITE_API_URL ?? 'http://localhost:3001'
 
 export function useAssistant() {
+  const { i18n }                        = useTranslation()
   const [messages, setMessages]         = useState<ChatMessage[]>([])
   const [streaming, setStreaming]       = useState('')
   const [isLoading, setIsLoading]       = useState(false)
@@ -40,7 +42,7 @@ export function useAssistant() {
       const res = await fetch(`${API_BASE}/api/assistant/chat`, {
         method: 'POST',
         headers,
-        body: JSON.stringify({ message: trimmed, history: messages }),
+        body: JSON.stringify({ message: trimmed, history: messages, locale: i18n.language }),
         signal: controller.signal,
       })
 
