@@ -6,7 +6,13 @@ import { authenticate, requireAdmin } from '../middleware/auth.js'
 
 const router = Router()
 
-const PRODUCT_INCLUDE = {
+const PRODUCT_INCLUDE_LIST = {
+  images:   { orderBy: { order: 'asc' as const }, take: 1 },
+  category: true,
+  brand:    true,
+}
+
+const PRODUCT_INCLUDE_DETAIL = {
   images:   { orderBy: { order: 'asc' as const } },
   variants: true,
   category: true,
@@ -51,7 +57,7 @@ router.get('/', async (req, res, next) => {
         orderBy,
         skip:    (pageN - 1) * perPageN,
         take:    perPageN,
-        include: PRODUCT_INCLUDE,
+        include: PRODUCT_INCLUDE_LIST,
       }),
     ])
 
@@ -159,7 +165,7 @@ router.get('/admin/all', authenticate, requireAdmin, async (_req, res, next) => 
   try {
     const data = await prisma.product.findMany({
       orderBy: { createdAt: 'desc' },
-      include: PRODUCT_INCLUDE,
+      include: PRODUCT_INCLUDE_LIST,
     })
     res.json({ success: true, data })
   } catch (err) { next(err) }
@@ -170,7 +176,7 @@ router.get('/:slug', async (req, res, next) => {
   try {
     const product = await prisma.product.findUnique({
       where:   { slug: req.params.slug },
-      include: PRODUCT_INCLUDE,
+      include: PRODUCT_INCLUDE_DETAIL,
     })
     if (!product) { res.status(404).json({ success: false, message: 'Product not found' }); return }
     res.json({ success: true, data: product })
@@ -240,7 +246,7 @@ router.post('/', authenticate, requireAdmin, async (req, res, next) => {
             }
           : undefined,
       },
-      include: PRODUCT_INCLUDE,
+      include: PRODUCT_INCLUDE_DETAIL,
     })
     res.status(201).json({ success: true, data: product })
   } catch (err) { next(err) }
@@ -294,7 +300,7 @@ router.patch('/:id', authenticate, requireAdmin, async (req: Request<{ id: strin
           },
         }),
       },
-      include: PRODUCT_INCLUDE,
+      include: PRODUCT_INCLUDE_DETAIL,
     })
     res.json({ success: true, data: product })
   } catch (err) { next(err) }

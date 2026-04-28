@@ -3,6 +3,10 @@ import { z } from 'zod'
 import { Prisma } from '../generated/prisma/client.js'
 import { prisma } from '../lib/prisma.js'
 import { embedQuery } from '../lib/embeddings.js'
+import { cacheGet, cacheSet } from '../lib/mem-cache.js'
+import { recordSearchClick } from '../lib/metrics.js'
+
+const EMBED_TTL_MS = 60 * 60 * 1000 // 1 hour — embeddings are deterministic
 
 const router = Router()
 
@@ -106,7 +110,12 @@ router.get('/', async (req, res, next) => {
     }
 
     // ── Hybrid semantic search ──────────────────────────────────────────────────
-    const vector = await embedQuery(q)
+    const embedKey = `embed:${q.toLowerCase()}`
+    const vector = cacheGet<number[]>(embedKey) ?? await (async () => {
+      const v = await embedQuery(q)
+      cacheSet(embedKey, v, EMBED_TTL_MS)
+      return v
+    })()
     const vectorStr = `[${vector.join(',')}]`
 
     const conditions: Prisma.Sql[] = [
@@ -227,6 +236,21 @@ router.get('/', async (req, res, next) => {
   } catch (err) {
     next(err)
   }
+})
+
+// ── POST /api/search/click — fire-and-forget click tracking ───────────────────
+
+const clickSchema = z.object({
+  query:     z.string().min(1).max(200),
+  productId: z.string().min(1),
+  position:  z.number().int().min(0).max(99),
+})
+
+router.post('/click', (req, res) => {
+  const parsed = clickSchema.safeParse(req.body)
+  if (!parsed.success) { res.status(400).json({ success: false }); return }
+  recordSearchClick(parsed.data)
+  res.status(204).send()
 })
 
 export default router

@@ -1,4 +1,5 @@
 const RING_SIZE = 200
+const MAX_CLICK_LOG = 500
 
 type RouteStats = {
   requests: number
@@ -7,7 +8,14 @@ type RouteStats = {
   latencies: number[]
 }
 
-const routes = new Map<string, RouteStats>()
+type ClickEvent = {
+  query: string
+  productId: string
+  position: number
+  at: number
+}
+
+const routes    = new Map<string, RouteStats>()
 const startedAt = Date.now()
 
 const ai = {
@@ -16,6 +24,8 @@ const ai = {
   cohere_calls:  0,
   cohere_errors: 0,
 }
+
+const searchClicks: ClickEvent[] = []
 
 function percentile(arr: number[], p: number): number {
   if (arr.length === 0) return 0
@@ -39,6 +49,11 @@ export function recordRequest(
   else if (status >= 400) s.errors_4xx++
   if (s.latencies.length >= RING_SIZE) s.latencies.shift()
   s.latencies.push(durationMs)
+}
+
+export function recordSearchClick(data: { query: string; productId: string; position: number }): void {
+  if (searchClicks.length >= MAX_CLICK_LOG) searchClicks.shift()
+  searchClicks.push({ ...data, at: Date.now() })
 }
 
 export function recordAiCall(provider: 'groq' | 'cohere', error = false): void {
@@ -69,5 +84,9 @@ export function getMetricsSnapshot() {
     uptime_s: Math.floor((Date.now() - startedAt) / 1000),
     ai,
     routes: routeStats,
+    search: {
+      total_clicks: searchClicks.length,
+      recent_clicks: searchClicks.slice(-20),
+    },
   }
 }
