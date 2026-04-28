@@ -2,10 +2,12 @@ import { Link } from '@tanstack/react-router'
 import { useTranslation } from 'react-i18next'
 import type { TFunction } from 'i18next'
 import { Truck, CreditCard, Tag } from 'lucide-react'
+import { useQueryClient } from '@tanstack/react-query'
 import { formatCurrency } from '@/shared/lib/format-currency'
 import { cloudinaryUrl } from '@/shared/lib/cloudinary'
 import { WishlistToggleButton } from '@/features/add-to-wishlist'
 import { useBrands } from '@/entities/brand'
+import { getProductBySlug, productKeys } from '@/entities/product'
 import type { Product } from '@/entities/product'
 
 interface ProductCardProps {
@@ -50,6 +52,7 @@ function getPromos(price: number, t: TFunction) {
 
 export function ProductCard({ product }: ProductCardProps) {
   const { t } = useTranslation()
+  const queryClient = useQueryClient()
   const { data } = useBrands()
   const brands = data?.data ?? []
   const image = product.images[0]
@@ -60,10 +63,20 @@ export function ProductCard({ product }: ProductCardProps) {
   const isLowStock = product.stock > 0 && product.stock <= 5
   const promos = getPromos(product.price, t)
 
+  function prefetchProduct() {
+    void queryClient.prefetchQuery({
+      queryKey: productKeys.detail(product.slug),
+      queryFn: () => getProductBySlug(product.slug),
+    })
+  }
+
   return (
     <Link
       to="/product/$productSlug"
       params={{ productSlug: product.slug }}
+      preload="intent"
+      onMouseEnter={prefetchProduct}
+      onFocus={prefetchProduct}
       className="group relative flex h-full flex-col rounded-xl bg-surface overflow-hidden shadow-sm hover:shadow-2xl hover:shadow-primary/20 transition-all duration-300 hover:-translate-y-1 hover:ring-2 hover:ring-primary/30"
     >
       {/* Badges */}
