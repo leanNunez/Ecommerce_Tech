@@ -1,6 +1,6 @@
 import { Link } from '@tanstack/react-router'
 import { useTranslation } from 'react-i18next'
-import { Button, EmptyState, PageTitle } from '@/shared/ui'
+import { Alert, AlertDescription, Button, EmptyState, PageTitle } from '@/shared/ui'
 import { formatCurrency } from '@/shared/lib/format-currency'
 import { cloudinaryUrl } from '@/shared/lib/cloudinary'
 import { OrderSummary } from '@/widgets/order-summary'
@@ -13,6 +13,8 @@ export function CartPage() {
   const items = useCartStore((s) => s.items)
   const updateQuantity = useCartStore((s) => s.updateQuantity)
   const removeItem = useCartStore((s) => s.removeItem)
+  const syncError = useCartStore((s) => s.syncError)
+  const setSyncError = useCartStore((s) => s.setSyncError)
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated)
 
   function handleRemove(productId: string, variantId?: string) {
@@ -53,6 +55,18 @@ export function CartPage() {
   return (
     <div className="mx-auto max-w-5xl px-6 py-10">
       <PageTitle className="mb-8">{t('cart.title')}</PageTitle>
+
+      {syncError && (
+        <Alert variant="destructive" className="mb-6 flex items-start justify-between">
+          <AlertDescription>{t('cart.syncError', 'Could not sync your cart. Some items may be outdated.')}</AlertDescription>
+          <button
+            onClick={() => setSyncError(false)}
+            className="ml-4 shrink-0 text-sm font-medium underline"
+          >
+            {t('common.dismiss', 'Dismiss')}
+          </button>
+        </Alert>
+      )}
 
       <div className="grid gap-8 lg:grid-cols-3">
         {/* Items */}

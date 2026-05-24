@@ -65,6 +65,7 @@ export {
 } from './dialog'
 
 // Custom shared UI
+export { ErrorBoundary, RouteErrorFallback } from './error-boundary'
 export { PageTitle } from './page-title'
 export { Spinner } from './spinner'
 export { EmptyState } from './empty-state'

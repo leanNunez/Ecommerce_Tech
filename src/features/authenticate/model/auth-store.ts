@@ -5,6 +5,7 @@ import type { User, UserRole } from '@/entities/user'
 function parseTokenRole(token: string): UserRole {
   try {
     const payload = JSON.parse(atob(token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')))
+    if (typeof payload.exp === 'number' && payload.exp * 1000 < Date.now()) return 'customer'
     return payload.role === 'admin' ? 'admin' : 'customer'
   } catch {
     return 'customer'

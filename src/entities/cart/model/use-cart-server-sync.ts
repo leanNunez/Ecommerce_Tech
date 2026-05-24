@@ -31,9 +31,10 @@ export function useCartServerSync() {
           : await cartServerApi.getCart()
 
         const items = serverItems.map(toCartItem)
-        useCartStore.setState({ items, isSynced: true, ...computeTotals(items) })
+        useCartStore.setState({ items, isSynced: true, syncError: false, ...computeTotals(items) })
       } catch (err) {
         console.error('[cart] sync failed:', err)
+        useCartStore.getState().setSyncError(true)
       }
     }
 

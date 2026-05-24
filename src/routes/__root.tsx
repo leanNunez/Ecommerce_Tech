@@ -6,6 +6,7 @@ import { Footer } from '@/widgets/footer'
 import { ChatWidget } from '@/features/ai-assistant'
 import { useAuthStore } from '@/features/authenticate'
 import { useCartServerSync } from '@/entities/cart'
+import { RouteErrorFallback } from '@/shared/ui'
 import { meQueryOptions } from './-meQueryOptions'
 
 interface RouterContext {
@@ -52,6 +53,7 @@ function RootComponent() {
 }
 
 export const Route = createRootRouteWithContext<RouterContext>()({
+  errorComponent: RouteErrorFallback,
   beforeLoad: async ({ context: { queryClient } }) => {
     // Skip if already authenticated (e.g., after login/register in this session).
     if (useAuthStore.getState().isAuthenticated) return
