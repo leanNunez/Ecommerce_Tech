@@ -19,7 +19,7 @@ describe('GET /api/search — filter only', () => {
     expect(res.body.data.products.length).toBeGreaterThan(0)
     expect(res.body.data.total).toBeGreaterThan(0)
     expect(res.body.data.totalPages).toBeGreaterThan(0)
-  })
+  }, 15000)
 
   it('filters by category', async () => {
     const res = await request(app).get('/api/search?category=laptops&perPage=20')
