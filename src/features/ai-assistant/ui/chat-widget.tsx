@@ -90,6 +90,21 @@ function MessageBubble({ msg }: { msg: ChatMessage }) {
 // ── Typing indicator ────────────────────────────────────────────────────────────
 
 function TypingBubble({ text }: { text: string }) {
+  const { t } = useTranslation()
+  const stages = t('assistant.thinkingStages', { returnObjects: true }) as string[]
+  const stageCount = Array.isArray(stages) ? stages.length : 0
+  const [stage, setStage] = useState(0)
+
+  // While no text has streamed yet, walk through the "thinking" phrases so the
+  // user sees progress during the (silent) tool-calling round-trips.
+  useEffect(() => {
+    if (text || stageCount === 0) return
+    const id = setInterval(() => {
+      setStage((s) => Math.min(s + 1, stageCount - 1))
+    }, 4000)
+    return () => clearInterval(id)
+  }, [text, stageCount])
+
   return (
     <div className="flex justify-start">
       <div className="mr-2 mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-accent/10">
@@ -103,10 +118,15 @@ function TypingBubble({ text }: { text: string }) {
       </div>
       <div className="max-w-[80%] rounded-2xl rounded-bl-sm bg-surface px-3.5 py-2.5 text-sm leading-relaxed text-text shadow-sm">
         {text || (
-          <span className="inline-flex gap-1">
-            <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-muted [animation-delay:0ms]" />
-            <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-muted [animation-delay:150ms]" />
-            <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-muted [animation-delay:300ms]" />
+          <span className="flex items-center gap-2">
+            <span className="inline-flex gap-1">
+              <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-muted [animation-delay:0ms]" />
+              <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-muted [animation-delay:150ms]" />
+              <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-muted [animation-delay:300ms]" />
+            </span>
+            {Array.isArray(stages) && (
+              <span className="text-xs text-muted">{stages[stage]}</span>
+            )}
           </span>
         )}
       </div>
@@ -305,7 +325,9 @@ export function ChatWidget() {
               {messages.map((msg, i) => (
                 <MessageBubble key={i} msg={msg} />
               ))}
-              {(isLoading || streaming) && <TypingBubble text={streaming} />}
+              {(isLoading || streaming) && (
+                <TypingBubble key={messages.length} text={streaming} />
+              )}
             </>
           )}
           <div ref={messagesEndRef} />

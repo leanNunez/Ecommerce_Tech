@@ -437,6 +437,11 @@
       "Compare iPhone 15 Pro vs Galaxy S24",
       "What's in my cart?",
       "Best headphones for music"
+    ],
+    "thinkingStages": [
+      "Thinking…",
+      "Checking the catalog…",
+      "Putting together an answer…"
     ]
   },
   "serverWaking": {
