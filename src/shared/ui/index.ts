@@ -67,6 +67,7 @@ export {
 // Custom shared UI
 export { ErrorBoundary, RouteErrorFallback } from './error-boundary'
 export { PageTitle } from './page-title'
+export { ServerWakingBanner } from './server-waking-banner'
 export { Spinner } from './spinner'
 export { EmptyState } from './empty-state'
 export { PageSeo } from './page-seo'

@@ -1,6 +1,7 @@
 import axios, { type AxiosError, type InternalAxiosRequestConfig } from 'axios'
 import { API_URL } from '@/shared/config/env'
 import type { ApiError } from '@/shared/types/api.types'
+import { reportRequestEnd, reportRequestStart } from './cold-start'
 
 export const apiClient = axios.create({
   baseURL: API_URL,
@@ -9,6 +10,25 @@ export const apiClient = axios.create({
     'Content-Type': 'application/json',
   },
 })
+
+// ── Cold-start tracking ─────────────────────────────────────────────────────
+// Registered first so every HTTP attempt is counted exactly once, before the
+// refresh-retry and error-normalization interceptors run.
+apiClient.interceptors.request.use((config) => {
+  reportRequestStart()
+  return config
+})
+
+apiClient.interceptors.response.use(
+  (response) => {
+    reportRequestEnd()
+    return response
+  },
+  (error) => {
+    reportRequestEnd()
+    return Promise.reject(error)
+  },
+)
 
 // ── Access token (in-memory, cleared on page reload) ─────────────────────────
 let accessToken: string | null = null
