@@ -6,6 +6,7 @@ import type { Request, Response, NextFunction } from 'express'
 import type { AuthPayload } from '../types.js'
 import { streamAssistant } from '../lib/assistant-orchestrator.js'
 import { injectionGuard } from '../middleware/injection-guard.js'
+import { logger } from '../lib/logger.js'
 
 const router = Router()
 
@@ -70,6 +71,11 @@ router.post('/chat', aiLimiter, injectionGuard, optionalAuth, async (req, res) =
     }
     send({ type: 'done' })
   } catch (err) {
+    // Log the real cause server-side; the client only ever gets a generic message.
+    logger.error('assistant chat failed', {
+      requestId: res.locals.requestId,
+      error: err instanceof Error ? err.message : String(err),
+    })
     // Never expose internal LLM or DB errors to the client
     const isConfigError = err instanceof Error && err.message.includes('API_KEY')
     const message = isConfigError

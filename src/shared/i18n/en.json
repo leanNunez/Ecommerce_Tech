@@ -438,5 +438,9 @@
       "What's in my cart?",
       "Best headphones for music"
     ]
+  },
+  "serverWaking": {
+    "title": "This is a free demo.",
+    "description": "The server sleeps when idle, so the first response can take up to 1 minute. We're waking it up now."
   }
 }

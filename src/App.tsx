@@ -2,13 +2,14 @@ import { RouterProvider } from '@tanstack/react-router'
 import { HelmetProvider } from 'react-helmet-async'
 import { QueryProvider } from '@/app/providers/query-provider'
 import { router } from '@/app/router'
-import { ErrorBoundary } from '@/shared/ui'
+import { ErrorBoundary, ServerWakingBanner } from '@/shared/ui'
 
 export function App() {
   return (
     <ErrorBoundary>
       <HelmetProvider>
         <QueryProvider>
+          <ServerWakingBanner />
           <RouterProvider router={router} />
         </QueryProvider>
       </HelmetProvider>

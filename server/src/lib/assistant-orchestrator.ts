@@ -2,7 +2,9 @@ import OpenAI from 'openai'
 import { TOOL_DEFINITIONS, createToolExecutor } from './assistant-tools.js'
 import { recordAiCall } from './metrics.js'
 
-const MODEL = process.env.GROQ_MODEL ?? 'llama-3.3-70b-versatile'
+// Groq decommissioned llama-3.3-70b-versatile for free/developer tier on 2026-08-16.
+// openai/gpt-oss-120b is Groq's recommended production replacement and supports tool use.
+const MODEL = process.env.GROQ_MODEL ?? 'openai/gpt-oss-120b'
 const MAX_TOOL_ROUNDS = 8
 
 const LANGUAGE_NAMES: Record<string, string> = { en: 'English', es: 'Spanish' }
