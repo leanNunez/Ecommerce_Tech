@@ -69,6 +69,13 @@ export function Footer() {
 
         <div className="mt-10 border-t border-white/10 pt-6 text-center text-sm text-white/50">
           {t('footer.copyright', { year: new Date().getFullYear() })}
+          {' · '}
+          <a
+            href="https://leannunez.github.io/myportfolio/"
+            className="text-white/70 hover:text-white transition-colors"
+          >
+            {t('footer.builtBy')}
+          </a>
         </div>
       </div>
     </footer>
