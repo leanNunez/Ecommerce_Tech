@@ -14,9 +14,11 @@ const INJECTION_PATTERNS = [
   // Spanish
   'ignora tus', 'ignora todas', 'ignora las instrucciones',
   'olvida tus', 'olvida todo', 'olvida las instrucciones',
-  'ahora eres', 'finge que eres', 'actua como si', 'actúa como si',
+  // Accents are stripped during normalization, so patterns are written
+  // without them and also cover voseo forms ("ignorá tus", "olvidá tus").
+  'ahora eres', 'finge que eres', 'actua como si',
   'sin restricciones', 'nuevas instrucciones',
-  'cuales son tus instrucciones', 'cuáles son tus instrucciones',
+  'cuales son tus instrucciones',
   'muestra tus instrucciones', 'revela tus instrucciones',
 ]
 
@@ -24,19 +26,28 @@ function normalize(text: string): string {
   return text
     .normalize('NFKC')
     .toLowerCase()
+    // Strip diacritics: "ignorá" → "ignora"
+    .normalize('NFD')
+    .replace(/\p{M}/gu, '')
     .replace(/1/g, 'i')
     .replace(/0/g, 'o')
     .replace(/3/g, 'e')
+    .replace(/4/g, 'a')
+    .replace(/5/g, 's')
+    .replace(/7/g, 't')
     .replace(/@/g, 'a')
     .replace(/\$/g, 's')
-    .replace(/5/g, 's')
 }
 
 function hasInjection(text: string): boolean {
   const norm = normalize(text)
   if (INJECTION_PATTERNS.some((p) => norm.includes(p))) return true
   // Spaced-out attack: "i g n o r e  a l l"
-  const collapsed = norm.replace(/(?<=[a-z])\s(?=[a-z])/g, '')
+  // Join letters within each word, then squeeze the wider gaps attackers
+  // leave between words so "i g n o r a   t u s" reads "ignora tus".
+  const collapsed = norm
+    .replace(/(?<=[a-z])\s(?=[a-z])/g, '')
+    .replace(/\s+/g, ' ')
   return INJECTION_PATTERNS.some((p) => collapsed.includes(p))
 }
 
