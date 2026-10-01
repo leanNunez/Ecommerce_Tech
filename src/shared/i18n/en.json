@@ -32,7 +32,8 @@
     "privacyPolicy": "Privacy policy",
     "termsOfService": "Terms of service",
     "cookiePolicy": "Cookie policy",
-    "copyright": "© {{year}} Ecommerce. All rights reserved."
+    "copyright": "© {{year}} Ecommerce. All rights reserved.",
+    "builtBy": "Built by Leandro Nuñez — Full Stack Developer"
   },
   "home": {
     "hero": {
