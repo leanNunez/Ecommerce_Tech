@@ -447,6 +447,7 @@
   },
   "serverWaking": {
     "title": "Es una demo gratuita.",
-    "description": "El servidor se apaga cuando no se usa, así que la primera respuesta puede tardar hasta 1 minuto. Ya lo estamos despertando."
+    "description": "El servidor se apaga cuando no se usa, así que la primera respuesta puede tardar hasta 1 minuto. Ya lo estamos despertando.",
+    "loading": "Cargando"
   }
 }
